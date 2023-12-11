@@ -35,11 +35,11 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 		<key>NSAppleMusicUsageDescription</key>
-	<string>This enables you to send media files using mesibo</string>
+	<string>This enables you to send media files using RedThread</string>
 	<key>NSCameraUsageDescription</key>
-	<string>This allows Mesibo to make video calls and send your pictures directly from your camera.</string>
+	<string>This allows RedThread to make video calls and send your pictures directly from your camera.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Mesibo syncs phone numbers from your contacts to Mesibo servers to help you connect with other Mesibo users and to provide a better experience</string>
+	<string>RedThread syncs phone numbers from your contacts to RedThread servers to help you connect with other RedThread users and to provide a better experience</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This enables you to send your location to your contacts.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -49,9 +49,9 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This enables you to send your location to your contacts.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This allows Mesibo to use your microphone for voice and video calls</string>
+	<string>This allows RedThread to use your microphone for voice and video calls</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This enables you to send your pictures to your Mesibo contacts</string>
+	<string>This enables you to send your pictures to your RedThread contacts</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
