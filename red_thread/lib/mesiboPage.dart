@@ -5,7 +5,7 @@ import 'package:mesibo_flutter_sdk/mesibo.dart';
 
 import 'dart:developer';
 
-/**************************************************************************************************
+/*
  This demo application implements real-time messaging, calls, and conferencing capabilities in a 
  Flutter application. It can serve as a guide for integrating these features into your own Flutter 
  projects. Please refer to the tutorial link below for details on getting started, obtaining 
@@ -15,7 +15,7 @@ import 'dart:developer';
 
  You MUST create tokens and initialize them for user1 and user2 in the code below.
 
- **************************************************************************************************/
+ */
 
 class DemoUser {
   String token = "";
