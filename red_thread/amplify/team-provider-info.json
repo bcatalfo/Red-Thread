@@ -10,6 +10,12 @@
       "StackName": "amplify-redthread-dev-93358",
       "StackId": "arn:aws:cloudformation:us-east-1:973979565813:stack/amplify-redthread-dev-93358/52aadc20-9832-11ee-a192-0a2aab951ffb",
       "AmplifyAppId": "d36iduh4a3tob0"
+    },
+    "categories": {
+      "auth": {
+        "redthreadca1f5ada": {},
+        "redthread6ffc13fb": {}
+      }
     }
   }
 }
