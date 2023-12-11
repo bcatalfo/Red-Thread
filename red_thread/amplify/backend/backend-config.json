@@ -1,6 +1,6 @@
 {
   "auth": {
-    "redthread6ffc13fb": {
+    "redthread": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -17,12 +17,12 @@
           "EMAIL",
           "GENDER",
           "NAME",
-          "PHONE_NUMBER"
+          "PHONE_NUMBER",
+          "UPDATED_AT"
         ],
         "socialProviders": [],
         "usernameAttributes": [
-          "EMAIL",
-          "PHONE_NUMBER"
+          "EMAIL"
         ],
         "verificationMechanisms": [
           "EMAIL"
