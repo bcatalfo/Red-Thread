@@ -357,6 +357,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.0"
+  mesibo_flutter_sdk:
+    dependency: "direct main"
+    description:
+      name: mesibo_flutter_sdk
+      sha256: "68ce881f38916b024e91d802031926af584fa1bde932db1eb8fd6eece745e828"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.5"
   meta:
     dependency: transitive
     description:

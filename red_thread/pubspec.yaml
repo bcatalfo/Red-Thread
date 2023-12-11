@@ -12,6 +12,7 @@ dependencies:
   amplify_flutter: ^1.6.1
   flutter:
     sdk: flutter
+  mesibo_flutter_sdk: ^2.1.5
 
 dev_dependencies:
   flutter_test:
