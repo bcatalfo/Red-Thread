@@ -43,13 +43,14 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Red Thread'),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
+            Text(
               'Welcome to Red Thread',
             ),
+            SignOutButton(),
           ],
         ),
       ),
