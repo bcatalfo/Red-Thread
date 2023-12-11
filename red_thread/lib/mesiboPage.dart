@@ -79,7 +79,7 @@ class _HomeWidgetState extends State<HomeWidget>
       "75e9522d82740e39a11dd6dc1c7ca36195988e25be8c012e334a134fma285be7af01",
       'sam');
   DemoUser user2 = DemoUser(
-      "7957d6baddc3737280f260b56f3621e54974d46b14f621eee4a1350qac8be19a15e",
+      "c1c704b6ffea47fd6f80afe5460a099e264079267342465108e774a1357xa448fd16242",
       'ben');
 
   String remoteUser = "";
