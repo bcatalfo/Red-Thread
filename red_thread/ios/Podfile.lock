@@ -7,6 +7,24 @@ PODS:
   - device_info_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
+  - mesibo (2.3.2)
+  - mesibo-calls (2.3.2):
+    - mesibo (= 2.3.2)
+    - mesibo-webrtc (= 1.4.0)
+  - mesibo-mediapicker (2.1.6)
+  - mesibo-ui (2.3.2):
+    - mesibo (= 2.3.2)
+    - mesibo-mediapicker
+  - mesibo-webrtc (1.4.0):
+    - mesibo
+  - mesibo_flutter_sdk (2.1.5):
+    - Flutter
+    - mesiboflutter
+  - mesiboflutter (2.1.5):
+    - Flutter
+    - mesibo (= 2.3.2)
+    - mesibo-calls (= 2.3.2)
+    - mesibo-ui (= 2.3.2)
   - package_info_plus (0.4.5):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -20,9 +38,19 @@ DEPENDENCIES:
   - amplify_secure_storage (from `.symlinks/plugins/amplify_secure_storage/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
+  - mesibo_flutter_sdk (from `.symlinks/plugins/mesibo_flutter_sdk/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - mesibo
+    - mesibo-calls
+    - mesibo-mediapicker
+    - mesibo-ui
+    - mesibo-webrtc
+    - mesiboflutter
 
 EXTERNAL SOURCES:
   amplify_auth_cognito:
@@ -33,6 +61,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
+  mesibo_flutter_sdk:
+    :path: ".symlinks/plugins/mesibo_flutter_sdk/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
@@ -45,6 +75,13 @@ SPEC CHECKSUMS:
   amplify_secure_storage: 501cbdac671a050090d48dfcc002d5637d3f4a55
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  mesibo: 8e7049d60a40e3de975238a0fc591c555322662f
+  mesibo-calls: c13aa776a6b956ab196c432801e6f75c45ed175a
+  mesibo-mediapicker: 42ef0007e88fbe544021ef46da195a1aeb742be1
+  mesibo-ui: e3818220fe6d819b4705d37fda37ea98a4fbf916
+  mesibo-webrtc: bff3012986dd1fb02680a620b56eb3920c9d5bde
+  mesibo_flutter_sdk: e20d1270b825100cc594f3d979b0310fc75d54b4
+  mesiboflutter: aa9c48cdb856e4d2d353d5f6f7bee5f6a36e4da5
   package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
