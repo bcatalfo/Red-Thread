@@ -36,13 +36,13 @@ class FirstMesiboApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mesibo Flutter Demo',
+      title: 'Red Thread',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text("First Mesibo App"),
+          title: Text("Red Thread"),
           actions: [SignOutButton()],
         ),
         body: HomeWidget(),
@@ -257,7 +257,7 @@ class _HomeWidgetState extends State<HomeWidget>
 
     _mesiboUi.getUiDefaults().then((MesiboUIOptions options) {
       options.enableBackButton = true;
-      options.appName = "My First App";
+      options.appName = "Red Thread";
       options.toolbarColor = 0xff00868b;
       _mesiboUi.setUiDefaults(options);
     });
