@@ -68,15 +68,19 @@ class _HomeWidgetState extends State<HomeWidget>
   String _mesiboStatus = 'Mesibo status: Not Connected.';
   Text? mStatusText;
   bool authFail = false;
-  String mAppId = "";
+  String mAppId = "338623";
 
   /**************************************************************************************************
    Please refer to the tutorial link below for details on obtaining user authentication tokens.
 
    https://mesibo.com/documentation/tutorials/get-started/
  **************************************************************************************************/
-  DemoUser user1 = DemoUser("user-access-token-for-user-1", 'user-1-address');
-  DemoUser user2 = DemoUser("user-access-token-for-user-2", 'user-2-address');
+  DemoUser user1 = DemoUser(
+      "75e9522d82740e39a11dd6dc1c7ca36195988e25be8c012e334a134fma285be7af01",
+      'sam');
+  DemoUser user2 = DemoUser(
+      "7957d6baddc3737280f260b56f3621e54974d46b14f621eee4a1350qac8be19a15e",
+      'ben');
 
   String remoteUser = "";
   bool mOnline = false, mLoginDone = false;
