@@ -3,7 +3,7 @@
   "cognitoConfig": {
     "identityPoolName": "testAuthIdentityPool",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "redthr6654eb67",
+    "resourceNameTruncated": "redthr9bc17ed5",
     "userPoolName": "redthread",
     "autoVerifiedAttributes": [
       "email"
@@ -24,17 +24,16 @@
       "email",
       "gender",
       "name",
-      "phone_number",
-      "updated_at"
+      "phone_number"
     ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [],
     "userpoolClientReadAttributes": [],
-    "userpoolClientLambdaRole": "redthr6654eb67_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "redthr9bc17ed5_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "6654eb67",
+    "sharedId": "9bc17ed5",
     "resourceName": "redthread",
     "authSelections": "identityPoolAndUserPool",
     "serviceName": "Cognito",

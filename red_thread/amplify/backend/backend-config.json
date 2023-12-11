@@ -17,8 +17,7 @@
           "EMAIL",
           "GENDER",
           "NAME",
-          "PHONE_NUMBER",
-          "UPDATED_AT"
+          "PHONE_NUMBER"
         ],
         "socialProviders": [],
         "usernameAttributes": [
