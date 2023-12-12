@@ -73,7 +73,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final meetingNameController = TextEditingController();
   final jitsiMeet = JitsiMeet();
-  void join() {
+
+  void join() async {
+    final attributes = await Amplify.Auth.fetchUserAttributes();
+    final data = {for (var e in attributes) e.userAttributeKey.key: e.value};
+
     var options = JitsiMeetConferenceOptions(
       serverURL: "https://jitsi.member.fsf.org",
       room: "jitsiIsAwesomeWithFlutter",
@@ -110,8 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
         'welcomepage.enabled': false,
         'lobby-mode.enabled': false,
       },
-      userInfo: JitsiMeetUserInfo(
-          displayName: "Sam Catalfo", email: "scatalfo@gmail.com"),
+      userInfo:
+          JitsiMeetUserInfo(displayName: data['Name'], email: data['email']),
     );
     jitsiMeet.join(options);
   }
@@ -134,4 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+Future<Map<String, String>> getUserAttributes() async {
+  final attributes = await Amplify.Auth.fetchUserAttributes();
+  final data = {for (var e in attributes) e.userAttributeKey.key: e.value};
+  return data;
 }
