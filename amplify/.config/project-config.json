@@ -7,7 +7,7 @@
   "frontend": "flutter",
   "flutter": {
     "config": {
-      "ResDir": "./lib/"
+      "ResDir": "red_thread/lib"
     }
   }
 }
