@@ -75,52 +75,59 @@ class _MyHomePageState extends State<MyHomePage> {
   final jitsiMeet = JitsiMeet();
 
   void join() async {
-    final attributes = await Amplify.Auth.fetchUserAttributes();
-    final data = {for (var e in attributes) e.userAttributeKey.key: e.value};
-
-    var options = JitsiMeetConferenceOptions(
-      serverURL: "https://jitsi.member.fsf.org",
-      room: "jitsiIsAwesomeWithFlutter",
-      configOverrides: {
-        "startWithAudioMuted": false,
-        "startWithVideoMuted": false,
-        "disableModeratorIndicator": true,
-        "prejoinPageEnabled": false,
-        "breakoutRooms.hideAddRoomButton": true,
-        "breakoutRooms.hideAutoAssignButton": true,
-        "breakoutRooms.hideJoinRoomButton": true,
-        "minHeightForQualityLvl.360": "low",
-        "minHeightForQualityLvl.720": "standard",
-        "minHeightForQualityLvl.1080": "high",
-        "resolution": 1080,
-      },
-      featureFlags: {
-        'unsaferoomwarning.enabled': false,
-        'add-people.enabled': false,
-        'filmstrip.enabled': true,
-        'breakout-rooms.enabled': false,
-        'calendar.enabled': false,
-        'call-integration.enabled': false,
-        'android.screensharing.enabled': false,
-        'live-streaming.enabled': false,
-        'car-mode.enabled': false,
-        'kick-out.enabled': false,
-        'chat.enabled': false,
-        'invite.enabled': false,
-        'meeting-name.enabled': false,
-        'raise-hand.enabled': false,
-        'recording.enabled': false,
-        'server-url-change.enabled': false,
-        'tile-view.enabled': false,
-        'toolbox.alwaysVisible': false,
-        'video-share.enabled': false,
-        'welcomepage.enabled': false,
-        'lobby-mode.enabled': false,
-      },
-      userInfo:
-          JitsiMeetUserInfo(displayName: data['Name'], email: data['email']),
-    );
-    jitsiMeet.join(options);
+    //TODO: fix bug where first user is a noob
+    var data;
+    await Amplify.Auth.fetchUserAttributes().then((value) {
+      data = value.map((v) => MapEntry(v.userAttributeKey, v.value)).toList();
+    }).whenComplete(() {
+      if (data != null) {
+        data = {for (var e in data) e.key: e.value};
+      }
+    }).whenComplete(() {
+      JitsiMeetConferenceOptions options = JitsiMeetConferenceOptions(
+        serverURL: "https://jitsi.member.fsf.org",
+        room: "jitsiIsAwesomeWithFlutter",
+        configOverrides: {
+          "startWithAudioMuted": false,
+          "startWithVideoMuted": false,
+          "disableModeratorIndicator": true,
+          "prejoinPageEnabled": false,
+          "breakoutRooms.hideAddRoomButton": true,
+          "breakoutRooms.hideAutoAssignButton": true,
+          "breakoutRooms.hideJoinRoomButton": true,
+          "minHeightForQualityLvl.360": "low",
+          "minHeightForQualityLvl.720": "standard",
+          "minHeightForQualityLvl.1080": "high",
+          "resolution": 1080,
+        },
+        featureFlags: {
+          'unsaferoomwarning.enabled': false,
+          'add-people.enabled': false,
+          'filmstrip.enabled': true,
+          'breakout-rooms.enabled': false,
+          'calendar.enabled': false,
+          'call-integration.enabled': false,
+          'android.screensharing.enabled': false,
+          'live-streaming.enabled': false,
+          'car-mode.enabled': false,
+          'kick-out.enabled': false,
+          'chat.enabled': false,
+          'invite.enabled': false,
+          'meeting-name.enabled': false,
+          'raise-hand.enabled': false,
+          'recording.enabled': false,
+          'server-url-change.enabled': false,
+          'tile-view.enabled': false,
+          'toolbox.alwaysVisible': false,
+          'video-share.enabled': false,
+          'welcomepage.enabled': false,
+          'lobby-mode.enabled': false,
+        },
+        userInfo:
+            JitsiMeetUserInfo(displayName: data['name'], email: data['email']),
+      );
+      jitsiMeet.join(options);
+    });
   }
 
   @override
