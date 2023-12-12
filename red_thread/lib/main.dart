@@ -81,11 +81,42 @@ class _MyHomePageState extends State<MyHomePage> {
         "startWithAudioMuted": false,
         "startWithVideoMuted": false,
         "disableModeratorIndicator": true,
-        "subject": "Jitsi with Flutter",
+        "subject": "Your RedThread Date",
+        "prejoinPageEnabled": false,
+        "breakoutRooms": {
+          "hideAddRoomButton": true,
+          "hideAutoAssignButton": true,
+          "hideJoinRoomButton": true,
+        },
+        "breakoutRooms.hideAddRoomButton": true,
+        "breakoutRooms.hideAutoAssignButton": true,
+        "breakoutRooms.hideJoinRoomButton": true,
+        "resolution": 1080,
       },
-      featureFlags: {"unsaferoomwarning.enabled": false},
+      featureFlags: {
+        'unsaferoomwarning.enabled': false,
+        'add-people.enabled': false,
+        'filmstrip.enabled': false,
+        'breakout-rooms.enabled': false,
+        'calendar.enabled': false,
+        'call-integration.enabled': false,
+        'car-mode.enabled': false,
+        'kick-out.enabled': false,
+        'chat.enabled': true,
+        'invite.enabled': false,
+        'live-streaming.enabled': false,
+        'meeting-name.enabled': false,
+        'raise-hand.enabled': false,
+        'recording.enabled': false,
+        'server-url-change.enabled': false,
+        'tile-view.enabled': false,
+        'toolbox.alwaysVisible': false,
+        'video-share.enabled': false,
+        'welcomepage.enabled': false,
+        'lobby-mode.enabled': false,
+      },
       userInfo: JitsiMeetUserInfo(
-          displayName: "Flutter user", email: "user@example.com"),
+          displayName: "Sam Catalfo", email: "scatalfo@gmail.com"),
     );
     jitsiMeet.join(options);
   }
@@ -98,33 +129,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              width: 250,
-              height: 50,
-              child: TextField(
-                controller: meetingNameController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter meeting name',
-                ),
-              ),
+        child: FilledButton(
+            onPressed: join,
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0))),
             ),
-            SizedBox(
-              width: 100,
-              height: 50,
-              child: FilledButton(
-                  onPressed: join,
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0))),
-                  ),
-                  child: const Text("Join")),
-            ),
-          ],
-        ),
+            child: const Text("Join")),
       ),
     );
   }
