@@ -1,19 +1,32 @@
+type TimeRange {
+  startTime: AWSTimestamp!
+  endTime: AWSTimestamp!
+}
+
 type User @model @auth(rules: [{allow: public}]) {
   id: ID!
-  mesiboId: String
   age: String
   gender: String
-  mesiboToken: String
-  untitledfield: String
   name: String
+  availability: [TimeRange]
 }
 
 type Match @model @auth(rules: [{allow: public}]) {
   id: ID!
-  maleUser: ID!
-  femaleUser: ID!
+  user1: ID!
+  user2: ID!
   isActive: Boolean!
   timeMatched: AWSTimestamp!
   dateLocation: String
   room: String
+  agreedToDate: Boolean!
+  user1DateRating: Float
+  user2DateRating: Float
+  timeOfDate: AWSTimestamp
+  user1Arrived: Boolean
+  user2Arrived: Boolean
+  user1ArrivalTime: AWSTimestamp
+  user2ArrivalTime: AWSTimestamp
+  chat: [ID!]
 }
+ 
