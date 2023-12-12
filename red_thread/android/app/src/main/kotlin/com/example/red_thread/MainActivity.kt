@@ -1,4 +1,4 @@
-package com.example.red_thread
+package com.catalfotech.redthread
 
 import io.flutter.embedding.android.FlutterActivity
 
