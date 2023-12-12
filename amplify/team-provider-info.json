@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-redthread-dev-93358-authRole",
+      "UnauthRoleArn": "arn:aws:iam::973979565813:role/amplify-redthread-dev-93358-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::973979565813:role/amplify-redthread-dev-93358-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-redthread-dev-93358-deployment",
+      "UnauthRoleName": "amplify-redthread-dev-93358-unauthRole",
+      "StackName": "amplify-redthread-dev-93358",
+      "StackId": "arn:aws:cloudformation:us-east-1:973979565813:stack/amplify-redthread-dev-93358/52aadc20-9832-11ee-a192-0a2aab951ffb",
+      "AmplifyAppId": "d36iduh4a3tob0"
+    },
+    "categories": {
+      "auth": {
+        "redthread": {}
+      }
+    }
+  }
+}
