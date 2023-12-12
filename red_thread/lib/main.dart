@@ -4,6 +4,8 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 import 'package:red_thread/amplifyconfiguration.dart';
+import 'package:amplify_api/amplify_api.dart';
+import 'models/ModelProvider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,7 @@ Future<void> _configureAmplify() async {
     // Add Amplify Plugins
     final amplifyAuthCognito = AmplifyAuthCognito();
     await Amplify.addPlugins([amplifyAuthCognito]);
+    final api = AmplifyAPI(modelProvider: ModelProvider.instance);
 
     await Amplify.configure(amplifyconfig);
   } catch (e) {
