@@ -76,11 +76,11 @@ class _HomeWidgetState extends State<HomeWidget>
    https://mesibo.com/documentation/tutorials/get-started/
  **************************************************************************************************/
   DemoUser user1 = DemoUser(
-      "75e9522d82740e39a11dd6dc1c7ca36195988e25be8c012e334a134fma285be7af01",
-      'sam');
+      "406c0c06e146f677b40185d9e065bc826b2985715be553baebb4a13f0za92de6c0759",
+      'scatalfo@gmail.com');
   DemoUser user2 = DemoUser(
-      "c1c704b6ffea47fd6f80afe5460a099e264079267342465108e774a1357xa448fd16242",
-      'ben');
+      "1134a0595ac6e1785cad162051d87ea1f5c98b6ad9eb483ae114a13f2tae38bbb1204",
+      'bcatalfo@gmail.com');
 
   String remoteUser = "";
   bool mOnline = false, mLoginDone = false;
