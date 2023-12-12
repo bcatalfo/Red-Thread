@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       featureFlags: {
         'unsaferoomwarning.enabled': false,
         'add-people.enabled': false,
-        'filmstrip.enabled': false,
+        'filmstrip.enabled': true,
         'breakout-rooms.enabled': false,
         'calendar.enabled': false,
         'call-integration.enabled': false,
