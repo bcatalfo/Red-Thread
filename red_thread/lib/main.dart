@@ -83,11 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
         "disableModeratorIndicator": true,
         "subject": "Your RedThread Date",
         "prejoinPageEnabled": false,
-        "breakoutRooms": {
-          "hideAddRoomButton": true,
-          "hideAutoAssignButton": true,
-          "hideJoinRoomButton": true,
-        },
         "breakoutRooms.hideAddRoomButton": true,
         "breakoutRooms.hideAutoAssignButton": true,
         "breakoutRooms.hideJoinRoomButton": true,
