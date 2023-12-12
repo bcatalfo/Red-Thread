@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
       configOverrides: {
         "startWithAudioMuted": false,
         "startWithVideoMuted": false,
-        "disableModeratorIndicator": false,
+        "disableModeratorIndicator": true,
         "subject": "Jitsi with Flutter",
       },
       featureFlags: {"unsaferoomwarning.enabled": false},
