@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "red_thread",
+            "cwd": "red_thread",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "red_thread (profile mode)",
+            "cwd": "red_thread",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "red_thread (release mode)",
+            "cwd": "red_thread",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
