@@ -41,7 +41,6 @@ class MainApp extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () async {
-                // TODO: Implement sign out functionality
                 await Amplify.Auth.signOut();
               },
             ),
