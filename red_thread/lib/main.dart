@@ -37,9 +37,17 @@ class MainApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Red Thread'),
-          actions: [SignOutButton()],
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () async {
+                // TODO: Implement sign out functionality
+                await Amplify.Auth.signOut();
+              },
+            ),
+          ],
         ),
-        body: MyHomePage(title: 'Red Thread'),
+        body: const MyHomePage(title: 'Red Thread'),
       ),
       theme: ThemeData.from(
         useMaterial3: true,
