@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 import 'package:red_thread/amplifyconfiguration.dart';
 import 'package:amplify_api/amplify_api.dart';
+import 'package:red_thread/presentation/pages/main_page.dart';
 //import 'models/ModelProvider.dart';
 
 Future<void> main() async {
@@ -46,7 +47,7 @@ class MainApp extends StatelessWidget {
             ),
           ],
         ),
-        body: const MyHomePage(title: 'Red Thread'),
+        body: MainPage(title: 'Red Thread'),
       ),
       theme: ThemeData.from(
         useMaterial3: true,
@@ -70,98 +71,4 @@ class MainApp extends StatelessWidget {
       themeMode: ThemeMode.system,
     ));
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final meetingNameController = TextEditingController();
-  final jitsiMeet = JitsiMeet();
-
-  void join() async {
-    //TODO: fix bug where first user is a noob
-    var data;
-    await Amplify.Auth.fetchUserAttributes().then((value) {
-      data = value.map((v) => MapEntry(v.userAttributeKey, v.value)).toList();
-    }).whenComplete(() {
-      if (data != null) {
-        data = {for (var e in data) e.key: e.value};
-      }
-    }).whenComplete(() {
-      JitsiMeetConferenceOptions options = JitsiMeetConferenceOptions(
-        serverURL: "https://jitsi.member.fsf.org",
-        room: "jitsiIsAwesomeWithFlutter",
-        configOverrides: {
-          "startWithAudioMuted": false,
-          "startWithVideoMuted": false,
-          "disableModeratorIndicator": true,
-          "prejoinPageEnabled": false,
-          "breakoutRooms.hideAddRoomButton": true,
-          "breakoutRooms.hideAutoAssignButton": true,
-          "breakoutRooms.hideJoinRoomButton": true,
-          "minHeightForQualityLvl.360": "low",
-          "minHeightForQualityLvl.720": "standard",
-          "minHeightForQualityLvl.1080": "high",
-          "resolution": 1080,
-        },
-        featureFlags: {
-          'unsaferoomwarning.enabled': false,
-          'add-people.enabled': false,
-          'filmstrip.enabled': true,
-          'breakout-rooms.enabled': false,
-          'calendar.enabled': false,
-          'call-integration.enabled': false,
-          'android.screensharing.enabled': false,
-          'live-streaming.enabled': false,
-          'car-mode.enabled': false,
-          'kick-out.enabled': false,
-          'chat.enabled': false,
-          'invite.enabled': false,
-          'meeting-name.enabled': false,
-          'raise-hand.enabled': false,
-          'recording.enabled': false,
-          'server-url-change.enabled': false,
-          'tile-view.enabled': false,
-          'toolbox.alwaysVisible': false,
-          'video-share.enabled': false,
-          'welcomepage.enabled': false,
-          'lobby-mode.enabled': false,
-        },
-        userInfo:
-            JitsiMeetUserInfo(displayName: data['name'], email: data['email']),
-      );
-      jitsiMeet.join(options);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: FilledButton(
-            onPressed: join,
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0))),
-            ),
-            child: const Text("Join")),
-      ),
-    );
-  }
-}
-
-Future<Map<String, String>> getUserAttributes() async {
-  final attributes = await Amplify.Auth.fetchUserAttributes();
-  final data = {for (var e in attributes) e.userAttributeKey.key: e.value};
-  return data;
 }
