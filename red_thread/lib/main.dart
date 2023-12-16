@@ -2,9 +2,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 import 'package:red_thread/amplifyconfiguration.dart';
-import 'package:amplify_api/amplify_api.dart';
 import 'package:red_thread/presentation/pages/main_page.dart';
 //import 'models/ModelProvider.dart';
 
@@ -36,16 +34,53 @@ class MainApp extends StatelessWidget {
         child: MaterialApp(
       builder: Authenticator.builder(),
       home: Scaffold(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                ),
+                child: Text('Red Thread'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.phone),
+                title: const Text('Contact Us'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.info),
+                title: const Text('About'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Log Out'),
+                onTap: () {
+                  Amplify.Auth.signOut();
+                },
+              ),
+            ],
+          ),
+        ),
         appBar: AppBar(
           title: const Text('Red Thread'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () async {
-                await Amplify.Auth.signOut();
-              },
-            ),
-          ],
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          ),
         ),
         body: MainPage(title: 'Red Thread'),
       ),
