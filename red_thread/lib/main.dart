@@ -1,27 +1,20 @@
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_authenticator/amplify_authenticator.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:red_thread/amplifyconfiguration.dart';
 import 'package:red_thread/presentation/pages/main_page.dart';
 //import 'models/ModelProvider.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await _configureAmplify();
+void main() async {
   runApp(const MainApp());
 }
 
-Future<void> _configureAmplify() async {
-  try {
-    // Add Amplify Plugins
-    final amplifyAuthCognito = AmplifyAuthCognito();
-    await Amplify.addPlugins([amplifyAuthCognito]);
-    //final api = AmplifyAPI(modelProvider: ModelProvider.instance);
+class BagoolApp extends StatelessWidget {
+  const BagoolApp({super.key});
 
-    await Amplify.configure(amplifyconfig);
-  } catch (e) {
-    print(e);
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Red Thread',
+      home: Center(child: Text('Red Thread')),
+    );
   }
 }
 
@@ -30,9 +23,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Authenticator(
-        child: MaterialApp(
-      builder: Authenticator.builder(),
+    return MaterialApp(
       home: Scaffold(
         drawer: Drawer(
           child: ListView(
@@ -62,9 +53,7 @@ class MainApp extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Log Out'),
-                onTap: () {
-                  Amplify.Auth.signOut();
-                },
+                onTap: () {},
               ),
             ],
           ),
@@ -104,6 +93,6 @@ class MainApp extends StatelessWidget {
       ),
       // set the theme mode to respond to the user's system preferences (optional)
       themeMode: ThemeMode.system,
-    ));
+    );
   }
 }

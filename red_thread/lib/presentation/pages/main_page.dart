@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
-import '../../domain/user_repository.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key, required this.title}) : super(key: key);
@@ -11,14 +10,14 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final UserRepository userRepository = UserRepository();
+  //final UserRepository userRepository = UserRepository();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: FilledButton(
-            onPressed: join,
+            onPressed: (){},
             style: ButtonStyle(
               shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0))),
@@ -73,10 +72,4 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  void join() async {
-    final data = await userRepository.getUserAttributes();
-    var options = dateOptions(data);
-
-    JitsiMeet().join(options);
-  }
 }
