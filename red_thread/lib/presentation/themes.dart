@@ -14,3 +14,15 @@ final ThemeData theme = ThemeData.from(
     ),
   ),
 );
+
+class ExtendedTheme {
+  final ThemeData themeData;
+  final Color surfaceContainerHighest;
+
+  ExtendedTheme({required this.themeData, required this.surfaceContainerHighest});
+}
+
+final ExtendedTheme extendedTheme = ExtendedTheme(
+  themeData: theme,
+  surfaceContainerHighest: const Color(0xFFF1DEDC),
+);
