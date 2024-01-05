@@ -34,14 +34,33 @@ Widget myDrawer = Drawer(
 
 
 AppBar myAppBar = AppBar(
-          title: const Text('Red Thread'),
+          title: Row(
+            children: [
+              Spacer(),
+              Container(
+                width: 289,
+                height: 61,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: extendedTheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text('Red Thread', style: TextStyle(fontSize: 48, color: theme.colorScheme.primary)),
+              ),
+            ],
+          ),
           leading: Builder(
             builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
+              return Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: IconButton(
+                  iconSize: 64,
+                  icon: const Icon(Icons.menu, size: 40),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  alignment: Alignment.centerLeft,
+                ),
               );
             },
           ),
