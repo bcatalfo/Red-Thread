@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:red_thread/presentation/drawer_closed.dart';
 import 'package:red_thread/presentation/pages/main_page.dart';
+import 'package:red_thread/presentation/pages/video_preview.dart';
+import 'package:red_thread/presentation/themes.dart';
 //import 'models/ModelProvider.dart';
 
 void main() async {
-  runApp(const MainApp());
+  runApp(const BagoolApp());
 }
 
 class BagoolApp extends StatelessWidget {
@@ -11,9 +14,9 @@ class BagoolApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Red Thread',
-      home: Center(child: Text('Red Thread')),
+    return MaterialApp(
+      home: VideoPreview(),
+      theme: theme
     );
   }
 }
