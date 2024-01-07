@@ -53,6 +53,8 @@ class _VideoPreviewState extends State<VideoPreview> {
         'video-share.enabled': false,
         'welcomepage.enabled': false,
         'lobby-mode.enabled': false,
+        'fullscreen.enabled': false,
+        'pip.enabled': false,
       },
       userInfo:
           JitsiMeetUserInfo(displayName: "Ben", email: 'ben@catalfotechnologies.com'),
