@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer_closed.dart';
+import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:red_thread/presentation/themes.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 
@@ -62,18 +63,21 @@ class _VideoPreviewState extends State<VideoPreview> {
     jitsiMeet.join(options);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    join();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         drawer: myDrawer,
         appBar: myAppBar,
-        body: Padding(padding: const EdgeInsets.all(25), child: Text('Get lookin snazzy', style: theme.textTheme.displayLarge)),
+        body: Padding(
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            children: [
+              Text('Get lookin snazzy', style: theme.textTheme.displayLarge),
+              FaceDetectorView(),
+            ],
+          ),
+        ),
         backgroundColor: theme.colorScheme.surface,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: Container(
