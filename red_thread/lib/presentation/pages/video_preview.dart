@@ -3,16 +3,15 @@ import 'package:red_thread/presentation/drawer_closed.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:red_thread/presentation/themes.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// make a stateful widget
-class VideoPreview extends StatefulWidget {
-  const VideoPreview({Key? key}) : super(key: key);
 
-  @override
-  _VideoPreviewState createState() => _VideoPreviewState();
-}
+final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
+final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
+final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
 
-class _VideoPreviewState extends State<VideoPreview> {
+
+class VideoPreview extends ConsumerWidget {
   final jitsiMeet = JitsiMeet();
 
   void join(){
@@ -65,7 +64,11 @@ class _VideoPreviewState extends State<VideoPreview> {
 
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final smileProbability = ref.watch(smileProbabilityProvider);
+    final numberOfFacesDetected = ref.watch(numberOfFacesDetectedProvider);
+    final isFaceCentered = ref.watch(isFaceCenteredProvider);
+
     return Scaffold(
         drawer: myDrawer,
         appBar: myAppBar,
@@ -73,7 +76,10 @@ class _VideoPreviewState extends State<VideoPreview> {
           padding: const EdgeInsets.all(25),
           child: Column(
             children: [
-              Text('Get lookin snazzy', style: theme.textTheme.displayLarge),
+              Text('Get lookin snazzy', style: theme.textTheme.displayLarge), 
+              Text('Smile Probability: $smileProbability', style: theme.textTheme.displayMedium),
+              Text('Number of Faces Detected: $numberOfFacesDetected', style: theme.textTheme.displayMedium),
+              Text('Is Face Centered: $isFaceCentered', style: theme.textTheme.displayMedium),
               FaceDetectorView(),
             ],
           ),

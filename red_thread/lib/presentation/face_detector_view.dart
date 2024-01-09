@@ -4,6 +4,8 @@ import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
 import 'detector_view.dart';
 import 'face_detector_painter.dart';
+import 'package:red_thread/presentation/pages/video_preview.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FaceDetectorView extends StatefulWidget {
   @override
@@ -15,6 +17,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     options: FaceDetectorOptions(
       enableContours: true,
       enableLandmarks: true,
+      enableClassification: true,
     ),
   );
   bool _canProcess = true;
@@ -32,17 +35,17 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
 
   @override
   Widget build(BuildContext context) {
-    return DetectorView(
+    return Consumer(builder: (context, ref, child) { return DetectorView(
       title: 'Face Detector',
       customPaint: _customPaint,
       text: _text,
-      onImage: _processImage,
+      onImage: (inputImage) => _processImage(inputImage, ref),
       initialCameraLensDirection: _cameraLensDirection,
       onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
-    );
+    ); },);
   }
 
-  Future<void> _processImage(InputImage inputImage) async {
+  Future<void> _processImage(InputImage inputImage, WidgetRef ref) async {
     if (!_canProcess) return;
     if (_isBusy) return;
     _isBusy = true;
@@ -50,6 +53,11 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       _text = '';
     });
     final faces = await _faceDetector.processImage(inputImage);
+    ref.read(numberOfFacesDetectedProvider.notifier).state = faces.length;
+    // if faces is not empty set smileprobability
+    if (faces.isNotEmpty) {
+      ref.read(smileProbabilityProvider.notifier).state = faces[0].smilingProbability ?? 0.0;
+    }
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null) {
       final painter = FaceDetectorPainter(
