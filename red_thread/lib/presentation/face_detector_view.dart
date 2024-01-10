@@ -8,6 +8,8 @@ import 'package:red_thread/presentation/pages/video_preview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FaceDetectorView extends StatefulWidget {
+  const FaceDetectorView({super.key});
+
   @override
   State<FaceDetectorView> createState() => _FaceDetectorViewState();
 }
