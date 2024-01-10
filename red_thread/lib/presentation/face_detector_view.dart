@@ -76,7 +76,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
         inputImage.metadata!.rotation,
         _cameraLensDirection,
       );
-      _customPaint = CustomPaint(painter: painter);
+      _customPaint = null;
     } else {
       String text = 'Faces found: ${faces.length}\n\n';
       for (final face in faces) {
