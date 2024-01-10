@@ -94,13 +94,29 @@ class VideoPreview extends ConsumerWidget {
           child: FittedBox(
             child: FloatingActionButton(
               onPressed: () {
+                // make a function that takes no arguments and returns a string
+                String alertText() {
+                  if (numberOfFacesDetected == 0) {
+                    return 'Make sure your face is in the camera!';
+                  }
+                  if (smileProbability < 0.5) {
+                    return 'Smile more!';
+                  }
+                  if (isFaceCentered == false) {
+                    return 'Center your face!';
+                  }
+                  if (numberOfFacesDetected > 1) {
+                    return 'Get your friend out of the frame!';
+                  }
+                  return 'You look great!';
+                }
                 // show an alert dialog
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: Text('Join Queue'),
-                      content: Text('Are you sure you want to join the queue?'),
+                      content: Text(alertText()),
                       actions: [
                         TextButton(
                           onPressed: () {
