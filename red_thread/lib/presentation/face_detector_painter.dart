@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
 import 'coordinates_translator.dart';
+import 'themes.dart';
 
 class FaceDetectorPainter extends CustomPainter {
   FaceDetectorPainter(
@@ -24,11 +25,11 @@ class FaceDetectorPainter extends CustomPainter {
     final Paint paint1 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Colors.red;
+      ..color = theme.colorScheme.primary;
     final Paint paint2 = Paint()
-      ..style = PaintingStyle.fill
+      ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
-      ..color = Colors.green;
+      ..color = theme.colorScheme.secondary;
 
     for (final Face face in faces) {
       final left = translateX(
@@ -64,6 +65,17 @@ class FaceDetectorPainter extends CustomPainter {
         Rect.fromLTRB(left, top, right, bottom),
         paint1,
       );
+      // draw a rectangle the same size as the face but centered in the frame
+      // Define the central box size
+    final double boxWidth = right - left; // Example width
+    final double boxHeight = top - bottom; // Example height
+
+    // Calculate the position of the box
+    final double left2 = (size.width - boxWidth) / 2;
+    final double top2 = (size.height - boxHeight) / 2;
+
+    // Draw the box
+    canvas.drawRect(Rect.fromLTWH(left2, top2, boxWidth, boxHeight), paint2);
 
       void paintContour(FaceContourType type) {
         final contour = face.contours[type];
