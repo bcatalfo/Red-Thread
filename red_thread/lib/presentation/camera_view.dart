@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:red_thread/presentation/themes.dart';
 
 class CameraView extends StatefulWidget {
   CameraView(
@@ -68,7 +69,7 @@ class _CameraViewState extends State<CameraView> {
     if (_controller == null) return Container();
     if (_controller?.value.isInitialized == false) return Container();
     return Container(
-      color: Colors.black,
+      color: theme.colorScheme.surface,
       child: Center(
         child: CameraPreview(
                 _controller!,
