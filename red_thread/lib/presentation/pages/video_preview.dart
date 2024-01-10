@@ -93,7 +93,33 @@ class VideoPreview extends ConsumerWidget {
           width: 100.0, // Set your desired width
           child: FittedBox(
             child: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                // show an alert dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Join Queue'),
+                      content: Text('Are you sure you want to join the queue?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            join();
+                          },
+                          child: Text('Join'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
               backgroundColor: theme.colorScheme.primary,
               child: Text(
                 'Join Queue',
