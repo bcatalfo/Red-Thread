@@ -56,9 +56,17 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     });
     final faces = await _faceDetector.processImage(inputImage);
     ref.read(numberOfFacesDetectedProvider.notifier).state = faces.length;
-    // if faces is not empty set smileprobability
+    // if faces is not empty set smileprobability and isFaceCentered
     if (faces.isNotEmpty) {
       ref.read(smileProbabilityProvider.notifier).state = faces[0].smilingProbability ?? 0.0;
+      final imageSize = inputImage.metadata?.size;
+      if (imageSize != null) {
+        final imageCenter = Offset(imageSize.width / 2, imageSize.height / 2);
+        final faceCenter = faces[0].boundingBox.center;
+        final isFaceCentered = (faceCenter.dx - imageCenter.dx).abs() < 100 &&
+            (faceCenter.dy - imageCenter.dy).abs() < 100;
+        ref.read(isFaceCenteredProvider.notifier).state = isFaceCentered;
+      }
     }
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null) {
