@@ -14,6 +14,8 @@ final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
 class VideoPreview extends ConsumerWidget {
   final jitsiMeet = JitsiMeet();
 
+  VideoPreview({super.key});
+
   void join(){
     var options = JitsiMeetConferenceOptions(
       serverURL: "https://jitsi.member.fsf.org",
