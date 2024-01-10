@@ -72,14 +72,14 @@ class VideoPreview extends ConsumerWidget {
       if (numberOfFacesDetected == 0) {
         return 'Get in the frame!';
       }
+      if (numberOfFacesDetected > 1) {
+        return 'Move your friend away!';
+      }
       if (smileProbability < 0.5) {
         return 'Smile more!';
       }
       if (isFaceCentered == false) {
         return 'Center your face!';
-      }
-      if (numberOfFacesDetected > 1) {
-        return 'Get your friend out of the frame!';
       }
       return 'You look great!';
     }
@@ -104,25 +104,23 @@ class VideoPreview extends ConsumerWidget {
         ),
         backgroundColor: theme.colorScheme.surface,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Visibility(
-          visible: alertText() == 'You look great!',
-          child: SizedBox(
-            height: 100.0, // Set your desired height
-            width: 100.0, // Set your desired width
-            child: FittedBox(
+        floatingActionButton: SizedBox(
+          height: 100.0, // Set your desired height
+          width: 100.0, // Set your desired width
+          child: FittedBox(
               child: FloatingActionButton(
-                onPressed: join,
-                backgroundColor: theme.colorScheme.primary,
-                child: Text(
-                  'Join Queue',
-                  style: TextStyle(
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+            onPressed: alertText() == 'You look great!' ? join : null,
+            backgroundColor: alertText() == 'You look great!'
+                ? theme.colorScheme.primary
+                : theme.colorScheme.primary.withOpacity(0.38), // Grey color when button is disabled
+            child: Text(
+              'Join Queue',
+              style: TextStyle(
+                color: alertText() == 'You look great!' ? colorScheme.onPrimary : colorScheme.onPrimary.withOpacity(0.38),
               ),
+              textAlign: TextAlign.center,
             ),
-          ),
+          )),
         ));
   }
 }
