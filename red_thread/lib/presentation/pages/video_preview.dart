@@ -5,18 +5,16 @@ import 'package:red_thread/presentation/themes.dart';
 import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
 final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
 final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
-
 
 class VideoPreview extends ConsumerWidget {
   final jitsiMeet = JitsiMeet();
 
   VideoPreview({super.key});
 
-  void join(){
+  void join() {
     var options = JitsiMeetConferenceOptions(
       serverURL: "https://jitsi.member.fsf.org",
       room: "jitsiIsAwesomeWithFlutter",
@@ -58,12 +56,11 @@ class VideoPreview extends ConsumerWidget {
         'fullscreen.enabled': false,
         'pip.enabled': false,
       },
-      userInfo:
-          JitsiMeetUserInfo(displayName: "Ben", email: 'ben@catalfotechnologies.com'),
+      userInfo: JitsiMeetUserInfo(
+          displayName: "Ben", email: 'ben@catalfotechnologies.com'),
     );
     jitsiMeet.join(options);
   }
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,78 +68,58 @@ class VideoPreview extends ConsumerWidget {
     final numberOfFacesDetected = ref.watch(numberOfFacesDetectedProvider);
     final isFaceCentered = ref.watch(isFaceCenteredProvider);
 
+    String alertText() {
+      if (numberOfFacesDetected == 0) {
+        return 'Get in the frame!';
+      }
+      if (smileProbability < 0.5) {
+        return 'Smile more!';
+      }
+      if (isFaceCentered == false) {
+        return 'Center your face!';
+      }
+      if (numberOfFacesDetected > 1) {
+        return 'Get your friend out of the frame!';
+      }
+      return 'You look great!';
+    }
+
     return Scaffold(
         drawer: myDrawer,
         appBar: myAppBar,
-        body: Padding(
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            children: [
-              Text('Get lookin snazzy', style: theme.textTheme.displayLarge), 
-              Text('Smile Probability: $smileProbability', style: theme.textTheme.displayMedium),
-              Text('Number of Faces Detected: $numberOfFacesDetected', style: theme.textTheme.displayMedium),
-              Text('Is Face Centered: $isFaceCentered', style: theme.textTheme.displayMedium),
-              FaceDetectorView(),
-            ],
-          ),
+        body: Column(
+          children: [
+            Flexible(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Text(alertText(), style: theme.textTheme.displayLarge),
+              ),
+            ),
+            const Flexible(
+              flex: 3,
+              child: FaceDetectorView(),
+            ),
+          ],
         ),
         backgroundColor: theme.colorScheme.surface,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Container(
-          height: 100.0, // Set your desired height
-          width: 100.0, // Set your desired width
-          child: FittedBox(
-            child: FloatingActionButton(
-              onPressed: () {
-                // make a function that takes no arguments and returns a string
-                String alertText() {
-                  if (numberOfFacesDetected == 0) {
-                    return 'Make sure your face is in the camera!';
-                  }
-                  if (smileProbability < 0.5) {
-                    return 'Smile more!';
-                  }
-                  if (isFaceCentered == false) {
-                    return 'Center your face!';
-                  }
-                  if (numberOfFacesDetected > 1) {
-                    return 'Get your friend out of the frame!';
-                  }
-                  return 'You look great!';
-                }
-                // show an alert dialog
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Join Queue'),
-                      content: Text(alertText()),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            join();
-                          },
-                          child: Text('Join'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              backgroundColor: theme.colorScheme.primary,
-              child: Text(
-                'Join Queue',
-                style: TextStyle(
-                  color: theme.colorScheme.onPrimary,
+        floatingActionButton: Visibility(
+          visible: alertText() == 'You look great!',
+          child: SizedBox(
+            height: 100.0, // Set your desired height
+            width: 100.0, // Set your desired width
+            child: FittedBox(
+              child: FloatingActionButton(
+                onPressed: join,
+                backgroundColor: theme.colorScheme.primary,
+                child: Text(
+                  'Join Queue',
+                  style: TextStyle(
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           ),
