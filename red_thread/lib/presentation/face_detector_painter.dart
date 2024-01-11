@@ -65,8 +65,8 @@ class FaceDetectorPainter extends CustomPainter {
       );
       // draw a rectangle the same size as the face but centered in the frame
       // Define the central box size
-      final double boxWidth = right - left + 50; // Example width
-      final double boxHeight = bottom - top + 100; // Example height
+      final double boxWidth = 200; // Example width
+      final double boxHeight = 300; // Example height
 
       // Calculate the position of the box
       final double left2 = (size.width - boxWidth) / 2;
