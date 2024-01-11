@@ -136,7 +136,9 @@ class VideoPreviewState extends ConsumerState<VideoPreview> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 25.0),
                   child: Text(
-                      inQueue ? 'Finding you a match ${formatTime(secsInQueue)}' : 'Not in queue',
+                      inQueue
+                          ? 'Finding you a match ${formatTime(secsInQueue)}'
+                          : 'Not in queue',
                       style: theme.textTheme.displayMedium),
                 )),
             const Flexible(
