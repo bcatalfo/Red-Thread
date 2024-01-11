@@ -18,7 +18,7 @@ class BagoolApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      home: VideoPreview(),
+      home: const VideoPreview(),
       theme: theme
     );
   }
