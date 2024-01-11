@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:red_thread/presentation/coordinates_translator.dart';
 
 import 'detector_view.dart';
 import 'face_detector_painter.dart';
@@ -37,14 +38,18 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, ref, child) { return DetectorView(
-      title: 'Face Detector',
-      customPaint: _customPaint,
-      text: _text,
-      onImage: (inputImage) => _processImage(inputImage, ref),
-      initialCameraLensDirection: _cameraLensDirection,
-      onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
-    ); },);
+    return Consumer(
+      builder: (context, ref, child) {
+        return DetectorView(
+          title: 'Face Detector',
+          customPaint: _customPaint,
+          text: _text,
+          onImage: (inputImage) => _processImage(inputImage, ref),
+          initialCameraLensDirection: _cameraLensDirection,
+          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+        );
+      },
+    );
   }
 
   Future<void> _processImage(InputImage inputImage, WidgetRef ref) async {
@@ -59,11 +64,26 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     // if faces is not empty set smileprobability and isFaceCentered
     bool isFaceCentered = false;
     if (faces.isNotEmpty) {
-      ref.read(smileProbabilityProvider.notifier).state = faces[0].smilingProbability ?? 0.0;
+      ref.read(smileProbabilityProvider.notifier).state =
+          faces[0].smilingProbability ?? 0.0;
       final imageSize = inputImage.metadata?.size;
       if (imageSize != null) {
         final imageCenter = Offset(imageSize.width / 2, imageSize.height / 2);
-        final faceCenter = faces[0].boundingBox.center;
+        final faceCenterX = translateX(
+          faces[0].boundingBox.center.dx,
+          imageSize,
+          imageSize,
+          inputImage.metadata!.rotation,
+          _cameraLensDirection,
+        );
+        final faceCenterY = translateY(
+          faces[0].boundingBox.center.dy,
+          imageSize,
+          imageSize,
+          inputImage.metadata!.rotation,
+          _cameraLensDirection,
+        );
+        final faceCenter = Offset(faceCenterX, faceCenterY);
         isFaceCentered = (faceCenter.dx - imageCenter.dx).abs() < 50 &&
             (faceCenter.dy - imageCenter.dy).abs() < 100;
         ref.read(isFaceCenteredProvider.notifier).state = isFaceCentered;
