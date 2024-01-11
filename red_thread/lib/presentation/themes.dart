@@ -12,6 +12,11 @@ final ThemeData theme = ThemeData.from(
       fontWeight: FontWeight.bold,
       color: colorScheme.onSurface,
     ),
+    displayMedium: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.normal,
+      color: colorScheme.onSurface,
+    ),
   ),
 );
 
