@@ -36,7 +36,7 @@ Widget myDrawer = Drawer(
 AppBar myAppBar = AppBar(
           title: Row(
             children: [
-              Spacer(),
+              const Spacer(),
               Container(
                 width: 289,
                 height: 61,
