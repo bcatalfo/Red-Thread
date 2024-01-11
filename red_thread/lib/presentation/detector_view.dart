@@ -6,7 +6,7 @@ import 'camera_view.dart';
 
 
 class DetectorView extends StatefulWidget {
-  DetectorView({
+  const DetectorView({
     Key? key,
     required this.title,
     required this.onImage,

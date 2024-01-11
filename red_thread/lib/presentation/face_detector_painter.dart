@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
 import 'coordinates_translator.dart';
-import 'themes.dart';
 
 class FaceDetectorPainter extends CustomPainter {
   FaceDetectorPainter(
@@ -35,6 +34,7 @@ class FaceDetectorPainter extends CustomPainter {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5); // Glow effect
 
     for (final Face face in faces) {
+      // ignore: unused_local_variable
       final left = translateX(
         face.boundingBox.left,
         size,
@@ -42,6 +42,7 @@ class FaceDetectorPainter extends CustomPainter {
         rotation,
         cameraLensDirection,
       );
+      // ignore: unused_local_variable
       final top = translateY(
         face.boundingBox.top,
         size,
@@ -49,6 +50,7 @@ class FaceDetectorPainter extends CustomPainter {
         rotation,
         cameraLensDirection,
       );
+      // ignore: unused_local_variable
       final right = translateX(
         face.boundingBox.right,
         size,
@@ -56,6 +58,7 @@ class FaceDetectorPainter extends CustomPainter {
         rotation,
         cameraLensDirection,
       );
+      // ignore: unused_local_variable
       final bottom = translateY(
         face.boundingBox.bottom,
         size,

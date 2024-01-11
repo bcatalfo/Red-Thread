@@ -7,7 +7,7 @@ import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:red_thread/presentation/themes.dart';
 
 class CameraView extends StatefulWidget {
-  CameraView(
+  const CameraView(
       {Key? key,
       required this.customPaint,
       required this.onImage,

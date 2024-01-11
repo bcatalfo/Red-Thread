@@ -16,10 +16,10 @@ class VideoPreview extends ConsumerStatefulWidget {
   const VideoPreview({super.key});
 
   @override
-  _VideoPreviewState createState() => _VideoPreviewState();
+  VideoPreviewState createState() => VideoPreviewState();
 }
 
-class _VideoPreviewState extends ConsumerState<VideoPreview> {
+class VideoPreviewState extends ConsumerState<VideoPreview> {
   final jitsiMeet = JitsiMeet();
 
   void join() {
@@ -74,7 +74,7 @@ class _VideoPreviewState extends ConsumerState<VideoPreview> {
 
   void startOrStopTimer(bool inQueue) {
     if (inQueue) {
-      _timer = Timer.periodic(Duration(seconds: 1), (_) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         ref.read(secsInQueueProvider.notifier).state++;
       });
     } else {
