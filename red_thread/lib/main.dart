@@ -3,8 +3,12 @@ import 'package:red_thread/presentation/pages/video_preview.dart';
 import 'package:red_thread/presentation/themes.dart';
 //import 'models/ModelProvider.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import 'package:flutter/services.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //await ModelProvider.loadModels();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const ProviderScope(child: BagoolApp()));
 }
 
