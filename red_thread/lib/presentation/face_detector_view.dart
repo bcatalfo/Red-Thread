@@ -63,7 +63,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       if (imageSize != null) {
         final imageCenter = Offset(imageSize.width / 2, imageSize.height / 2);
         final faceCenter = faces[0].boundingBox.center;
-        final isFaceCentered = (faceCenter.dx - imageCenter.dx).abs() < 100 &&
+        final isFaceCentered = (faceCenter.dx - imageCenter.dx).abs() < 50 &&
             (faceCenter.dy - imageCenter.dy).abs() < 100;
         ref.read(isFaceCenteredProvider.notifier).state = isFaceCentered;
       }
