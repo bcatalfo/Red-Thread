@@ -72,12 +72,12 @@ class FaceDetectorPainter extends CustomPainter {
       final double left2 = (size.width - boxWidth) / 2;
       final double top2 = (size.height - boxHeight) / 2;
 
-      // Draw the box
-      canvas.drawRect(
-          Rect.fromLTWH(left2, top2, boxWidth, boxHeight), centerBorderPaint);
+      // Draw the oval
+      canvas.drawOval(
+        Rect.fromLTWH(left2, top2, boxWidth, boxHeight), centerBorderPaint);
 
       // Make it glow
-      canvas.drawRect(
+      canvas.drawOval(
           Rect.fromLTWH(left2, top2, boxWidth, boxHeight), glowPaint);
 
       void paintContour(FaceContourType type) {
