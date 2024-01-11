@@ -112,11 +112,14 @@ class VideoPreview extends ConsumerWidget {
             onPressed: alertText() == 'You look great!' ? join : null,
             backgroundColor: alertText() == 'You look great!'
                 ? theme.colorScheme.primary
-                : theme.colorScheme.primary.withOpacity(0.38), // Grey color when button is disabled
+                : theme.colorScheme.primary
+                    .withOpacity(0.38), // Grey color when button is disabled
             child: Text(
               'Join Queue',
               style: TextStyle(
-                color: alertText() == 'You look great!' ? colorScheme.onPrimary : colorScheme.onPrimary.withOpacity(0.38),
+                color: alertText() == 'You look great!'
+                    ? colorScheme.onPrimary
+                    : colorScheme.onPrimary.withOpacity(0.38),
               ),
               textAlign: TextAlign.center,
             ),
