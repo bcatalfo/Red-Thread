@@ -13,29 +13,26 @@ class FaceDetectorPainter extends CustomPainter {
     this.imageSize,
     this.rotation,
     this.cameraLensDirection,
+    this.isFaceCentered,
   );
 
   final List<Face> faces;
   final Size imageSize;
   final InputImageRotation rotation;
   final CameraLensDirection cameraLensDirection;
+  final bool isFaceCentered;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint faceBorderPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = theme.colorScheme.primary
-      ..strokeWidth = 3.0;
     final Paint centerBorderPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..color = theme.colorScheme.secondary
+      ..color = isFaceCentered ? Colors.green : Colors.red
       ..strokeWidth = 3.0;
     final Paint glowPaint = Paint()
-      ..color = theme.colorScheme.primary // Choose a glow color
       ..style = PaintingStyle.stroke
+      ..color = isFaceCentered ? Colors.green : Colors.red
       ..strokeWidth = 10.0
-      ..maskFilter =
-          const MaskFilter.blur(BlurStyle.normal, 5); // Outer blur for glow effect
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5); // Glow effect
 
     for (final Face face in faces) {
       final left = translateX(
@@ -66,24 +63,6 @@ class FaceDetectorPainter extends CustomPainter {
         rotation,
         cameraLensDirection,
       );
-
-      // Instead of drawing a full rectangle, draw a path that outlines just the edges
-      final Rect rect = Rect.fromLTRB(left, top, right, bottom);
-      canvas.drawRect(
-        rect,
-        faceBorderPaint,
-      );
-
-      final Path edgePath = Path()
-        ..moveTo(rect.left, rect.top)
-        ..lineTo(rect.right, rect.top)
-        ..lineTo(rect.right, rect.bottom)
-        ..lineTo(rect.left, rect.bottom)
-        ..close();
-
-      // Make it glow!
-      canvas.drawPath(edgePath, glowPaint);
-
       // draw a rectangle the same size as the face but centered in the frame
       // Define the central box size
       final double boxWidth = right - left + 50; // Example width
@@ -96,6 +75,10 @@ class FaceDetectorPainter extends CustomPainter {
       // Draw the box
       canvas.drawRect(
           Rect.fromLTWH(left2, top2, boxWidth, boxHeight), centerBorderPaint);
+
+      // Make it glow
+      canvas.drawRect(
+          Rect.fromLTWH(left2, top2, boxWidth, boxHeight), glowPaint);
 
       void paintContour(FaceContourType type) {
         final contour = face.contours[type];
@@ -119,7 +102,7 @@ class FaceDetectorPainter extends CustomPainter {
                   ),
                 ),
                 1,
-                faceBorderPaint);
+                centerBorderPaint);
           }
         }
       }

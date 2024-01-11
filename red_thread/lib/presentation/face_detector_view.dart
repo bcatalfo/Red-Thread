@@ -57,13 +57,14 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     final faces = await _faceDetector.processImage(inputImage);
     ref.read(numberOfFacesDetectedProvider.notifier).state = faces.length;
     // if faces is not empty set smileprobability and isFaceCentered
+    bool isFaceCentered = false;
     if (faces.isNotEmpty) {
       ref.read(smileProbabilityProvider.notifier).state = faces[0].smilingProbability ?? 0.0;
       final imageSize = inputImage.metadata?.size;
       if (imageSize != null) {
         final imageCenter = Offset(imageSize.width / 2, imageSize.height / 2);
         final faceCenter = faces[0].boundingBox.center;
-        final isFaceCentered = (faceCenter.dx - imageCenter.dx).abs() < 50 &&
+        isFaceCentered = (faceCenter.dx - imageCenter.dx).abs() < 50 &&
             (faceCenter.dy - imageCenter.dy).abs() < 100;
         ref.read(isFaceCenteredProvider.notifier).state = isFaceCentered;
       }
@@ -75,6 +76,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
         inputImage.metadata!.size,
         inputImage.metadata!.rotation,
         _cameraLensDirection,
+        isFaceCentered,
       );
       _customPaint = CustomPaint(painter: painter);
     } else {
