@@ -75,11 +75,11 @@ class VideoPreview extends ConsumerWidget {
       if (numberOfFacesDetected > 1) {
         return 'Move your friend away!';
       }
-      if (smileProbability < 0.5) {
-        return 'Smile more!';
-      }
       if (isFaceCentered == false) {
         return 'Center your face!';
+      }
+      if (smileProbability < 0.5) {
+        return 'Smile more!';
       }
       return 'You look great!';
     }
