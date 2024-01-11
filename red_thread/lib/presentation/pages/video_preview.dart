@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
 final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
 final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
+final inQueueProvider = StateProvider<bool>((ref) => false);
 
 class VideoPreview extends ConsumerWidget {
   final jitsiMeet = JitsiMeet();
@@ -67,6 +68,7 @@ class VideoPreview extends ConsumerWidget {
     final smileProbability = ref.watch(smileProbabilityProvider);
     final numberOfFacesDetected = ref.watch(numberOfFacesDetectedProvider);
     final isFaceCentered = ref.watch(isFaceCenteredProvider);
+    final inQueue = ref.watch(inQueueProvider);
 
     String alertText() {
       if (numberOfFacesDetected == 0) {
@@ -109,14 +111,22 @@ class VideoPreview extends ConsumerWidget {
           width: 100.0, // Set your desired width
           child: FittedBox(
               child: FloatingActionButton(
-            onPressed: alertText() == 'You look great!' ? join : null,
-            backgroundColor: alertText() == 'You look great!'
+            onPressed: () {
+              if (inQueue) {
+                ref.read(inQueueProvider.notifier).state = false;
+              } else {
+                ref.read(inQueueProvider.notifier).state = true;
+              }
+            },
+            backgroundColor: alertText() == 'You look great!' || inQueue
                 ? theme.colorScheme.primary
-                : theme.colorScheme.primary.withOpacity(0.38), // Grey color when button is disabled
+                : theme.colorScheme.primary.withOpacity(0.38),
             child: Text(
-              'Join Queue',
+              inQueue ? 'Leave Queue' : 'Join Queue',
               style: TextStyle(
-                color: alertText() == 'You look great!' ? colorScheme.onPrimary : colorScheme.onPrimary.withOpacity(0.38),
+                color: alertText() == 'You look great!' || inQueue
+                    ? colorScheme.onPrimary
+                    : colorScheme.onPrimary.withOpacity(0.38),
               ),
               textAlign: TextAlign.center,
             ),
