@@ -60,6 +60,9 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       _text = '';
     });
     final faces = await _faceDetector.processImage(inputImage);
+    if (!mounted) {
+      return;
+    }
     ref.read(numberOfFacesDetectedProvider.notifier).state = faces.length;
     // if faces is not empty set smileprobability and isFaceCentered
     bool isFaceCentered = false;
