@@ -12,14 +12,14 @@ final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final secsInQueueProvider = StateProvider<int>((ref) => 0);
 
-class VideoPreview extends ConsumerStatefulWidget {
-  const VideoPreview({super.key});
+class PreviewPage extends ConsumerStatefulWidget {
+  const PreviewPage({super.key});
 
   @override
-  VideoPreviewState createState() => VideoPreviewState();
+  PreviewPageState createState() => PreviewPageState();
 }
 
-class VideoPreviewState extends ConsumerState<VideoPreview> {
+class PreviewPageState extends ConsumerState<PreviewPage> {
   final jitsiMeet = JitsiMeet();
 
   void join() {
