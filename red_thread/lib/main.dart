@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:red_thread/presentation/pages/video_preview.dart';
-import 'package:red_thread/presentation/themes.dart';
-//import 'models/ModelProvider.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:flutter/services.dart';
+import 'package:red_thread/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,9 +15,8 @@ class BagoolApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
-      home: const VideoPreview(),
-      theme: theme
+    return MaterialApp.router(
+      routerConfig: createRouter(ref),
     );
   }
 }
