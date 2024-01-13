@@ -8,12 +8,12 @@ final ThemeData theme = ThemeData.from(
   colorScheme: colorScheme,
   textTheme: TextTheme(
     displayLarge: TextStyle(
-      fontSize: 48,
+      fontSize: 40,
       fontWeight: FontWeight.bold,
       color: colorScheme.onSurface,
     ),
     displayMedium: TextStyle(
-      fontSize: 40,
+      fontSize: 36,
       fontWeight: FontWeight.normal,
       color: colorScheme.onSurface,
     ),

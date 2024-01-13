@@ -11,6 +11,7 @@ void main() async {
   runApp(const ProviderScope(child: BagoolApp()));
 }
 
+// TODO: Add auth back
 class BagoolApp extends ConsumerWidget {
   const BagoolApp({super.key});
 
