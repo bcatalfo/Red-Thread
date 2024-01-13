@@ -3,7 +3,7 @@ import 'package:red_thread/presentation/drawer_closed.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:red_thread/jitsi_meet.dart';
+import 'package:red_thread/main.dart';
 
 final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
 final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
@@ -20,8 +20,8 @@ class PreviewPage extends ConsumerStatefulWidget {
 
 class PreviewPageState extends ConsumerState<PreviewPage> {
   void joinChat(BuildContext context) {
-    join();
     context.go('/chat');
+    BagoolApp.join();
   }
 
   @override

@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 
 final secsInQueueProvider = StateProvider<int>((ref) => 0);
 final inQueueProvider = StateProvider<bool>((ref) => false);
-const queueOpensAt = TimeOfDay(hour: 14, minute: 0);
-const queueClosesAt = TimeOfDay(hour: 16, minute: 0);
+const queueOpensAt = TimeOfDay(hour: 18, minute: 0);
+const queueClosesAt = TimeOfDay(hour: 20, minute: 0);
 
 class QueuePage extends ConsumerStatefulWidget {
   const QueuePage({super.key});
@@ -18,21 +18,21 @@ class QueuePage extends ConsumerStatefulWidget {
 }
 
 class QueuePageState extends ConsumerState<QueuePage> {
-  Timer? _timer;
-  Timer? _queueTimer;
+  Timer? _inQueueTimer; // increments secsInQueue every second
+  Timer? _queueOpensTimer; // updates UI every second
 
   @override
   void initState() {
     super.initState();
-    _queueTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _queueOpensTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _queueTimer?.cancel();
+    _inQueueTimer?.cancel();
+    _queueOpensTimer?.cancel();
     super.dispose();
   }
 
@@ -45,6 +45,11 @@ class QueuePageState extends ConsumerState<QueuePage> {
   }
 
   void joinPreview(BuildContext context) {
+    _inQueueTimer?.cancel(); // Cancel the timer when navigating away
+    _queueOpensTimer?.cancel(); // Cancel the timer when navigating away
+    ref.read(secsInQueueProvider.notifier).state =
+        0; // Reset seconds in queue
+    ref.read(inQueueProvider.notifier).state = false; // Reset in queue
     context.go('/preview');
   }
 
@@ -67,10 +72,10 @@ class QueuePageState extends ConsumerState<QueuePage> {
 
     // Artificially make a match happen after 5 seconds
     if (queueOpen && !matchFound && secsInQueue > 5) {
-      WidgetsBinding.instance.addPostFrameCallback( (_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         findMatch(context);
       });
-    } 
+    }
 
     if (matchFound) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -108,8 +113,8 @@ class QueuePageState extends ConsumerState<QueuePage> {
     } else {
       // The queue is closed
       // TODO: Calculate the 6PM from _queueOpensAt
-      final timeUntil = now.isBefore(DateTime(now.year, now.month, now.day, queueOpensAt.hour,
-          queueOpensAt.minute))
+      final timeUntil = now.isBefore(DateTime(now.year, now.month, now.day,
+              queueOpensAt.hour, queueOpensAt.minute))
           ? DateTime(now.year, now.month, now.day, queueOpensAt.hour,
                   queueOpensAt.minute)
               .difference(now)
@@ -126,10 +131,11 @@ class QueuePageState extends ConsumerState<QueuePage> {
             child: FloatingActionButton(
           onPressed: () {
             if (inQueue) {
-              _timer?.cancel();
+              _inQueueTimer?.cancel();
               ref.watch(secsInQueueProvider.notifier).state = 0; // Reset timer
             } else {
-              _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              _inQueueTimer =
+                  Timer.periodic(const Duration(seconds: 1), (timer) {
                 ref.read(secsInQueueProvider.notifier).state++;
               });
             }
