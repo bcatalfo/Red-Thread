@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
-import 'coordinates_translator.dart';
+import '../utils/coordinates_translator.dart';
 
 class FaceDetectorPainter extends CustomPainter {
   FaceDetectorPainter(
@@ -77,7 +77,7 @@ class FaceDetectorPainter extends CustomPainter {
 
       // Draw the oval
       canvas.drawOval(
-        Rect.fromLTWH(left2, top2, boxWidth, boxHeight), centerBorderPaint);
+          Rect.fromLTWH(left2, top2, boxWidth, boxHeight), centerBorderPaint);
 
       // Make it glow
       canvas.drawOval(
