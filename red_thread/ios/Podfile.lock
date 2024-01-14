@@ -174,7 +174,7 @@ SPEC CHECKSUMS:
   camera_avfoundation: 3125e8cd1a4387f6f31c6c63abb8a55892a9eeeb
   connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   Giphy: b6d5087521d251bb8c99cdc0eb07bbdf86d142d5
   google_mlkit_commons: 3857c1e9f23ca02073f8dd34a7a3580feb814cef
   google_mlkit_face_detection: 52f7e4c15a7c49b98940fa32af4c2b10fd8608fc
