@@ -10,6 +10,7 @@ final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
 final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final secsInQueueProvider = StateProvider<int>((ref) => 0);
+final isJoiningProvider = StateProvider<bool>((ref) => false);
 
 class PreviewPage extends ConsumerStatefulWidget {
   const PreviewPage({super.key});
@@ -19,9 +20,15 @@ class PreviewPage extends ConsumerStatefulWidget {
 }
 
 class PreviewPageState extends ConsumerState<PreviewPage> {
-  void joinChat(BuildContext context) {
-    context.go('/chat');
-    BagoolApp.join();
+  Future<void> joinChat(BuildContext context) async {
+    if (ref.watch(isJoiningProvider)) return;
+    ref.read(isJoiningProvider.notifier).state = true;
+    await BagoolApp.join().whenComplete(() async {
+      await Future.delayed(const Duration(seconds: 1), () {
+        ref.read(isJoiningProvider.notifier).state = false;
+        context.go('/chat');
+      });
+    });
   }
 
   @override
@@ -42,9 +49,11 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
       alertText = 'Smile more!';
     } else {
       alertText = 'You look great!';
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        joinChat(context);
-      });
+      if (!ref.watch(isJoiningProvider)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          joinChat(context);
+        });
+      }
     }
 
     return Scaffold(
