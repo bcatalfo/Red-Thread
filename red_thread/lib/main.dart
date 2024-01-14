@@ -19,8 +19,8 @@ class BagoolApp extends ConsumerWidget {
 
   static final jitsiMeet = JitsiMeet();
 
-  static void join() {
-    jitsiMeet.join(options);
+  static Future<void> join() async {
+    await jitsiMeet.join(options);
   }
 
   @override
