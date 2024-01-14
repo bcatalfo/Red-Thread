@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 
 final secsInQueueProvider = StateProvider<int>((ref) => 0);
 final inQueueProvider = StateProvider<bool>((ref) => false);
-const queueOpensAt = TimeOfDay(hour: 20, minute: 35);
-const queueClosesAt = TimeOfDay(hour: 22, minute: 35);
+const queueOpensAt = TimeOfDay(hour: 23, minute: 00);
+const queueClosesAt = TimeOfDay(hour: 23, minute: 35);
 
 class QueuePage extends ConsumerStatefulWidget {
   const QueuePage({super.key});
