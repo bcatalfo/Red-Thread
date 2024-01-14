@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 final secsInQueueProvider = StateProvider<int>((ref) => 0);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 const queueOpensAt = TimeOfDay(hour: 18, minute: 0);
-const queueClosesAt = TimeOfDay(hour: 20, minute: 0);
+const queueClosesAt = TimeOfDay(hour: 21, minute: 0);
 
 class QueuePage extends ConsumerStatefulWidget {
   const QueuePage({super.key});
@@ -47,8 +47,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
   void joinPreview(BuildContext context) {
     _inQueueTimer?.cancel(); // Cancel the timer when navigating away
     _queueOpensTimer?.cancel(); // Cancel the timer when navigating away
-    ref.read(secsInQueueProvider.notifier).state =
-        0; // Reset seconds in queue
+    ref.read(secsInQueueProvider.notifier).state = 0; // Reset seconds in queue
     ref.read(inQueueProvider.notifier).state = false; // Reset in queue
     context.go('/preview');
   }

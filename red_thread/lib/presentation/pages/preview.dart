@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer_closed.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:red_thread/main.dart';
 
 final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
@@ -23,12 +22,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
   Future<void> joinChat(BuildContext context) async {
     if (ref.watch(isJoiningProvider)) return;
     ref.read(isJoiningProvider.notifier).state = true;
-    await BagoolApp.join().whenComplete(() async {
-      await Future.delayed(const Duration(seconds: 1), () {
-        ref.read(isJoiningProvider.notifier).state = false;
-        context.go('/chat');
-      });
-    });
+    await BagoolApp.join(context, ref);
   }
 
   @override
