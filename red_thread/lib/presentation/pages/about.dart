@@ -44,15 +44,14 @@ class MyCustomCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
               child: Text(
                 mainText,
                 style: theme.textTheme.displayLarge,
               ),
             ),
-            const SizedBox(height: 8.0), // Spacer between texts
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
               child: Text(
                 subText,
                 style: theme.textTheme.displayMedium,
