@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 //define a drawer called top drawer
 Drawer myDrawer(BuildContext context) {
+  final theme = Theme.of(context);
+
   return Drawer(
     backgroundColor: theme.colorScheme.surfaceVariant,
     child: ListView(
@@ -11,25 +13,29 @@ Drawer myDrawer(BuildContext context) {
       children: [
         DrawerHeader(child: Image.asset('assets/images/heart.png')),
         ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text('Settings'),
+          leading: Icon(Icons.settings,
+              size: theme.textTheme.displayMedium?.fontSize),
+          title: Text('Settings', style: theme.textTheme.displayMedium),
           onTap: () {},
         ),
         ListTile(
-          leading: const Icon(Icons.phone),
-          title: const Text('Contact Us'),
+          leading:
+              Icon(Icons.phone, size: theme.textTheme.displayMedium?.fontSize),
+          title: Text('Contact Us', style: theme.textTheme.displayMedium),
           onTap: () {},
         ),
         ListTile(
-          leading: const Icon(Icons.info),
-          title: const Text('About'),
+          leading:
+              Icon(Icons.info, size: theme.textTheme.displayMedium?.fontSize),
+          title: Text('About', style: theme.textTheme.displayMedium),
           onTap: () {
             context.push('/about');
           },
         ),
         ListTile(
-          leading: const Icon(Icons.logout),
-          title: const Text('Log Out'),
+          leading:
+              Icon(Icons.logout, size: theme.textTheme.displayMedium?.fontSize),
+          title: Text('Log Out', style: theme.textTheme.displayMedium),
           onTap: () {},
         ),
       ],
