@@ -16,7 +16,9 @@ Drawer myDrawer(BuildContext context) {
           leading: Icon(Icons.settings,
               size: theme.textTheme.displayMedium?.fontSize),
           title: Text('Settings', style: theme.textTheme.displayMedium),
-          onTap: () {},
+          onTap: () {
+            context.push('/settings');
+          },
         ),
         ListTile(
           leading:
