@@ -9,7 +9,7 @@ Drawer myDrawer(BuildContext context) {
   return Drawer(
     backgroundColor: theme.colorScheme.surfaceVariant,
     child: ListView(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.all(8.0),
       children: [
         DrawerHeader(child: Image.asset('assets/images/heart.png')),
         ListTile(
