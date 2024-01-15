@@ -73,6 +73,33 @@ class QueuePageState extends ConsumerState<QueuePage> {
     );
   }
 
+  SizedBox fab(bool inQueue, bool queueOpen, ThemeData theme) => SizedBox(
+      width: 100,
+      height: 100,
+      child: FittedBox(
+          child: FloatingActionButton(
+        onPressed: () {
+          if (inQueue) {
+            _inQueueTimer?.cancel();
+            ref.watch(secsInQueueProvider.notifier).state = 0; // Reset timer
+          } else {
+            _inQueueTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              ref.read(secsInQueueProvider.notifier).state++;
+            });
+          }
+          ref.read(inQueueProvider.notifier).state = !inQueue;
+        },
+        backgroundColor: queueOpen
+            ? theme.colorScheme.primary
+            : theme.colorScheme.primary.withOpacity(0.38),
+        child: Text(inQueue ? 'Leave Queue' : 'Join Queue',
+            style: TextStyle(
+                color: queueOpen
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onPrimary.withOpacity(0.38)),
+            textAlign: TextAlign.center),
+      )));
+
   @override
   Widget build(BuildContext context) {
     final inQueue = ref.watch(inQueueProvider);
@@ -124,33 +151,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
       body = prompt('Queue opens in ${formatDuration(timeUntil)}',
           'The queue opens at 6PM every day.', theme);
     }
-    final floatingActionButton = SizedBox(
-        width: 100,
-        height: 100,
-        child: FittedBox(
-            child: FloatingActionButton(
-          onPressed: () {
-            if (inQueue) {
-              _inQueueTimer?.cancel();
-              ref.watch(secsInQueueProvider.notifier).state = 0; // Reset timer
-            } else {
-              _inQueueTimer =
-                  Timer.periodic(const Duration(seconds: 1), (timer) {
-                ref.read(secsInQueueProvider.notifier).state++;
-              });
-            }
-            ref.read(inQueueProvider.notifier).state = !inQueue;
-          },
-          backgroundColor: queueOpen
-              ? theme.colorScheme.primary
-              : theme.colorScheme.primary.withOpacity(0.38),
-          child: Text(inQueue ? 'Leave Queue' : 'Join Queue',
-              style: TextStyle(
-                  color: queueOpen
-                      ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.onPrimary.withOpacity(0.38)),
-              textAlign: TextAlign.center),
-        )));
+    final floatingActionButton = fab(inQueue, queueOpen, theme);
     return Scaffold(
       drawer: myDrawer(context),
       appBar: myAppBar,
