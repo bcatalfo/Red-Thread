@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 
 final secsInQueueProvider = StateProvider<int>((ref) => 0);
 final inQueueProvider = StateProvider<bool>((ref) => false);
-const queueOpensAt = TimeOfDay(hour: 23, minute: 00);
-const queueClosesAt = TimeOfDay(hour: 23, minute: 35);
+const queueOpensAt = TimeOfDay(hour: 2, minute: 00);
+const queueClosesAt = TimeOfDay(hour: 3, minute: 35);
 
 class QueuePage extends ConsumerStatefulWidget {
   const QueuePage({super.key});
@@ -57,6 +57,22 @@ class QueuePageState extends ConsumerState<QueuePage> {
     ref.read(matchFoundProvider.notifier).state = true;
   }
 
+  Column prompt(String heading, String subheading, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
+          child: Text(heading, style: theme.textTheme.displayLarge),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
+          child: Text(subheading, style: theme.textTheme.displayMedium),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final inQueue = ref.watch(inQueueProvider);
@@ -82,33 +98,18 @@ class QueuePageState extends ConsumerState<QueuePage> {
       });
     }
 
-    Column prompt(String heading, String subheading) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
-            child: Text(heading, style: theme.textTheme.displayLarge),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
-            child: Text(subheading, style: theme.textTheme.displayMedium),
-          )
-        ],
-      );
-    }
-
     Column body;
     if (inQueue) {
       // TODO: Edge case where the queue closes while the user is in queue
       assert(queueOpen);
       body = prompt(
           'You have been in the queue for ${formatDuration(Duration(seconds: secsInQueue))}',
-          'Sit back and relax while we find you a match.');
+          'Sit back and relax while we find you a match.',
+          theme);
     } else if (queueOpen) {
       // The queue is open but the user is not in the queue
-      body = prompt(
-          'The queue is open!', 'Tap the button below to join the queue.');
+      body = prompt('The queue is open!',
+          'Tap the button below to join the queue.', theme);
     } else {
       // The queue is closed
       // TODO: Calculate the 6PM from _queueOpensAt
@@ -121,7 +122,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
                   queueOpensAt.minute)
               .difference(now);
       body = prompt('Queue opens in ${formatDuration(timeUntil)}',
-          'The queue opens at 6PM every day.');
+          'The queue opens at 6PM every day.', theme);
     }
     final floatingActionButton = SizedBox(
         width: 100,
