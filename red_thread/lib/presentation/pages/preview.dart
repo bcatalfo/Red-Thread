@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:red_thread/presentation/drawer_closed.dart';
+import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/main.dart';
@@ -51,7 +51,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
     }
 
     return Scaffold(
-      drawer: myDrawer,
+      drawer: myDrawer(context),
       appBar: myAppBar,
       body: Column(
         children: [

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/presentation/pages/chat.dart';
 import 'package:red_thread/presentation/pages/preview.dart';
 import 'package:red_thread/presentation/pages/queue.dart';
+import 'package:red_thread/presentation/pages/about.dart';
 
 GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
@@ -18,6 +19,10 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(
         path: '/chat',
         builder: (context, state) => const ChatPage(),
+      ),
+      GoRoute(
+        path: '/about',
+        builder: (context, state) => const AboutPage(),
       ),
     ],
   );
