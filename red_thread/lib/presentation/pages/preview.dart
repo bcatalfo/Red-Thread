@@ -14,6 +14,8 @@ final isJoiningProvider = StateProvider<bool>((ref) => false);
 class PreviewPage extends ConsumerStatefulWidget {
   const PreviewPage({super.key});
 
+  static const String routeName = '/preview';
+
   @override
   PreviewPageState createState() => PreviewPageState();
 }
