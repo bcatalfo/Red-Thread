@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
 
+  static const String routeName = '/chat';
+
   @override
   ChatPageState createState() => ChatPageState();
 }
