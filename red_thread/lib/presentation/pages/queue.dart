@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:red_thread/presentation/drawer_closed.dart';
+import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
 import 'package:go_router/go_router.dart';
@@ -151,7 +151,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
               textAlign: TextAlign.center),
         )));
     return Scaffold(
-      drawer: myDrawer,
+      drawer: myDrawer(context),
       appBar: myAppBar,
       body: body,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
