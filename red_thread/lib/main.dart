@@ -6,7 +6,6 @@ import 'package:red_thread/presentation/themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await ModelProvider.loadModels();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const ProviderScope(child: BagoolApp()));
 }
