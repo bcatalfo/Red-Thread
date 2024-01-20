@@ -13,22 +13,19 @@ class SettingsPage extends StatelessWidget {
         title:
             Text('Settings', style: Theme.of(context).textTheme.displayLarge),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 8, 8, 8),
-            child: Text('Identify As',
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(25, 8, 8, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Identify As',
                 style: Theme.of(context).textTheme.displayLarge),
-          ),
-          const Center(child: IdentifyAsButton()),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 8, 8, 8),
-            child: Text('Interested In',
+            const IdentifyAsButton(),
+            Text('Interested In',
                 style: Theme.of(context).textTheme.displayLarge),
-          ),
-          const Center(child: InterestedInSwitches()),
-        ],
+            const InterestedInSwitches(),
+          ],
+        ),
       ));
 }
 
