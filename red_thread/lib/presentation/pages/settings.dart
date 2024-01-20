@@ -22,6 +22,12 @@ class SettingsPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.displayLarge),
           ),
           const Center(child: IdentifyAsButton()),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25, 8, 8, 8),
+            child: Text('Interested In',
+                style: Theme.of(context).textTheme.displayLarge),
+          ),
+          const Center(child: InterestedInSwitches()),
         ],
       ));
 }
@@ -69,5 +75,44 @@ class IdentifyAsButtonState extends ConsumerState<IdentifyAsButton> {
             });
           }),
     ]);
+  }
+}
+
+class InterestedInSwitches extends ConsumerWidget {
+  const InterestedInSwitches({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final interestedInMale = ref.watch(interestedInMaleProvider);
+    final interestedInFemale = ref.watch(interestedInFemaleProvider);
+    final interestedInOther = ref.watch(interestedInOtherProvider);
+
+    return Column(
+      children: [
+        SwitchListTile(
+          title: Text('Male', style: Theme.of(context).textTheme.displayMedium),
+          value: interestedInMale,
+          onChanged: (bool value) {
+            ref.read(interestedInMaleProvider.notifier).state = value;
+          },
+        ),
+        SwitchListTile(
+          title:
+              Text('Female', style: Theme.of(context).textTheme.displayMedium),
+          value: interestedInFemale,
+          onChanged: (bool value) {
+            ref.read(interestedInFemaleProvider.notifier).state = value;
+          },
+        ),
+        SwitchListTile(
+          title:
+              Text('Other', style: Theme.of(context).textTheme.displayMedium),
+          value: interestedInOther,
+          onChanged: (bool value) {
+            ref.read(interestedInOtherProvider.notifier).state = value;
+          },
+        ),
+      ],
+    );
   }
 }
