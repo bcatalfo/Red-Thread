@@ -23,7 +23,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: myAppBar,
+      appBar: myAppBar(context, ref),
       drawer: myDrawer(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () => unmatch(context),

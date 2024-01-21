@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:flutter/services.dart';
+import 'package:red_thread/providers.dart';
 import 'package:red_thread/router.dart';
-import 'package:red_thread/presentation/themes.dart';
+import 'package:red_thread/presentation/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,10 +21,14 @@ class BagoolApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp.router(
       title: 'Red Thread',
       routerConfig: createRouter(ref),
-      theme: theme,
+      theme: MaterialTheme.light(),
+      darkTheme: MaterialTheme.dark(),
+      themeMode: themeMode,
     );
   }
 }
