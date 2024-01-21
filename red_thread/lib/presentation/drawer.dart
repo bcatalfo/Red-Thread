@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:red_thread/presentation/themes.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:red_thread/presentation/theme.dart';
+import 'package:red_thread/providers.dart';
 
 //define a drawer called top drawer
 Drawer myDrawer(BuildContext context) {
@@ -45,36 +47,46 @@ Drawer myDrawer(BuildContext context) {
   );
 }
 
-AppBar myAppBar = AppBar(
-  title: Row(
-    children: [
-      const Spacer(),
-      Container(
-        width: 289,
-        height: 61,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: extendedTheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(16),
+AppBar myAppBar(BuildContext context, WidgetRef ref) {
+  final themeMode = ref.watch(themeModeProvider);
+
+  return AppBar(
+    title: Row(
+      children: [
+        const Spacer(),
+        Container(
+          width: 289,
+          height: 61,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: themeMode == ThemeMode.light
+                ? globalLightScheme.surfaceVariant
+                : globalDarkScheme.surfaceVariant,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text('Red Thread',
+              style: TextStyle(
+                  fontSize: 48,
+                  color: themeMode == ThemeMode.light
+                      ? globalLightScheme.primary
+                      : globalDarkScheme.primary)),
         ),
-        child: Text('Red Thread',
-            style: TextStyle(fontSize: 48, color: theme.colorScheme.primary)),
-      ),
-    ],
-  ),
-  leading: Builder(
-    builder: (BuildContext context) {
-      return Padding(
-        padding: const EdgeInsets.only(left: 15.0),
-        child: IconButton(
-          iconSize: 64,
-          icon: const Icon(Icons.menu, size: 40),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-          alignment: Alignment.centerLeft,
-        ),
-      );
-    },
-  ),
-);
+      ],
+    ),
+    leading: Builder(
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 15.0),
+          child: IconButton(
+            iconSize: 64,
+            icon: const Icon(Icons.menu, size: 40),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            alignment: Alignment.centerLeft,
+          ),
+        );
+      },
+    ),
+  );
+}

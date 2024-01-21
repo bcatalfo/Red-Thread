@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
-import 'package:red_thread/presentation/themes.dart';
+import 'package:red_thread/presentation/theme.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView(
@@ -61,24 +61,23 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   Widget build(BuildContext context) {
-    return _liveFeedBody();
+    return _liveFeedBody(context);
   }
 
-  Widget _liveFeedBody() {
+  Widget _liveFeedBody(BuildContext context) {
     if (_cameras.isEmpty) return Container();
     if (_controller == null) return Container();
     if (_controller?.value.isInitialized == false) return Container();
     return Container(
-      color: theme.colorScheme.surface,
+      color: Theme.of(context).colorScheme.surface,
       child: Center(
         child: CameraPreview(
-                _controller!,
-                child: widget.customPaint,
-              ),
+          _controller!,
+          child: widget.customPaint,
+        ),
       ),
     );
   }
-
 
   Future _startLiveFeed() async {
     final camera = _cameras[_cameraIndex];

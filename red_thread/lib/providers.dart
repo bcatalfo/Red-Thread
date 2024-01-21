@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum Gender { male, female, other }
@@ -8,3 +9,4 @@ final identifyAsProvider = StateProvider<Gender>((ref) => Gender.male);
 final interestedInMaleProvider = StateProvider<bool>((ref) => false);
 final interestedInFemaleProvider = StateProvider<bool>((ref) => false);
 final interestedInOtherProvider = StateProvider<bool>((ref) => false);
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.dark);
