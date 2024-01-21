@@ -4,7 +4,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
-import 'package:red_thread/presentation/theme.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView(
