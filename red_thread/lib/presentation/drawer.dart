@@ -5,8 +5,9 @@ import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
 
 //define a drawer called top drawer
-Drawer myDrawer(BuildContext context) {
+Drawer myDrawer(BuildContext context, WidgetRef ref) {
   final theme = Theme.of(context);
+  final themeMode = ref.watch(themeModeProvider);
 
   return Drawer(
     backgroundColor: theme.colorScheme.surfaceVariant,
@@ -43,6 +44,22 @@ Drawer myDrawer(BuildContext context) {
           title: Text('Log Out', style: theme.textTheme.displayMedium),
           onTap: () {},
         ),
+        themeMode == ThemeMode.light
+            ? ListTile(
+                leading: Icon(Icons.dark_mode,
+                    size: theme.textTheme.displayMedium?.fontSize),
+                title: Text('Dark Mode', style: theme.textTheme.displayMedium),
+                onTap: () {
+                  ref.read(themeModeProvider.notifier).state = ThemeMode.dark;
+                })
+            : ListTile(
+                leading: Icon(Icons.light_mode,
+                    size: theme.textTheme.displayMedium?.fontSize),
+                title: Text('Light Mode', style: theme.textTheme.displayMedium),
+                onTap: () {
+                  ref.read(themeModeProvider.notifier).state = ThemeMode.light;
+                },
+              )
       ],
     ),
   );

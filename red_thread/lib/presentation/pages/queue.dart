@@ -153,7 +153,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
     }
     final floatingActionButton = fab(inQueue, queueOpen, theme);
     return Scaffold(
-      drawer: myDrawer(context),
+      drawer: myDrawer(context, ref),
       appBar: myAppBar(context, ref),
       body: body,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

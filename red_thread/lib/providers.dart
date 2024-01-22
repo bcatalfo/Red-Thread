@@ -9,4 +9,4 @@ final identifyAsProvider = StateProvider<Gender>((ref) => Gender.male);
 final interestedInMaleProvider = StateProvider<bool>((ref) => false);
 final interestedInFemaleProvider = StateProvider<bool>((ref) => false);
 final interestedInOtherProvider = StateProvider<bool>((ref) => false);
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.dark);
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
