@@ -53,7 +53,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
     }
 
     return Scaffold(
-      drawer: myDrawer(context),
+      drawer: myDrawer(context, ref),
       appBar: myAppBar(context, ref),
       body: Column(
         children: [

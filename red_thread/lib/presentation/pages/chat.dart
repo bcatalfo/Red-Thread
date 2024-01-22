@@ -24,7 +24,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: myAppBar(context, ref),
-      drawer: myDrawer(context),
+      drawer: myDrawer(context, ref),
       floatingActionButton: FloatingActionButton(
         onPressed: () => unmatch(context),
         child: const Icon(Icons.close),
