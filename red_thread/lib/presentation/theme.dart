@@ -15,6 +15,11 @@ class MaterialTheme {
       fontWeight: FontWeight.normal,
       color: Colors.black, // Default color, will be overridden by theme
     ),
+    displaySmall: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.normal,
+      color: Colors.black, // Default color, will be overridden by theme
+    ),
     // Add other text styles if needed
   );
 
