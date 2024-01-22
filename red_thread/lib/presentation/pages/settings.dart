@@ -28,51 +28,6 @@ class SettingsPage extends ConsumerWidget {
                   ],
                 ),
               ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Center(
-                      child: Text('Other Settings',
-                          style: Theme.of(context).textTheme.displayLarge),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            debugPrint('Change email');
-                          },
-                          child: const Text('Change email'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            ref.read(themeModeProvider.notifier).state =
-                                ThemeMode.dark;
-                          },
-                          child: const Text('Dark Mode'),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            debugPrint('Reset Password');
-                          },
-                          child: const Text('Reset Password'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            debugPrint('Delete Account');
-                          },
-                          child: const Text('Delete Account'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
