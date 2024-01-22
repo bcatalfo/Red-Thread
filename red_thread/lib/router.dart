@@ -4,13 +4,27 @@ import 'package:red_thread/presentation/pages/chat.dart';
 import 'package:red_thread/presentation/pages/preview.dart';
 import 'package:red_thread/presentation/pages/queue.dart';
 import 'package:red_thread/presentation/pages/about.dart';
+import 'package:red_thread/presentation/pages/login.dart';
+import 'package:red_thread/presentation/pages/account_setup.dart';
+import 'package:red_thread/providers.dart';
 
 GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
     routes: <GoRoute>[
       GoRoute(
         path: '/',
-        builder: (context, state) => const QueuePage(),
+        builder: (context, state) {
+          final isAuthenticated = ref.watch(isAuthenticatedProvider);
+          final isAccountSetupComplete =
+              ref.watch(isAccountSetupCompleteProvider);
+          if (!isAuthenticated) {
+            return const LoginPage();
+          }
+          if (!isAccountSetupComplete) {
+            return const AccountSetupPage();
+          }
+          return const QueuePage();
+        },
       ),
       GoRoute(
         path: '/preview',
