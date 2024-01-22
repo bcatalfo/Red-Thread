@@ -13,7 +13,8 @@ Drawer myDrawer(BuildContext context) {
     child: ListView(
       padding: const EdgeInsets.all(8.0),
       children: [
-        DrawerHeader(child: Image.asset('assets/images/heart.png')),
+        DrawerHeader(
+            child: Image.asset('assets/images/iTunesArtwork-1024.png')),
         ListTile(
           leading: Icon(Icons.settings,
               size: theme.textTheme.displayMedium?.fontSize),
