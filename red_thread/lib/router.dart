@@ -4,7 +4,6 @@ import 'package:red_thread/presentation/pages/chat.dart';
 import 'package:red_thread/presentation/pages/preview.dart';
 import 'package:red_thread/presentation/pages/queue.dart';
 import 'package:red_thread/presentation/pages/about.dart';
-import 'package:red_thread/presentation/pages/settings.dart';
 
 GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
@@ -25,10 +24,6 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/about',
         builder: (context, state) => const AboutPage(),
       ),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsPage(),
-      )
     ],
   );
 }

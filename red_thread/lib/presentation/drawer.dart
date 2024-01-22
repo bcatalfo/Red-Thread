@@ -17,14 +17,6 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
         DrawerHeader(
             child: Image.asset('assets/images/iTunesArtwork-1024.png')),
         ListTile(
-          leading: Icon(Icons.settings,
-              size: theme.textTheme.displayMedium?.fontSize),
-          title: Text('Settings', style: theme.textTheme.displayMedium),
-          onTap: () {
-            context.push('/settings');
-          },
-        ),
-        ListTile(
           leading:
               Icon(Icons.phone, size: theme.textTheme.displayMedium?.fontSize),
           title: Text('Contact Us', style: theme.textTheme.displayMedium),
