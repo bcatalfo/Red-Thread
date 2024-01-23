@@ -5,8 +5,6 @@ import 'package:red_thread/providers.dart';
 class AccountSetupPage extends ConsumerStatefulWidget {
   const AccountSetupPage({Key? key}) : super(key: key);
 
-  static const String routeName = "/account_setup";
-
   @override
   AccountSetupPageState createState() => AccountSetupPageState();
 }
