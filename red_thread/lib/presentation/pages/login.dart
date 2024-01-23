@@ -5,8 +5,6 @@ import 'package:red_thread/providers.dart';
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
-  static const String routeName = "/login";
-
   @override
   LoginPageState createState() => LoginPageState();
 }
