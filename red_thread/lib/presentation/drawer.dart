@@ -34,7 +34,10 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
           leading:
               Icon(Icons.logout, size: theme.textTheme.displayMedium?.fontSize),
           title: Text('Log Out', style: theme.textTheme.displayMedium),
-          onTap: () {},
+          onTap: () {
+            // TODO: Actually log out
+            ref.read(isAuthenticatedProvider.notifier).state = false;
+          },
         ),
         themeMode == ThemeMode.light
             ? ListTile(
