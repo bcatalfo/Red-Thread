@@ -6,6 +6,7 @@ import 'package:red_thread/presentation/pages/queue.dart';
 import 'package:red_thread/presentation/pages/about.dart';
 import 'package:red_thread/presentation/pages/login.dart';
 import 'package:red_thread/presentation/pages/account_setup.dart';
+import 'package:red_thread/presentation/pages/verification.dart';
 import 'package:red_thread/providers.dart';
 
 GoRouter createRouter(WidgetRef ref) {
@@ -17,11 +18,16 @@ GoRouter createRouter(WidgetRef ref) {
           final isAuthenticated = ref.watch(isAuthenticatedProvider);
           final isAccountSetupComplete =
               ref.watch(isAccountSetupCompleteProvider);
+          final isVerified = ref.watch(isVerifiedProvider);
+
           if (!isAuthenticated) {
             return const LoginPage();
           }
           if (!isAccountSetupComplete) {
             return const AccountSetupPage();
+          }
+          if (!isVerified) {
+            return const VerificationPage();
           }
           return const QueuePage();
         },
