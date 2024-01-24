@@ -24,7 +24,6 @@ class LoginPageState extends ConsumerState<LoginPage> {
               ElevatedButton(
                 onPressed: () {
                   ref.read(isAuthenticatedProvider.notifier).state = true;
-                  //context.go("/account_setup");
                 },
                 child: const Text("Go to Account Setup"),
               ),
