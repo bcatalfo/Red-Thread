@@ -7,6 +7,7 @@ import 'package:red_thread/presentation/pages/about.dart';
 import 'package:red_thread/presentation/pages/login.dart';
 import 'package:red_thread/presentation/pages/account_setup.dart';
 import 'package:red_thread/presentation/pages/verification.dart';
+import 'package:red_thread/presentation/pages/welcome.dart';
 import 'package:red_thread/providers.dart';
 
 GoRouter createRouter(WidgetRef ref) {
@@ -19,7 +20,11 @@ GoRouter createRouter(WidgetRef ref) {
           final isAccountSetupComplete =
               ref.watch(isAccountSetupCompleteProvider);
           final isVerified = ref.watch(isVerifiedProvider);
+          final isFirstTimeUser = ref.watch(isFirstTimeUserProvider);
 
+          if (isFirstTimeUser) {
+            return const WelcomePage();
+          }
           if (!isAuthenticated) {
             return const LoginPage();
           }
