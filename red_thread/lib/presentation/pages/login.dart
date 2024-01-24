@@ -101,9 +101,17 @@ class LoginPageState extends ConsumerState<LoginPage> {
                     text: 'OR', dividerColor: theme.colorScheme.outline),
                 const SizedBox(height: 20),
                 // TODO: Implement sign in logic
-                SignInButton(Buttons.google, onPressed: () {}),
+                SignInButton(
+                    themeMode == ThemeMode.light
+                        ? Buttons.google
+                        : Buttons.googleDark,
+                    onPressed: () {}),
                 const SizedBox(height: 20),
-                SignInButton(Buttons.apple, onPressed: () {}),
+                SignInButton(
+                    themeMode == ThemeMode.light
+                        ? Buttons.apple
+                        : Buttons.appleDark,
+                    onPressed: () {}),
               ],
             ),
           ),
