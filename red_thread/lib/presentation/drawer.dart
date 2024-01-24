@@ -20,7 +20,9 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
           leading:
               Icon(Icons.phone, size: theme.textTheme.displayMedium?.fontSize),
           title: Text('Contact Us', style: theme.textTheme.displayMedium),
-          onTap: () {},
+          onTap: () {
+            context.push('/contact_us');
+          },
         ),
         ListTile(
           leading:

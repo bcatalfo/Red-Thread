@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/presentation/pages/chat.dart';
+import 'package:red_thread/presentation/pages/contact_us.dart';
 import 'package:red_thread/presentation/pages/preview.dart';
 import 'package:red_thread/presentation/pages/queue.dart';
 import 'package:red_thread/presentation/pages/about.dart';
@@ -49,6 +50,10 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/about',
         builder: (context, state) => const AboutPage(),
       ),
+      GoRoute(
+        path: '/contact_us',
+        builder: (context, state) => const ContactUsPage(),
+      )
     ],
   );
 }
