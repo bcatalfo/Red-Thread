@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,7 +48,10 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
       alertText = 'You look great!';
       if (!ref.watch(isJoiningProvider)) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          joinChat(context);
+          //joinChat(context);
+          // TODO: Make this add the other person to the call
+          // After the call ends, go to the chat page
+          context.go('/chat');
         });
       }
     }
