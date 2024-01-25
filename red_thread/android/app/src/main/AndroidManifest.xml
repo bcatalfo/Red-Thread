@@ -1,3 +1,4 @@
+<!-- TODO: allow phone calls. see https://pub.dev/packages/url_launcher#configuration -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <application
