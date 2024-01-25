@@ -12,6 +12,7 @@ class ContactUsPage extends StatefulWidget {
 
 class ContactUsPageState extends State<ContactUsPage> {
   void _makePhoneCall(String phoneNumber) async {
+    // TODO: update AndroidManifest.xml to allow phone calls. See https://pub.dev/packages/url_launcher#configuration
     final Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
