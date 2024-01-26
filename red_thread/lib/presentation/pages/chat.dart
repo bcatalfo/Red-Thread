@@ -57,7 +57,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
       drawer: myDrawer(context, ref),
       resizeToAvoidBottomInset: true,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             Expanded(
@@ -65,7 +65,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.all(8),
                     child: messages[index],
                   );
                 },
@@ -147,7 +147,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           AnimatedSize(
