@@ -150,14 +150,18 @@ class _ChatInputBarState extends State<ChatInputBar> {
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
-          if (!_isTyping)
-            ElevatedButton(
-              onPressed: () {
-                // TODO: start video call
-              },
-              child: const Icon(Icons.video_call),
-            ),
-          if (!_isTyping) const SizedBox(width: 8),
+          AnimatedSize(
+            duration: Duration(milliseconds: 200),
+            child: _isTyping
+                ? SizedBox()
+                : ElevatedButton(
+                    onPressed: () {
+                      // TODO: start video call
+                    },
+                    child: const Icon(Icons.video_call),
+                  ),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: _textController,
