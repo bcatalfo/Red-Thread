@@ -183,9 +183,13 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 debugPrint("Other button pressed");
               }
             },
-            child: _isTyping
-                ? const Icon(Icons.send)
-                : const Icon(Icons.edit_calendar_sharp),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: _isTyping
+                  ? const Icon(Icons.send, key: ValueKey('send'))
+                  : const Icon(Icons.edit_calendar_sharp,
+                      key: ValueKey('calendar')),
+            ),
           ),
         ],
       ),
