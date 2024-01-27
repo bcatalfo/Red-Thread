@@ -3,12 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/providers.dart';
-import 'package:go_router/go_router.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
-
-  static const String routeName = '/chat';
 
   @override
   ChatPageState createState() => ChatPageState();
@@ -18,7 +15,8 @@ class ChatPageState extends ConsumerState<ChatPage> {
   void unmatch(BuildContext context) {
     // Add your unmatch button logic here
     ref.read(matchFoundProvider.notifier).state = false;
-    context.go('/');
+    ref.read(isPreviewCompleteProvider.notifier).state = false;
+    debugPrint("Unmatch button pressed");
   }
 
   final messages = <ChatMessage>[
@@ -60,6 +58,22 @@ class ChatPageState extends ConsumerState<ChatPage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            Container(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () => unmatch(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                  Text(
+                    'Emma',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: messages.length,
@@ -118,7 +132,7 @@ class ChatMessage extends StatelessWidget {
 class ChatInputBar extends StatefulWidget {
   final Function(String) onSend;
 
-  ChatInputBar({Key? key, required this.onSend}) : super(key: key);
+  const ChatInputBar({Key? key, required this.onSend}) : super(key: key);
 
   @override
   _ChatInputBarState createState() => _ChatInputBarState();
@@ -151,9 +165,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
       child: Row(
         children: [
           AnimatedSize(
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             child: _isTyping
-                ? SizedBox()
+                ? const SizedBox()
                 : ElevatedButton(
                     onPressed: () {
                       // TODO: start video call
