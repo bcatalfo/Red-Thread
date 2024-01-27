@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:red_thread/main.dart';
+import 'package:red_thread/providers.dart';
 
 final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
 final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
 final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
-final inQueueProvider = StateProvider<bool>((ref) => false);
-final secsInQueueProvider = StateProvider<int>((ref) => 0);
-final isJoiningProvider = StateProvider<bool>((ref) => false);
 
 class PreviewPage extends ConsumerStatefulWidget {
   const PreviewPage({super.key});
@@ -22,12 +18,6 @@ class PreviewPage extends ConsumerStatefulWidget {
 }
 
 class PreviewPageState extends ConsumerState<PreviewPage> {
-  Future<void> joinChat(BuildContext context) async {
-    if (ref.watch(isJoiningProvider)) return;
-    ref.read(isJoiningProvider.notifier).state = true;
-    await BagoolApp.join(context, ref);
-  }
-
   @override
   Widget build(BuildContext context) {
     final smileProbability = ref.watch(smileProbabilityProvider);
@@ -46,14 +36,9 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
       alertText = 'Smile more!';
     } else {
       alertText = 'You look great!';
-      if (!ref.watch(isJoiningProvider)) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          //joinChat(context);
-          // TODO: Make this add the other person to the call
-          // After the call ends, go to the chat page
-          context.go('/chat');
-        });
-      }
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(isPreviewCompleteProvider.notifier).state = true;
+      });
     }
 
     return Scaffold(

@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
-import 'package:go_router/go_router.dart';
 
-final secsInQueueProvider = StateProvider<int>((ref) => 0);
-final inQueueProvider = StateProvider<bool>((ref) => false);
 const queueOpensAt = TimeOfDay(hour: 18, minute: 00);
 const queueClosesAt = TimeOfDay(hour: 23, minute: 59);
 
@@ -42,14 +39,6 @@ class QueuePageState extends ConsumerState<QueuePage> {
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-  }
-
-  void joinPreview(BuildContext context) {
-    _inQueueTimer?.cancel(); // Cancel the timer when navigating away
-    _queueOpensTimer?.cancel(); // Cancel the timer when navigating away
-    ref.read(secsInQueueProvider.notifier).state = 0; // Reset seconds in queue
-    ref.read(inQueueProvider.notifier).state = false; // Reset in queue
-    context.go('/preview');
   }
 
   void findMatch(BuildContext context) {
@@ -116,12 +105,6 @@ class QueuePageState extends ConsumerState<QueuePage> {
     if (queueOpen && !matchFound && secsInQueue > 5) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         findMatch(context);
-      });
-    }
-
-    if (matchFound) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        joinPreview(context);
       });
     }
 

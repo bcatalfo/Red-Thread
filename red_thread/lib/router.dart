@@ -22,6 +22,8 @@ GoRouter createRouter(WidgetRef ref) {
               ref.watch(isAccountSetupCompleteProvider);
           final isVerified = ref.watch(isVerifiedProvider);
           final isFirstTimeUser = ref.watch(isFirstTimeUserProvider);
+          final matchFound = ref.watch(matchFoundProvider);
+          final isPreviewComplete = ref.watch(isPreviewCompleteProvider);
 
           if (isFirstTimeUser) {
             return const WelcomePage();
@@ -35,7 +37,13 @@ GoRouter createRouter(WidgetRef ref) {
           if (!isVerified) {
             return const VerificationPage();
           }
-          return const QueuePage();
+          if (!matchFound) {
+            return const QueuePage();
+          }
+          if (!isPreviewComplete) {
+            return const PreviewPage();
+          }
+          return const ChatPage();
         },
       ),
       GoRoute(
