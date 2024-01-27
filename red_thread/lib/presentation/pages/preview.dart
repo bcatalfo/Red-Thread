@@ -38,6 +38,10 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
       alertText = 'You look great!';
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         ref.read(isPreviewCompleteProvider.notifier).state = true;
+        ref.read(numberOfFacesDetectedProvider.notifier).state = 0;
+        ref.read(isFaceCenteredProvider.notifier).state = false;
+        ref.read(smileProbabilityProvider.notifier).state = 0.0;
+        debugPrint("Post frame callback");
       });
     }
 
