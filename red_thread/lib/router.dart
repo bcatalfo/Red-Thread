@@ -47,14 +47,6 @@ GoRouter createRouter(WidgetRef ref) {
         },
       ),
       GoRoute(
-        path: '/preview',
-        builder: (context, state) => const PreviewPage(),
-      ),
-      GoRoute(
-        path: '/chat',
-        builder: (context, state) => const ChatPage(),
-      ),
-      GoRoute(
         path: '/about',
         builder: (context, state) => const AboutPage(),
       ),
