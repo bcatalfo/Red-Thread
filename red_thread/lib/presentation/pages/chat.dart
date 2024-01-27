@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:red_thread/presentation/drawer.dart';
+import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
@@ -12,13 +13,6 @@ class ChatPage extends ConsumerStatefulWidget {
 }
 
 class ChatPageState extends ConsumerState<ChatPage> {
-  void unmatch(BuildContext context) {
-    // Add your unmatch button logic here
-    ref.read(matchFoundProvider.notifier).state = false;
-    ref.read(isPreviewCompleteProvider.notifier).state = false;
-    debugPrint("Unmatch button pressed");
-  }
-
   final messages = <ChatMessage>[
     ChatMessage(
       message: 'Where do you wanna go?',
@@ -50,6 +44,8 @@ class ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: myAppBar(context, ref),
       drawer: myDrawer(context, ref),
@@ -58,22 +54,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () => unmatch(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                  Text(
-                    'Emma',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
-              ),
-            ),
+            const MatchBar(),
             Expanded(
               child: ListView.builder(
                 itemCount: messages.length,
@@ -204,6 +185,103 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   : const Icon(Icons.edit_calendar_sharp,
                       key: ValueKey('calendar')),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MatchBar extends ConsumerWidget {
+  const MatchBar({Key? key}) : super(key: key);
+
+  void unmatch(BuildContext context, WidgetRef ref) {
+    // Add your unmatch button logic here
+    ref.read(matchFoundProvider.notifier).state = false;
+    ref.read(isPreviewCompleteProvider.notifier).state = false;
+    debugPrint("Unmatch button pressed");
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final scheme = isLight ? globalLightScheme : globalDarkScheme;
+
+    return Container(
+      color: scheme.surfaceContainerHighest,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Emma',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text('25, 3.5 miles away',
+                    style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  backgroundColor: scheme.surfaceContainerHigh,
+                  title: Text('Unmatch with Emma?',
+                      style: theme.textTheme.headlineMedium
+                          ?.copyWith(color: scheme.onSurface)),
+                  content: Text(
+                      'Are you sure you want to unmatch? This action cannot be undone.',
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: scheme.onSurfaceVariant)),
+                  actionsAlignment: MainAxisAlignment.center,
+                  actions: [
+                    ButtonBar(
+                      alignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            unmatch(context, ref);
+                          },
+                          child: Text('Unmatch',
+                              style: theme.textTheme.bodyLarge
+                                  ?.copyWith(color: scheme.primary)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                  12.0), // Adjust the radius as needed
+                              color: scheme.primary, // Set the background color
+                            ),
+                            padding: const EdgeInsets.all(
+                                8.0), // Optional: Add padding for some spacing
+                            child: Text(
+                              'Cancel',
+                              style: theme.textTheme.bodyLarge
+                                  ?.copyWith(color: scheme.onPrimary),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+            icon: const Icon(Icons.delete),
           ),
         ],
       ),
