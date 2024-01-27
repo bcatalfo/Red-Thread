@@ -43,6 +43,8 @@ class QueuePageState extends ConsumerState<QueuePage> {
 
   void findMatch(BuildContext context) {
     // This is a placeholder for getting AWS working with the provider
+    ref.read(inQueueProvider.notifier).state = false;
+    ref.read(secsInQueueProvider.notifier).state = 0;
     ref.read(matchFoundProvider.notifier).state = true;
   }
 
