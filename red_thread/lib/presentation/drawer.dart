@@ -16,7 +16,14 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
       children: [
         DrawerHeader(
             child: Image.asset('assets/images/iTunesArtwork-1024.png')),
-        // TODO: should we add a home / queue button?
+        ListTile(
+          leading:
+              Icon(Icons.home, size: theme.textTheme.displayMedium?.fontSize),
+          title: Text('Home', style: theme.textTheme.displayMedium),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        ),
         ListTile(
           leading:
               Icon(Icons.phone, size: theme.textTheme.displayMedium?.fontSize),
