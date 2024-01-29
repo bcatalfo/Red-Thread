@@ -44,8 +44,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: myAppBar(context, ref),
       drawer: myDrawer(context, ref),
@@ -116,10 +114,10 @@ class ChatInputBar extends StatefulWidget {
   const ChatInputBar({Key? key, required this.onSend}) : super(key: key);
 
   @override
-  _ChatInputBarState createState() => _ChatInputBarState();
+  ChatInputBarState createState() => ChatInputBarState();
 }
 
-class _ChatInputBarState extends State<ChatInputBar> {
+class ChatInputBarState extends State<ChatInputBar> {
   final TextEditingController _textController = TextEditingController();
   bool _isTyping = false;
 
