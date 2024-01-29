@@ -40,15 +40,6 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
             context.push('/about');
           },
         ),
-        ListTile(
-          leading:
-              Icon(Icons.logout, size: theme.textTheme.displayMedium?.fontSize),
-          title: Text('Log Out', style: theme.textTheme.displayMedium),
-          onTap: () {
-            // TODO: Actually log out
-            ref.read(isAuthenticatedProvider.notifier).state = false;
-          },
-        ),
         themeMode == ThemeMode.light
             ? ListTile(
                 leading: Icon(Icons.dark_mode,
@@ -64,7 +55,16 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                 onTap: () {
                   ref.read(themeModeProvider.notifier).state = ThemeMode.light;
                 },
-              )
+              ),
+        ListTile(
+          leading:
+              Icon(Icons.logout, size: theme.textTheme.displayMedium?.fontSize),
+          title: Text('Log Out', style: theme.textTheme.displayMedium),
+          onTap: () {
+            // TODO: Actually log out
+            ref.read(isAuthenticatedProvider.notifier).state = false;
+          },
+        )
       ],
     ),
   );
