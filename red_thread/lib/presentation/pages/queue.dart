@@ -4,7 +4,7 @@ import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
 
-const queueOpensAt = TimeOfDay(hour: 18, minute: 00);
+const queueOpensAt = TimeOfDay(hour: 0, minute: 00);
 const queueClosesAt = TimeOfDay(hour: 23, minute: 59);
 
 class QueuePage extends ConsumerStatefulWidget {
