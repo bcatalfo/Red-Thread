@@ -10,7 +10,7 @@ class AboutPage extends StatelessWidget {
       appBar: AppBar(
           title:
               Text('About', style: Theme.of(context).textTheme.displayLarge)),
-      body: Column(children: [
+      body: const Column(children: [
         MyCustomCard(
           mainText: 'Red Thread is...',
           subText: 'A dating app that actually gets you dating.',
@@ -30,7 +30,7 @@ class MyCustomCard extends StatelessWidget {
   final String mainText;
   final String subText;
 
-  MyCustomCard({
+  const MyCustomCard({super.key, 
     required this.mainText,
     required this.subText,
   });
