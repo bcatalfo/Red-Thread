@@ -117,6 +117,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                   ),
                 );
               }),
+              const SizedBox(height: 32),
         ],
       ),
     ),
