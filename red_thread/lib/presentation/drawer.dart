@@ -125,14 +125,16 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
 
 AppBar myAppBar(BuildContext context, WidgetRef ref) {
   final themeMode = ref.watch(themeModeProvider);
+  double screenWidth = MediaQuery.of(context).size.width;
+  double screenHeight = MediaQuery.of(context).size.height;
 
   return AppBar(
     title: Row(
       children: [
         const Spacer(),
         Container(
-          width: 289,
-          height: 61,
+          width: screenWidth * 0.5,
+          height: screenHeight * 0.05,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: themeMode == ThemeMode.light
@@ -142,7 +144,8 @@ AppBar myAppBar(BuildContext context, WidgetRef ref) {
           ),
           child: Text('Red Thread',
               style: TextStyle(
-                  fontSize: 48,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                   color: themeMode == ThemeMode.light
                       ? globalLightScheme.primary
                       : globalDarkScheme.primary)),
