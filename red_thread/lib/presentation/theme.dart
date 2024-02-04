@@ -6,12 +6,12 @@ final MaterialScheme globalDarkScheme = MaterialTheme.darkScheme();
 class MaterialTheme {
   static const TextTheme textTheme = TextTheme(
     displayLarge: TextStyle(
-      fontSize: 40,
+      fontSize: 24,
       fontWeight: FontWeight.bold,
       color: Colors.black, // Default color, will be overridden by theme
     ),
     displayMedium: TextStyle(
-      fontSize: 36,
+      fontSize: 18,
       fontWeight: FontWeight.normal,
       color: Colors.black, // Default color, will be overridden by theme
     ),

@@ -54,7 +54,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
             flex: 3,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
-              child: Text(alertText, style: theme.textTheme.displayLarge),
+              child: Text(alertText, style: theme.textTheme.displayMedium),
             ),
           ),
           const Flexible(
