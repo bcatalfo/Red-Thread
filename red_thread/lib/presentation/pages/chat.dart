@@ -279,7 +279,7 @@ class MatchBar extends ConsumerWidget {
                 ),
               );
             },
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.block),
           ),
         ],
       ),
