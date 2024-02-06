@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
-import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
+import 'package:red_thread/presentation/video_preview.dart';
 
 final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
 final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
@@ -59,7 +59,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
           ),
           const Flexible(
             flex: 15,
-            child: FaceDetectorView(),
+            child: VideoPreview(),
           ),
         ],
       ),
