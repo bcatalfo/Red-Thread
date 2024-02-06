@@ -21,9 +21,7 @@ To get started with Red Thread, follow these steps:
 
 2. Sign up for an account using your email.
 
-3. Create your profile and start exploring potential matches.
-
-4. Enjoy meaningful conversations and set up dates through video chat.
+3. Enjoy meaningful conversations and set up dates through video chat.
 
 ---
 
