@@ -104,7 +104,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
     final matchFound = ref.watch(matchFoundProvider);
 
     // Artificially make a match happen after 5 seconds
-    if (queueOpen && !matchFound && secsInQueue > 5) {
+    if (queueOpen && !matchFound && secsInQueue > 2) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         findMatch(context);
       });
