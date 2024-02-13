@@ -19,11 +19,12 @@ class SegmentationPainter extends CustomPainter {
   final InputImageRotation rotation;
   final CameraLensDirection cameraLensDirection;
   List<Rect> rectangles = [];
+  Set<Rect> backgroundRectangles = {};
 
   void calculateRectangles(Size size){
     final width = mask.width;
     final height = mask.height;
-    const int pixelSize = 8;
+    const int pixelSize = 4;
     for (int y = 0; y < height; y += pixelSize) {
       for (int x = 0; x < width; x += pixelSize) {
         final double tx = translateX(
@@ -69,7 +70,8 @@ class SegmentationPainter extends CustomPainter {
 
     final paint = Paint()..style = PaintingStyle.fill;
 
-    List<Offset> offsets = [];
+    //List<Offset> offsets = [];
+    
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
@@ -88,26 +90,17 @@ class SegmentationPainter extends CustomPainter {
           cameraLensDirection,
         ).round();
 
-        if (confidences[(y * width) + x] > 0.5) {
-          offsets.add(Offset(tx.toDouble(), ty.toDouble()));
+        if (confidences[(y * width) + x] < 0.5) {
+          //offsets.add(Offset(tx.toDouble(), ty.toDouble()));
+          // TODO: modify this to add the rectangles to a set
+          backgroundRectangles.add(Rect.fromLTWH(tx.toDouble(), ty.toDouble(), 2, 2));
         }
       }
     }
     paint.color = color;
 
-    for (var rectangle in rectangles) {
-      bool faceInRectangle = false;
-      final paint = Paint()..color = color
-      ..blendMode = BlendMode.src;
-      for (var offset in offsets) {
-        if (rectangle.contains(offset)) {
-          faceInRectangle = true;
-          break;
-        }
-      }
-      if (!faceInRectangle) {
-        canvas.drawRect(rectangle, paint);
-      }
+    for (var rectangle in backgroundRectangles) {
+      canvas.drawRect(rectangle, paint);
     }
   }
 
