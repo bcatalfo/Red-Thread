@@ -18,60 +18,14 @@ class SegmentationPainter extends CustomPainter {
   final Color color = globalLightScheme.surfaceVariant;
   final InputImageRotation rotation;
   final CameraLensDirection cameraLensDirection;
-  List<Rect> rectangles = [];
   Set<Rect> backgroundRectangles = {};
 
-  void calculateRectangles(Size size){
-    final width = mask.width;
-    final height = mask.height;
-    const int pixelSize = 4;
-    for (int y = 0; y < height; y += pixelSize) {
-      for (int x = 0; x < width; x += pixelSize) {
-        final double tx = translateX(
-          x.toDouble(),
-          size,
-          Size(mask.width.toDouble(), mask.height.toDouble()),
-          rotation,
-          cameraLensDirection,
-        );
-        final double ty = translateY(
-          y.toDouble(),
-          size,
-          Size(mask.width.toDouble(), mask.height.toDouble()),
-          rotation,
-          cameraLensDirection,
-        );
-        final double bx = translateX(
-          (x + pixelSize).toDouble(),
-          size,
-          Size(mask.width.toDouble(), mask.height.toDouble()),
-          rotation,
-          cameraLensDirection,
-        );
-        final double by = translateY(
-          (y + pixelSize).toDouble(),
-          size,
-          Size(mask.width.toDouble(), mask.height.toDouble()),
-          rotation,
-          cameraLensDirection,
-        );
-        rectangles.add(Rect.fromLTRB(tx, ty, bx, by));
-      }
-    }
-  }
   @override
   void paint(Canvas canvas, Size size) {
-    if (rectangles.isEmpty){
-      calculateRectangles(size);
-    }
     final width = mask.width;
     final height = mask.height;
     final confidences = mask.confidences;
-
     final paint = Paint()..style = PaintingStyle.fill;
-
-    //List<Offset> offsets = [];
-    
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
