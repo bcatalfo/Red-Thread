@@ -60,6 +60,6 @@ class SegmentationPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(SegmentationPainter oldDelegate) {
-    return oldDelegate.mask != mask;
+    return oldDelegate.backgroundRectangles != backgroundRectangles;
   }
 }
