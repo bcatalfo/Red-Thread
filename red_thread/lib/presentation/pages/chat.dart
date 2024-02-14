@@ -227,59 +227,69 @@ class MatchBar extends ConsumerWidget {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  backgroundColor: scheme.surfaceContainerHigh,
-                  title: Text('Unmatch with Emma?',
-                      style: theme.textTheme.headlineMedium
-                          ?.copyWith(color: scheme.onSurface)),
-                  content: Text(
-                      'Are you sure you want to unmatch? This action cannot be undone.',
-                      style: theme.textTheme.bodyLarge
-                          ?.copyWith(color: scheme.onSurfaceVariant)),
-                  actionsAlignment: MainAxisAlignment.center,
-                  actions: [
-                    ButtonBar(
-                      alignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            unmatch(context, ref);
-                          },
-                          child: Text('Unmatch',
-                              style: theme.textTheme.bodyLarge
-                                  ?.copyWith(color: scheme.primary)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                  12.0), // Adjust the radius as needed
-                              color: scheme.primary, // Set the background color
-                            ),
-                            padding: const EdgeInsets.all(
-                                8.0), // Optional: Add padding for some spacing
-                            child: Text(
-                              'Cancel',
-                              style: theme.textTheme.bodyLarge
-                                  ?.copyWith(color: scheme.onPrimary),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: scheme.primary,
+                backgroundColor: scheme.surfaceContainerLow,
+              ),
+              label: Text('Unmatch', style: theme.textTheme.bodyLarge?.copyWith(
+                color: scheme.primary,
+              )),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    backgroundColor: scheme.surfaceContainerHigh,
+                    title: Text('Unmatch with Emma?',
+                        style: theme.textTheme.headlineMedium
+                            ?.copyWith(color: scheme.onSurface)),
+                    content: Text(
+                        'Are you sure you want to unmatch? This action cannot be undone.',
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(color: scheme.onSurfaceVariant)),
+                    actionsAlignment: MainAxisAlignment.center,
+                    actions: [
+                      ButtonBar(
+                        alignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              unmatch(context, ref);
+                            },
+                            child: Text('Unmatch',
+                                style: theme.textTheme.bodyLarge
+                                    ?.copyWith(color: scheme.primary)),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                    12.0), // Adjust the radius as needed
+                                color: scheme.primary, // Set the background color
+                              ),
+                              padding: const EdgeInsets.all(
+                                  8.0), // Optional: Add padding for some spacing
+                              child: Text(
+                                'Cancel',
+                                style: theme.textTheme.bodyLarge
+                                    ?.copyWith(color: scheme.onPrimary),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-            icon: const Icon(Icons.block),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+              icon: Icon(Icons.block, color: scheme.primary),
+            ),
           ),
         ],
       ),
