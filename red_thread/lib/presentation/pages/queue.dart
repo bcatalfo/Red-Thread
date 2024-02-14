@@ -83,12 +83,14 @@ class QueuePageState extends ConsumerState<QueuePage> {
         backgroundColor: queueOpen
             ? theme.colorScheme.primary
             : theme.colorScheme.primary.withOpacity(0.38),
-        child: Text(inQueue ? 'Leave Queue' : 'Join Queue',
-            style: TextStyle(
-                color: queueOpen
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onPrimary.withOpacity(0.38)),
-            textAlign: TextAlign.center),
+        child: Column(
+          children: [
+            inQueue ? const Icon(Icons.cancel) : const Icon(Icons.arrow_forward),
+            Text(inQueue ? 'Leave Queue' : 'Join Queue',
+                style: theme.textTheme.displaySmall?.copyWith(color: theme.colorScheme.onPrimary),
+                textAlign: TextAlign.center),
+          ],
+        ),
       )));
 
   @override
