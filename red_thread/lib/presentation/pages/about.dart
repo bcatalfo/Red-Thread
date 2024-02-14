@@ -10,7 +10,9 @@ class AboutPage extends StatelessWidget {
       appBar: AppBar(
           title:
               Text('About', style: Theme.of(context).textTheme.displayLarge)),
-      body: const Column(children: [
+      body: const Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
         MyCustomCard(
           mainText: 'Red Thread is...',
           subText: 'A dating app that actually gets you dating.',
