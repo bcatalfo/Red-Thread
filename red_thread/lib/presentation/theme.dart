@@ -381,19 +381,7 @@ class MaterialTheme {
         useMaterial3: true,
         brightness: colorScheme.brightness,
         colorScheme: colorScheme,
-        textTheme: TextTheme(
-          displayLarge: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface,
-          ),
-          displayMedium: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.normal,
-            color: colorScheme.onSurface,
-          ),
-          // Add other text styles if needed
-        ).apply(
+        textTheme: textTheme.apply(
           bodyColor: colorScheme.onSurface,
           displayColor: colorScheme.onSurface,
         ),
