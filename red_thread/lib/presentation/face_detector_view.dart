@@ -5,7 +5,6 @@ import 'package:google_mlkit_selfie_segmentation/google_mlkit_selfie_segmentatio
 import 'package:red_thread/utils/coordinates_translator.dart';
 import 'package:red_thread/presentation/segmentation_painter.dart';
 import 'detector_view.dart';
-import 'face_detector_painter.dart';
 import 'package:red_thread/presentation/pages/preview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,7 +29,6 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
   );
   bool _canProcess = true;
   bool _isBusy = false;
-  CustomPaint? _faceDetectorPaint;
   CustomPaint? _segmenterPaint;
   String? _text;
   var _cameraLensDirection = CameraLensDirection.front;
@@ -47,14 +45,6 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        /* return DetectorView(
-          title: 'Face Detector',
-          customPaint: _faceDetectorPaint,
-          text: _text,
-          onImage: (inputImage) => _processImage(inputImage, ref),
-          initialCameraLensDirection: _cameraLensDirection,
-          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
-        ); */
         return DetectorView(
       title: 'Selfie Segmenter',
       customPaint: _segmenterPaint,
@@ -110,14 +100,6 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     }
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null && mask != null) {
-      final painter = FaceDetectorPainter(
-        faces,
-        inputImage.metadata!.size,
-        inputImage.metadata!.rotation,
-        _cameraLensDirection,
-        isFaceCentered,
-      );
-      _faceDetectorPaint = CustomPaint(painter: painter);
       final segmenterPainter = SegmentationPainter(
         mask,
         inputImage.metadata!.size,
@@ -131,7 +113,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
         text += 'face: ${face.boundingBox}\n\n';
       }
       _text = text;
-      _faceDetectorPaint = null;
+
       _segmenterPaint = null;
     }
     _isBusy = false;
