@@ -72,11 +72,8 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
           ListTile(
               leading: Icon(Icons.delete,
                   size: theme.textTheme.displayMedium?.fontSize),
-              title: FittedBox(
-                  fit: BoxFit.contain,
-                  alignment: Alignment.centerLeft,
-                  child: Text('Delete Account',
-                      style: theme.textTheme.displayMedium)),
+              title: Text('Delete Account',
+                  style: theme.textTheme.displayMedium),
               onTap: () {
                 // Make an alert dialog
                 showDialog(
