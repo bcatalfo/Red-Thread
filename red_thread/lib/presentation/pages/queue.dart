@@ -84,10 +84,11 @@ class QueuePageState extends ConsumerState<QueuePage> {
             ? theme.colorScheme.primaryContainer
             : theme.colorScheme.primaryContainer.withOpacity(0.38),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            inQueue ? const Icon(Icons.cancel) : const Icon(Icons.arrow_forward),
-            Text(inQueue ? 'Leave Queue' : 'Join Queue',
-                style: theme.textTheme.displaySmall?.copyWith(color: theme.colorScheme.onPrimaryContainer),
+            inQueue ? Icon(Icons.cancel, color: theme.colorScheme.onPrimaryContainer) : Icon(Icons.arrow_forward, color: theme.colorScheme.onPrimaryContainer),
+            Text(inQueue ? 'Leave' : 'Join',
+                style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center),
           ],
         ),
