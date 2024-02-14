@@ -18,7 +18,6 @@ class SegmentationPainter extends CustomPainter {
   final Color color = globalLightScheme.surfaceVariant;
   final InputImageRotation rotation;
   final CameraLensDirection cameraLensDirection;
-  Set<Rect> backgroundRectangles = {};
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -46,12 +45,7 @@ class SegmentationPainter extends CustomPainter {
         );
 
         if (confidences[(y * width) + x] < 0.5) {
-          //offsets.add(Offset(tx.toDouble(), ty.toDouble()));
-          // TODO: modify this to add the rectangles to a set
-          var rect = Rect.fromLTWH(tx, ty, 2, 2);
-          if (backgroundRectangles.add(rect)) {
-            canvas.drawRect(rect, paint);
-          }
+          canvas.drawRect(Rect.fromLTWH(tx, ty, 2, 2), paint);
         }
       }
     }
@@ -59,6 +53,9 @@ class SegmentationPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(SegmentationPainter oldDelegate) {
-    return oldDelegate.backgroundRectangles != backgroundRectangles;
+    return oldDelegate.mask != mask ||
+        oldDelegate.imageSize != imageSize ||
+        oldDelegate.rotation != rotation ||
+        oldDelegate.cameraLensDirection != cameraLensDirection;
   }
 }
