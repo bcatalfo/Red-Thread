@@ -25,36 +25,35 @@ class SegmentationPainter extends CustomPainter {
     final width = mask.width;
     final height = mask.height;
     final confidences = mask.confidences;
-    final paint = Paint()..style = PaintingStyle.fill;
+    final paint = Paint()..style = PaintingStyle.fill
+    ..color = color;
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        final int tx = translateX(
+        final double tx = translateX(
           x.toDouble(),
           size,
           Size(mask.width.toDouble(), mask.height.toDouble()),
           rotation,
           cameraLensDirection,
-        ).round();
-        final int ty = translateY(
+        );
+        final double ty = translateY(
           y.toDouble(),
           size,
           Size(mask.width.toDouble(), mask.height.toDouble()),
           rotation,
           cameraLensDirection,
-        ).round();
+        );
 
         if (confidences[(y * width) + x] < 0.5) {
           //offsets.add(Offset(tx.toDouble(), ty.toDouble()));
           // TODO: modify this to add the rectangles to a set
-          backgroundRectangles.add(Rect.fromLTWH(tx.toDouble(), ty.toDouble(), 2, 2));
+          var rect = Rect.fromLTWH(tx, ty, 2, 2);
+          if (backgroundRectangles.add(rect)) {
+            canvas.drawRect(rect, paint);
+          }
         }
       }
-    }
-    paint.color = color;
-
-    for (var rectangle in backgroundRectangles) {
-      canvas.drawRect(rectangle, paint);
     }
   }
 
