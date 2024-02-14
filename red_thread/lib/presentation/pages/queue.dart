@@ -81,13 +81,13 @@ class QueuePageState extends ConsumerState<QueuePage> {
           ref.read(inQueueProvider.notifier).state = !inQueue;
         },
         backgroundColor: queueOpen
-            ? theme.colorScheme.primary
-            : theme.colorScheme.primary.withOpacity(0.38),
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.primaryContainer.withOpacity(0.38),
         child: Column(
           children: [
             inQueue ? const Icon(Icons.cancel) : const Icon(Icons.arrow_forward),
             Text(inQueue ? 'Leave Queue' : 'Join Queue',
-                style: theme.textTheme.displaySmall?.copyWith(color: theme.colorScheme.onPrimary),
+                style: theme.textTheme.displaySmall?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center),
           ],
         ),
