@@ -25,6 +25,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
     final isFaceCentered = ref.watch(isFaceCenteredProvider);
     String alertText;
     final theme = Theme.of(context);
+    // TODO: add the is ready var here. when ur all smiling and shit at the end minimize ur p\review andd= show the call
 
     if (numberOfFacesDetected == 0) {
       alertText = 'Get in the frame!';
@@ -50,19 +51,27 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
       appBar: myAppBar(context, ref),
       body: Column(
         children: [
-          Flexible(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
-              child: Text(alertText, style: theme.textTheme.displayMedium),
-            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
+            child: Text(alertText, style: theme.textTheme.displayLarge),
           ),
-          const Flexible(
-            flex: 15,
+          const Center(
+              child: Padding(
+            padding: EdgeInsets.all(8.0),
             child: FaceDetectorView(),
-          ),
+          )),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ref.read(matchFoundProvider.notifier).state = false;
+          ref.read(numberOfFacesDetectedProvider.notifier).state = 0;
+          ref.read(isFaceCenteredProvider.notifier).state = false;
+          ref.read(smileProbabilityProvider.notifier).state = 0.0;
+        },
+        child: const Icon(Icons.cancel),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       backgroundColor: theme.colorScheme.surface,
     );
   }
