@@ -18,6 +18,8 @@ class PreviewPage extends ConsumerStatefulWidget {
 }
 
 class PreviewPageState extends ConsumerState<PreviewPage> {
+  bool _minimizePreview = false;
+
   @override
   Widget build(BuildContext context) {
     final smileProbability = ref.watch(smileProbabilityProvider);
@@ -25,6 +27,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
     final isFaceCentered = ref.watch(isFaceCenteredProvider);
     String alertText;
     final theme = Theme.of(context);
+    final screenSize = MediaQuery.of(context).size;
     // TODO: add the is ready var here. when ur all smiling and shit at the end minimize ur p\review andd= show the call
 
     if (numberOfFacesDetected == 0) {
@@ -35,6 +38,9 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
       alertText = 'Center your face!';
     } else if (smileProbability < 0.5) {
       alertText = 'Smile more!';
+      setState(() {
+        _minimizePreview = true;
+      });
     } else {
       alertText = 'You look great!';
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -55,11 +61,24 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
             padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
             child: Text(alertText, style: theme.textTheme.displayLarge),
           ),
-          const Center(
-              child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: FaceDetectorView(),
-          )),
+          Stack(
+            children: [
+              Container(
+                color: theme.colorScheme.surfaceVariant,
+                child: Center(child: Image.asset('assets/images/hot chinese.jpeg'))
+              ),
+              Align(
+            alignment: Alignment.bottomRight,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 750),
+              width: _minimizePreview ? screenSize.width * 0.2 : screenSize.width,
+              height: _minimizePreview ? screenSize.height * 0.2 : screenSize.height,
+              child: const FaceDetectorView(), // Your FaceDetectorView here
+              // Additional styling or logic...
+            ),
+          )
+            ],
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
