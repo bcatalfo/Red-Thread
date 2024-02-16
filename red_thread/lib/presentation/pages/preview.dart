@@ -61,23 +61,30 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
             padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
             child: Text(alertText, style: theme.textTheme.displayLarge),
           ),
-          Stack(
-            children: [
-              Container(
-                color: theme.colorScheme.surfaceVariant,
-                child: Center(child: Image.asset('assets/images/hot chinese.jpeg'))
-              ),
-              Align(
-            alignment: Alignment.bottomRight,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 750),
-              width: _minimizePreview ? screenSize.width * 0.2 : screenSize.width,
-              height: _minimizePreview ? screenSize.height * 0.2 : screenSize.height,
-              child: const FaceDetectorView(), // Your FaceDetectorView here
-              // Additional styling or logic...
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Stack(
+              children: [
+                Center(
+                  child: ClipRect(
+                    child: Center(
+                      widthFactor: .75,
+                      heightFactor: .75,
+                      child: Image.asset('assets/images/hot chinese.jpeg')
+                    ),
+                  ),
+                ),
+                AnimatedPositioned(
+                  bottom: _minimizePreview ? 0 : screenSize.height * 0.25,
+                  right: _minimizePreview ? 0 : screenSize.width * 0.125,
+                  duration: const Duration(milliseconds: 2000),
+                  width: _minimizePreview
+                      ? screenSize.width * 0.2
+                      : screenSize.width * .75,
+                  child: const Center(child: FaceDetectorView()),
+                )
+              ],
             ),
-          )
-            ],
           ),
         ],
       ),
