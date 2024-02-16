@@ -13,6 +13,7 @@ class ChatPage extends ConsumerStatefulWidget {
 }
 
 class ChatPageState extends ConsumerState<ChatPage> {
+  final _scrollController = ScrollController();
   final messages = <ChatMessage>[
     ChatMessage(
       message: 'Where do you wanna go?',
@@ -31,6 +32,17 @@ class ChatPageState extends ConsumerState<ChatPage> {
     ),
   ];
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      final position = _scrollController.position.maxScrollExtent;
+      _scrollController.animateTo(
+        position,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   void _sendMessage(String text) {
     final newMessage = ChatMessage(
       message: text,
@@ -40,6 +52,21 @@ class ChatPageState extends ConsumerState<ChatPage> {
     setState(() {
       messages.add(newMessage);
     });
+    // wait for the new message to appear before scrolling to the bottom
+    // TODO: instead of using a set timeout, use a listener for when the layout is done
+    Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,6 +82,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
             const MatchBar(),
             Expanded(
               child: ListView.builder(
+                controller: _scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   return Padding(
@@ -64,7 +92,15 @@ class ChatPageState extends ConsumerState<ChatPage> {
                 },
               ),
             ),
-            ChatInputBar(onSend: _sendMessage),
+            ChatInputBar(
+              onSend: _sendMessage,
+              onTapTextField: (() {
+                // wait for the keyboard to appear before scrolling
+                // TODO: instead of using a set timeout, use a listener for when the layout is done
+                Future.delayed(
+                    const Duration(milliseconds: 350), _scrollToBottom);
+              }),
+            )
           ],
         ),
       ),
@@ -93,7 +129,7 @@ class ChatMessage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(author,
                 style: theme.textTheme.bodyLarge
@@ -110,8 +146,11 @@ class ChatMessage extends StatelessWidget {
 
 class ChatInputBar extends StatefulWidget {
   final Function(String) onSend;
+  final Function() onTapTextField;
 
-  const ChatInputBar({Key? key, required this.onSend}) : super(key: key);
+  const ChatInputBar(
+      {Key? key, required this.onSend, required this.onTapTextField})
+      : super(key: key);
 
   @override
   ChatInputBarState createState() => ChatInputBarState();
@@ -162,6 +201,7 @@ class ChatInputBarState extends State<ChatInputBar> {
                 hintText: "Type a message",
                 border: UnderlineInputBorder(),
               ),
+              onTap: widget.onTapTextField,
             ),
           ),
           const SizedBox(width: 8),
@@ -234,9 +274,10 @@ class MatchBar extends ConsumerWidget {
                 foregroundColor: scheme.primary,
                 backgroundColor: scheme.surfaceContainerLow,
               ),
-              label: Text('Unmatch', style: theme.textTheme.bodyLarge?.copyWith(
-                color: scheme.primary,
-              )),
+              label: Text('Unmatch',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: scheme.primary,
+                  )),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -269,12 +310,10 @@ class MatchBar extends ConsumerWidget {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(
-                                    12.0), // Adjust the radius as needed
-                                color: scheme.primary, // Set the background color
+                                borderRadius: BorderRadius.circular(12.0),
+                                color: scheme.primary,
                               ),
-                              padding: const EdgeInsets.all(
-                                  8.0), // Optional: Add padding for some spacing
+                              padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Cancel',
                                 style: theme.textTheme.bodyLarge
