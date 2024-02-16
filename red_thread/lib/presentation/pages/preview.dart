@@ -76,7 +76,7 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
                 ),
                 AnimatedPositioned(
                   bottom: _minimizePreview ? 0 : screenSize.height * 0.25,
-                  right: _minimizePreview ? 0 : screenSize.width * 0.125,
+                  right: _minimizePreview ? 0 : screenSize.width * 0.1225,
                   duration: const Duration(milliseconds: 2000),
                   width: _minimizePreview
                       ? screenSize.width * 0.2
