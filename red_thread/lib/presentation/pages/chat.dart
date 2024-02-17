@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'dart:async';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -57,15 +59,31 @@ class ChatPageState extends ConsumerState<ChatPage> {
     Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
   }
 
+  late StreamSubscription<bool> keyboardSubscription;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+
+    var keyboardVisibilityController = KeyboardVisibilityController();
+    // Query
+    debugPrint(
+        'Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
+
+    // Subscribe
+    keyboardSubscription =
+        keyboardVisibilityController.onChange.listen((bool visible) {
+      debugPrint('Keyboard visibility update. Is visible: $visible');
+      if (visible) {
+        Future.delayed(const Duration(milliseconds: 350), _scrollToBottom);
+      }
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    keyboardSubscription.cancel();
     super.dispose();
   }
 
@@ -77,31 +95,27 @@ class ChatPageState extends ConsumerState<ChatPage> {
       resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const MatchBar(),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: messages[index],
-                  );
-                },
+        child: KeyboardDismissOnTap(
+          child: Column(
+            children: [
+              const MatchBar(),
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: messages[index],
+                    );
+                  },
+                ),
               ),
-            ),
-            ChatInputBar(
-              onSend: _sendMessage,
-              onTapTextField: (() {
-                // wait for the keyboard to appear before scrolling
-                // TODO: instead of using a set timeout, use a listener for when the layout is done
-                Future.delayed(
-                    const Duration(milliseconds: 350), _scrollToBottom);
-              }),
-            )
-          ],
+              ChatInputBar(
+                onSend: _sendMessage,
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -146,11 +160,8 @@ class ChatMessage extends StatelessWidget {
 
 class ChatInputBar extends StatefulWidget {
   final Function(String) onSend;
-  final Function() onTapTextField;
 
-  const ChatInputBar(
-      {Key? key, required this.onSend, required this.onTapTextField})
-      : super(key: key);
+  const ChatInputBar({Key? key, required this.onSend}) : super(key: key);
 
   @override
   ChatInputBarState createState() => ChatInputBarState();
@@ -179,49 +190,65 @@ class ChatInputBarState extends State<ChatInputBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       child: Row(
         children: [
           AnimatedSize(
             duration: const Duration(milliseconds: 200),
             child: _isTyping
                 ? const SizedBox()
-                : ElevatedButton(
-                    onPressed: () {
-                      // TODO: start video call
-                    },
-                    child: const Icon(Icons.video_call),
+                : SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // TODO: start video call
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(0),
+                      ),
+                      child: const Icon(Icons.video_call),
+                    ),
                   ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
+              keyboardType: TextInputType.multiline,
               controller: _textController,
+              minLines: 1,
+              maxLines: 5,
               decoration: const InputDecoration(
                 hintText: "Type a message",
-                border: UnderlineInputBorder(),
+                border: OutlineInputBorder(),
               ),
-              onTap: widget.onTapTextField,
             ),
           ),
           const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {
-              if (_isTyping) {
-                widget.onSend(_textController.text);
-                _textController.clear();
-                // TODO: Send the message to the backend
-              } else {
-                // Implement other button functionality
-                debugPrint("Other button pressed");
-              }
-            },
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: _isTyping
-                  ? const Icon(Icons.send, key: ValueKey('send'))
-                  : const Icon(Icons.edit_calendar_sharp,
-                      key: ValueKey('calendar')),
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(0),
+              ),
+              onPressed: () {
+                if (_isTyping) {
+                  widget.onSend(_textController.text);
+                  _textController.clear();
+                  // TODO: Send the message to the backend
+                } else {
+                  // Implement other button functionality
+                  debugPrint("Other button pressed");
+                }
+              },
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: _isTyping
+                    ? const Icon(Icons.send, key: ValueKey('send'))
+                    : const Icon(Icons.edit_calendar_sharp,
+                        key: ValueKey('calendar')),
+              ),
             ),
           ),
         ],
