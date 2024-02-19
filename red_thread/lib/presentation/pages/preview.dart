@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
-import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
-import 'package:flutter_unity_widget/flutter_unity_widget.dart';
-
-final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
-final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
-final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
+//import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 
 class PreviewPage extends ConsumerStatefulWidget {
   const PreviewPage({super.key});
@@ -19,39 +14,11 @@ class PreviewPage extends ConsumerStatefulWidget {
 }
 
 class PreviewPageState extends ConsumerState<PreviewPage> {
-  bool _minimizePreview = false;
+  //UnityWidgetController? _unityWidgetController;
 
   @override
   Widget build(BuildContext context) {
-    final smileProbability = ref.watch(smileProbabilityProvider);
-    final numberOfFacesDetected = ref.watch(numberOfFacesDetectedProvider);
-    final isFaceCentered = ref.watch(isFaceCenteredProvider);
-    String alertText;
     final theme = Theme.of(context);
-    final screenSize = MediaQuery.of(context).size;
-    // TODO: add the is ready var here. when ur all smiling and shit at the end minimize ur p\review andd= show the call
-
-    if (numberOfFacesDetected == 0) {
-      alertText = 'Get in the frame!';
-    } else if (numberOfFacesDetected > 1) {
-      alertText = 'Move your friend away!';
-    } else if (isFaceCentered == false) {
-      alertText = 'Center your face!';
-    } else if (smileProbability < 0.5) {
-      alertText = 'Smile more!';
-      setState(() {
-        _minimizePreview = true;
-      });
-    } else {
-      alertText = 'You look great!';
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        ref.read(isPreviewCompleteProvider.notifier).state = true;
-        ref.read(numberOfFacesDetectedProvider.notifier).state = 0;
-        ref.read(isFaceCenteredProvider.notifier).state = false;
-        ref.read(smileProbabilityProvider.notifier).state = 0.0;
-        debugPrint("Post frame callback");
-      });
-    }
 
     return Scaffold(
       drawer: myDrawer(context, ref),
@@ -60,10 +27,13 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
-            child: Text(alertText, style: theme.textTheme.displayLarge),
+            child: Text(
+                'TODO: Replace this with the top bar from the Chat page',
+                style: theme.textTheme.displayLarge),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
+            // TODO: Replace this with the flutter unity widget
             child: Container(),
           ),
         ],
@@ -71,9 +41,6 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           ref.read(matchFoundProvider.notifier).state = false;
-          ref.read(numberOfFacesDetectedProvider.notifier).state = 0;
-          ref.read(isFaceCenteredProvider.notifier).state = false;
-          ref.read(smileProbabilityProvider.notifier).state = 0.0;
         },
         child: const Icon(Icons.cancel),
       ),
