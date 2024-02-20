@@ -43,7 +43,6 @@ Library: /Users/bcatalfo/dev/Red-Thread/red_thread/unity/Red Thread/Temp/BurstOu
 --assembly-defines=UnityEngine;
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/bcatalfo/dev/Red-Thread/red_thread/unity/Red Thread/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --key-folder=/Applications/Unity/Hub/Editor/2022.3.20f1/PlaybackEngines/iOSSupport
 --decode-folder=/Users/bcatalfo/dev/Red-Thread/red_thread/unity/Red Thread/Library/Burst
@@ -94,7 +93,6 @@ Library: /Users/bcatalfo/dev/Red-Thread/red_thread/unity/Red Thread/Temp/BurstOu
 --assembly-defines=UnityEngine;
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/bcatalfo/dev/Red-Thread/red_thread/unity/Red Thread/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --key-folder=/Applications/Unity/Hub/Editor/2022.3.20f1/PlaybackEngines/iOSSupport
 --decode-folder=/Users/bcatalfo/dev/Red-Thread/red_thread/unity/Red Thread/Library/Burst
