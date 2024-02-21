@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
-//import 'package:flutter_unity_widget/flutter_unity_widget.dart';
+import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 
 class PreviewPage extends ConsumerStatefulWidget {
   const PreviewPage({super.key});
@@ -14,7 +14,7 @@ class PreviewPage extends ConsumerStatefulWidget {
 }
 
 class PreviewPageState extends ConsumerState<PreviewPage> {
-  //UnityWidgetController? _unityWidgetController;
+  UnityWidgetController? _unityWidgetController;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,11 @@ class PreviewPageState extends ConsumerState<PreviewPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             // TODO: Replace this with the flutter unity widget
-            child: Container(),
+            child: UnityWidget(
+              onUnityCreated: (controller) {
+                _unityWidgetController = controller;
+              },
+            ),
           ),
         ],
       ),

@@ -16,8 +16,14 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9952145B508C38FB175CC817 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35FB5BC2EB22CC3C668575B8 /* Pods_RunnerTests.framework */; };
+		EF456E312B8520A200C52BA3 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF456E262B85100F00C52BA3 /* CoreAudio.framework */; };
+		EF456E322B8520A200C52BA3 /* CoreAudio.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EF456E262B85100F00C52BA3 /* CoreAudio.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EF456E342B8520C300C52BA3 /* CoreAudioTypes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF456E282B85108400C52BA3 /* CoreAudioTypes.framework */; };
+		EF456E352B8520C300C52BA3 /* CoreAudioTypes.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EF456E282B85108400C52BA3 /* CoreAudioTypes.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EFE2C8632B8188020012648C /* Flutter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE2C8612B8187F10012648C /* Flutter.xcframework */; };
 		EFE2C8642B8188020012648C /* Flutter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EFE2C8612B8187F10012648C /* Flutter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EFE2C8792B8509440012648C /* UnityFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE2C8742B840E5B0012648C /* UnityFramework.framework */; };
+		EFE2C87A2B8509440012648C /* UnityFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EFE2C8742B840E5B0012648C /* UnityFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,7 +43,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				EF456E352B8520C300C52BA3 /* CoreAudioTypes.framework in Embed Frameworks */,
+				EF456E322B8520A200C52BA3 /* CoreAudio.framework in Embed Frameworks */,
 				EFE2C8642B8188020012648C /* Flutter.xcframework in Embed Frameworks */,
+				EFE2C87A2B8509440012648C /* UnityFramework.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -68,6 +77,10 @@
 		AA564FE734D6CBDC84D32FEA /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		ACB446217E4851159E32DA66 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		B4480A01B33206079F8CC4A1 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		EF456E262B85100F00C52BA3 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		EF456E282B85108400C52BA3 /* CoreAudioTypes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioTypes.framework; path = System/Library/Frameworks/CoreAudioTypes.framework; sourceTree = SDKROOT; };
+		EF456E2C2B851F1900C52BA3 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		EF456E2F2B85204600C52BA3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		EFE2C8612B8187F10012648C /* Flutter.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:S8QB4VV633:FLUTTER.IO LLC"; lastKnownFileType = wrapper.xcframework; path = Flutter.xcframework; sourceTree = "<group>"; };
 		EFE2C8742B840E5B0012648C /* UnityFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UnityFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -79,6 +92,9 @@
 			files = (
 				EFE2C8632B8188020012648C /* Flutter.xcframework in Frameworks */,
 				3075D7093624B2EBC1CD2DBE /* Pods_Runner.framework in Frameworks */,
+				EF456E342B8520C300C52BA3 /* CoreAudioTypes.framework in Frameworks */,
+				EF456E312B8520A200C52BA3 /* CoreAudio.framework in Frameworks */,
+				EFE2C8792B8509440012648C /* UnityFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,6 +120,10 @@
 		466DCCB4796439FBACFAF014 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EF456E2F2B85204600C52BA3 /* AVFoundation.framework */,
+				EF456E2C2B851F1900C52BA3 /* ARKit.framework */,
+				EF456E282B85108400C52BA3 /* CoreAudioTypes.framework */,
+				EF456E262B85100F00C52BA3 /* CoreAudio.framework */,
 				EFE2C8742B840E5B0012648C /* UnityFramework.framework */,
 				A4C9483AAFF935961376CEC4 /* Pods_Runner.framework */,
 				35FB5BC2EB22CC3C668575B8 /* Pods_RunnerTests.framework */,
