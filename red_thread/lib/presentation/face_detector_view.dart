@@ -1,9 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
-import 'package:google_mlkit_selfie_segmentation/google_mlkit_selfie_segmentation.dart';
+import 'package:red_thread/presentation/face_detector_painter.dart';
 import 'package:red_thread/utils/coordinates_translator.dart';
-import 'package:red_thread/presentation/segmentation_painter.dart';
 import 'detector_view.dart';
 import 'package:red_thread/presentation/pages/preview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,13 +22,9 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       enableClassification: true,
     ),
   );
-  final _segmenter = SelfieSegmenter(
-    mode: SegmenterMode.stream,
-    enableRawSizeMask: true,
-  );
   bool _canProcess = true;
   bool _isBusy = false;
-  CustomPaint? _segmenterPaint;
+  CustomPaint? _paint;
   String? _text;
   var _cameraLensDirection = CameraLensDirection.front;
 
@@ -37,7 +32,6 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
   void dispose() {
     _canProcess = false;
     _faceDetector.close();
-    _segmenter.close();
     super.dispose();
   }
 
@@ -46,13 +40,13 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     return Consumer(
       builder: (context, ref, child) {
         return DetectorView(
-      title: 'Selfie Segmenter',
-      customPaint: _segmenterPaint,
-      text: _text,
-      onImage: (inputImage) => _processImage(inputImage, ref),
-      initialCameraLensDirection: _cameraLensDirection,
-      onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
-    );
+          title: 'Selfie Segmenter',
+          customPaint: _paint,
+          text: _text,
+          onImage: (inputImage) => _processImage(inputImage, ref),
+          initialCameraLensDirection: _cameraLensDirection,
+          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+        );
       },
     );
   }
@@ -65,7 +59,6 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       _text = '';
     });
     final faces = await _faceDetector.processImage(inputImage);
-    final mask = await _segmenter.processImage(inputImage);
     if (!mounted) {
       return;
     }
@@ -99,14 +92,15 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       }
     }
     if (inputImage.metadata?.size != null &&
-        inputImage.metadata?.rotation != null && mask != null) {
-      final segmenterPainter = SegmentationPainter(
-        mask,
+        inputImage.metadata?.rotation != null) {
+      final facePainter = FaceDetectorPainter(
+        faces,
         inputImage.metadata!.size,
         inputImage.metadata!.rotation,
         _cameraLensDirection,
+        isFaceCentered,
       );
-      _segmenterPaint = CustomPaint(painter: segmenterPainter, willChange: true);
+      _paint = CustomPaint(painter: facePainter, willChange: true);
     } else {
       String text = 'Faces found: ${faces.length}\n\n';
       for (final face in faces) {
@@ -114,7 +108,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       }
       _text = text;
 
-      _segmenterPaint = null;
+      _paint = null;
     }
     _isBusy = false;
     if (mounted) {
@@ -122,4 +116,3 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     }
   }
 }
-

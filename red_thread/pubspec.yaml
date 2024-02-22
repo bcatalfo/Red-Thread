@@ -23,7 +23,6 @@ dependencies:
   sign_in_button: ^3.2.0
   url_launcher: ^6.2.4
   intl: ^0.19.0
-  google_mlkit_selfie_segmentation: ^0.6.0
   flutter_keyboard_visibility: ^6.0.0
 
 dev_dependencies:
