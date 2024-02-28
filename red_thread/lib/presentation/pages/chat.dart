@@ -143,7 +143,6 @@ class ChatMessage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(author,
                 style: theme.textTheme.bodyLarge
