@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
+import 'package:red_thread/widgets/widgets.dart';
 
 const queueOpensAt = TimeOfDay(hour: 0, minute: 00);
 const queueClosesAt = TimeOfDay(hour: 23, minute: 59);
@@ -17,6 +18,7 @@ class QueuePage extends ConsumerStatefulWidget {
 class QueuePageState extends ConsumerState<QueuePage> {
   Timer? _inQueueTimer; // increments secsInQueue every second
   Timer? _queueOpensTimer; // updates UI every second
+  bool _isQueueVisible = false;
 
   @override
   void initState() {
@@ -42,13 +44,23 @@ class QueuePageState extends ConsumerState<QueuePage> {
   }
 
   void findMatch(BuildContext context) {
+    setState(() {
+      _isQueueVisible = true;
+    });
     // This is a placeholder for getting AWS working with the provider
-    ref.read(inQueueProvider.notifier).state = false;
     ref.read(secsInQueueProvider.notifier).state = 0;
     ref.read(matchFoundProvider.notifier).state = true;
   }
 
-  Column prompt(String heading, String subheading, ThemeData theme) {
+  void acceptMatch(BuildContext context) {
+    // wait two seconds for a little animation to play then navigate to the call page
+    Future.delayed(const Duration(seconds: 2), () {
+      ref.read(inQueueProvider.notifier).state = false;
+    });
+  }
+
+  Column bodyColumn(
+      String heading, String subheading, ThemeData theme, double queuePopSize) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -59,7 +71,14 @@ class QueuePageState extends ConsumerState<QueuePage> {
         Padding(
           padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
           child: Text(subheading, style: theme.textTheme.displayMedium),
-        )
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: SizedBox(
+              width: queuePopSize,
+              height: queuePopSize,
+              child: const QueuePop()),
+        ),
       ],
     );
   }
@@ -86,9 +105,14 @@ class QueuePageState extends ConsumerState<QueuePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            inQueue ? Icon(Icons.cancel, color: theme.colorScheme.onPrimaryContainer) : Icon(Icons.arrow_forward, color: theme.colorScheme.onPrimaryContainer),
+            inQueue
+                ? Icon(Icons.cancel,
+                    color: theme.colorScheme.onPrimaryContainer)
+                : Icon(Icons.arrow_forward,
+                    color: theme.colorScheme.onPrimaryContainer),
             Text(inQueue ? 'Leave' : 'Join',
-                style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onPrimaryContainer),
+                style: theme.textTheme.labelLarge
+                    ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center),
           ],
         ),
@@ -105,6 +129,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
             queueClosesAt.minute));
     final theme = Theme.of(context);
     final matchFound = ref.watch(matchFoundProvider);
+    final queuePopSize = MediaQuery.of(context).size.width * .7;
 
     // Artificially make a match happen after 5 seconds
     if (queueOpen && !matchFound && secsInQueue > 2) {
@@ -117,14 +142,15 @@ class QueuePageState extends ConsumerState<QueuePage> {
     if (inQueue) {
       // TODO: Edge case where the queue closes while the user is in queue
       assert(queueOpen);
-      body = prompt(
+      body = bodyColumn(
           'You have been in the queue for ${formatDuration(Duration(seconds: secsInQueue))}',
           'Sit back and relax while we find you a match.',
-          theme);
+          theme,
+          queuePopSize);
     } else if (queueOpen) {
       // The queue is open but the user is not in the queue
-      body = prompt('The queue is open!',
-          'Tap the button below to join the queue.', theme);
+      body = bodyColumn('The queue is open!',
+          'Tap the button below to join the queue.', theme, queuePopSize);
     } else {
       // The queue is closed
       // TODO: Calculate the 6PM from _queueOpensAt
@@ -136,8 +162,8 @@ class QueuePageState extends ConsumerState<QueuePage> {
           : DateTime(now.year, now.month, now.day + 1, queueOpensAt.hour,
                   queueOpensAt.minute)
               .difference(now);
-      body = prompt('Queue opens in ${formatDuration(timeUntil)}',
-          'The queue opens at 6PM every day.', theme);
+      body = bodyColumn('Queue opens in ${formatDuration(timeUntil)}',
+          'The queue opens at 6PM every day.', theme, queuePopSize);
     }
     final floatingActionButton = fab(inQueue, queueOpen, theme);
     return Scaffold(
