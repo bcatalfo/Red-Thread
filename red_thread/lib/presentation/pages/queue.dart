@@ -59,8 +59,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
     });
   }
 
-  Column bodyColumn(
-      String heading, String subheading, ThemeData theme, double queuePopSize) {
+  Column bodyColumn(String heading, String subheading, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -72,13 +71,10 @@ class QueuePageState extends ConsumerState<QueuePage> {
           padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
           child: Text(subheading, style: theme.textTheme.displayMedium),
         ),
-        Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-              width: queuePopSize,
-              height: queuePopSize,
-              child: const QueuePop()),
+        const SizedBox(
+          height: 25,
         ),
+        const QueuePop(),
       ],
     );
   }
@@ -129,7 +125,6 @@ class QueuePageState extends ConsumerState<QueuePage> {
             queueClosesAt.minute));
     final theme = Theme.of(context);
     final matchFound = ref.watch(matchFoundProvider);
-    final queuePopSize = MediaQuery.of(context).size.width * .7;
 
     // Artificially make a match happen after 5 seconds
     if (queueOpen && !matchFound && secsInQueue > 2) {
@@ -145,12 +140,11 @@ class QueuePageState extends ConsumerState<QueuePage> {
       body = bodyColumn(
           'You have been in the queue for ${formatDuration(Duration(seconds: secsInQueue))}',
           'Sit back and relax while we find you a match.',
-          theme,
-          queuePopSize);
+          theme);
     } else if (queueOpen) {
       // The queue is open but the user is not in the queue
       body = bodyColumn('The queue is open!',
-          'Tap the button below to join the queue.', theme, queuePopSize);
+          'Tap the button below to join the queue.', theme);
     } else {
       // The queue is closed
       // TODO: Calculate the 6PM from _queueOpensAt
@@ -163,7 +157,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
                   queueOpensAt.minute)
               .difference(now);
       body = bodyColumn('Queue opens in ${formatDuration(timeUntil)}',
-          'The queue opens at 6PM every day.', theme, queuePopSize);
+          'The queue opens at 6PM every day.', theme);
     }
     final floatingActionButton = fab(inQueue, queueOpen, theme);
     return Scaffold(
