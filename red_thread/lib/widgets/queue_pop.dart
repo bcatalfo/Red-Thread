@@ -1,9 +1,6 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'timed_border_painter.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class QueuePop extends StatefulWidget {
   final void Function()? onQueueAccepted;
