@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:red_thread/providers.dart';
 import 'timed_border_painter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class QueuePop extends StatefulWidget {
+class QueuePop extends ConsumerStatefulWidget {
   final void Function()? onQueueAccepted;
   final void Function()? onQueueDeclined;
   const QueuePop({this.onQueueAccepted, this.onQueueDeclined, super.key});
@@ -11,13 +13,18 @@ class QueuePop extends StatefulWidget {
   QueuePopState createState() => QueuePopState();
 }
 
-class QueuePopState extends State<QueuePop> {
+class QueuePopState extends ConsumerState<QueuePop> {
   bool _isQueueAccepted = false;
   bool _isQueueDeclined = false;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size.width;
+    final isQueueVisible = ref.watch(isQueueVisibleProvider);
+
+    if (!isQueueVisible) {
+      return Container();
+    }
 
     return Center(
       child: SizedBox(
@@ -86,6 +93,6 @@ class QueuePopState extends State<QueuePop> {
           ),
         ),
       ),
-    );
+    ).animate().fade().scale();
   }
 }

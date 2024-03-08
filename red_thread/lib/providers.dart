@@ -13,3 +13,4 @@ final isVerifiedProvider = StateProvider<bool>((ref) => true);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final secsInQueueProvider = StateProvider<int>((ref) => 0);
 final isPreviewCompleteProvider = StateProvider<bool>((ref) => false);
+final isQueueVisibleProvider = StateProvider<bool>((ref) => false);

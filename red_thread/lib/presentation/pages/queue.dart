@@ -18,7 +18,6 @@ class QueuePage extends ConsumerStatefulWidget {
 class QueuePageState extends ConsumerState<QueuePage> {
   Timer? _inQueueTimer; // increments secsInQueue every second
   Timer? _queueOpensTimer; // updates UI every second
-  bool _isQueueVisible = false;
 
   @override
   void initState() {
@@ -44,12 +43,10 @@ class QueuePageState extends ConsumerState<QueuePage> {
   }
 
   void findMatch(BuildContext context) {
-    setState(() {
-      _isQueueVisible = true;
-    });
+    ref.read(isQueueVisibleProvider.notifier).state = true;
     // This is a placeholder for getting AWS working with the provider
     ref.read(secsInQueueProvider.notifier).state = 0;
-    ref.read(matchFoundProvider.notifier).state = true;
+    //ref.read(matchFoundProvider.notifier).state = true;
   }
 
   void acceptMatch(BuildContext context) {
