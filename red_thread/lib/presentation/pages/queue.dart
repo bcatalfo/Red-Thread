@@ -44,8 +44,9 @@ class QueuePageState extends ConsumerState<QueuePage> {
 
   void findMatch(BuildContext context) {
     ref.read(isQueueVisibleProvider.notifier).state = true;
-    // This is a placeholder for getting AWS working with the provider
-    ref.read(secsInQueueProvider.notifier).state = 0;
+    // TODO: set the secs in queue to zero and match found to true AFTER ACCEPTING THE MATCH
+    // Potentially rename match found to match accepted and change the routing logic to reflect that
+    //ref.read(secsInQueueProvider.notifier).state = 0;
     //ref.read(matchFoundProvider.notifier).state = true;
   }
 
