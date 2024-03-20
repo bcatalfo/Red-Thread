@@ -262,7 +262,6 @@ class MatchBar extends ConsumerWidget {
   void unmatch(BuildContext context, WidgetRef ref) {
     // Add your unmatch button logic here
     ref.read(matchFoundProvider.notifier).state = false;
-    ref.read(isPreviewCompleteProvider.notifier).state = false;
     debugPrint("Unmatch button pressed");
   }
 

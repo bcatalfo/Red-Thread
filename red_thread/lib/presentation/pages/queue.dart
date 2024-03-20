@@ -4,6 +4,7 @@ import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
 import 'package:red_thread/widgets/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 const queueOpensAt = TimeOfDay(hour: 0, minute: 00);
 const queueClosesAt = TimeOfDay(hour: 23, minute: 59);
@@ -83,6 +84,11 @@ class QueuePageState extends ConsumerState<QueuePage> {
       child: FittedBox(
           child: FloatingActionButton(
         onPressed: () {
+          // if not verified navigate to the verification page
+          if (!ref.read(isVerifiedProvider)) {
+            context.push('/verification');
+            return;
+          }
           if (inQueue) {
             _inQueueTimer?.cancel();
             ref.watch(secsInQueueProvider.notifier).state = 0; // Reset timer

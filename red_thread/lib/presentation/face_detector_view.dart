@@ -4,7 +4,7 @@ import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:red_thread/presentation/face_detector_painter.dart';
 import 'package:red_thread/utils/coordinates_translator.dart';
 import 'detector_view.dart';
-import 'package:red_thread/presentation/pages/preview.dart';
+import 'package:red_thread/presentation/pages/verification.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FaceDetectorView extends StatefulWidget {
