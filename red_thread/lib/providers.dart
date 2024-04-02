@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// TODO: replace other with non-binary
 enum Gender { male, female, other }
 
 // TODO: Get this from backend

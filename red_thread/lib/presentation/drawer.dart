@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
 
+// TODO: Reorganize this garbage, update the logo code, add it to the widgets folder
 //define a drawer called top drawer
 Drawer myDrawer(BuildContext context, WidgetRef ref) {
   final theme = Theme.of(context);
@@ -72,8 +73,8 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
           ListTile(
               leading: Icon(Icons.delete,
                   size: theme.textTheme.displayMedium?.fontSize),
-              title: Text('Delete Account',
-                  style: theme.textTheme.displayMedium),
+              title:
+                  Text('Delete Account', style: theme.textTheme.displayMedium),
               onTap: () {
                 // Make an alert dialog
                 showDialog(
@@ -114,7 +115,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                   ),
                 );
               }),
-              const SizedBox(height: 32),
+          const SizedBox(height: 32),
         ],
       ),
     ),
