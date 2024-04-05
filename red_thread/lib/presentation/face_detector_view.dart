@@ -65,12 +65,18 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
     ref.read(numberOfFacesDetectedProvider.notifier).state = faces.length;
     // if faces is not empty set smileprobability and isFaceCentered
     bool isFaceCentered = false;
+    bool isFaceTooClose = false;
+    bool isFaceTooFar = false;
     if (faces.isNotEmpty) {
       ref.read(smileProbabilityProvider.notifier).state =
           faces[0].smilingProbability ?? 0.0;
       final imageSize = inputImage.metadata?.size;
       if (imageSize != null) {
-        final imageCenter = Offset(imageSize.width / 2, imageSize.height / 2);
+        //final imageCenter = Offset(imageSize.width / 2, imageSize.height / 2);
+        final imageCenterX = translateX(imageSize.width / 2, imageSize,
+            imageSize, inputImage.metadata!.rotation, _cameraLensDirection);
+        final imageCenterY = translateX(imageSize.height / 2, imageSize,
+            imageSize, inputImage.metadata!.rotation, _cameraLensDirection);
         final faceCenterX = translateX(
           faces[0].boundingBox.center.dx,
           imageSize,
@@ -85,10 +91,44 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
           inputImage.metadata!.rotation,
           _cameraLensDirection,
         );
+        final faceLeft = translateX(
+          faces[0].boundingBox.left,
+          imageSize,
+          imageSize,
+          inputImage.metadata!.rotation,
+          _cameraLensDirection,
+        );
+        final faceRight = translateX(
+          faces[0].boundingBox.right,
+          imageSize,
+          imageSize,
+          inputImage.metadata!.rotation,
+          _cameraLensDirection,
+        );
+        final faceTop = translateY(
+          faces[0].boundingBox.top,
+          imageSize,
+          imageSize,
+          inputImage.metadata!.rotation,
+          _cameraLensDirection,
+        );
+        final faceBottom = translateY(
+          faces[0].boundingBox.bottom,
+          imageSize,
+          imageSize,
+          inputImage.metadata!.rotation,
+          _cameraLensDirection,
+        );
+        final faceWidth = faceRight - faceLeft;
+        final faceHeight = faceBottom - faceTop;
         final faceCenter = Offset(faceCenterX, faceCenterY);
-        isFaceCentered = (faceCenter.dx - imageCenter.dx).abs() < 50 &&
-            (faceCenter.dy - imageCenter.dy).abs() < 100;
+        isFaceCentered = (faceCenter.dx - imageCenterX).abs() < 50 &&
+            (faceCenter.dy - imageCenterY).abs() < 50;
         ref.read(isFaceCenteredProvider.notifier).state = isFaceCentered;
+        isFaceTooClose = faceWidth > 200;
+        isFaceTooFar = faceWidth < 175;
+        ref.read(isFaceTooFarProvider.notifier).state = isFaceTooFar;
+        ref.read(isFaceTooCloseProvider.notifier).state = isFaceTooClose;
       }
     }
     if (inputImage.metadata?.size != null &&
@@ -98,7 +138,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
         inputImage.metadata!.size,
         inputImage.metadata!.rotation,
         _cameraLensDirection,
-        isFaceCentered,
+        isFaceCentered && !isFaceTooClose && !isFaceTooFar,
       );
       _paint = CustomPaint(painter: facePainter, willChange: true);
     } else {

@@ -10,6 +10,8 @@ enum VerificationState { capturing, verifying, success, failure }
 final smileProbabilityProvider = StateProvider<double>((ref) => 0.0);
 final numberOfFacesDetectedProvider = StateProvider<int>((ref) => 0);
 final isFaceCenteredProvider = StateProvider<bool>((ref) => false);
+final isFaceTooCloseProvider = StateProvider<bool>((ref) => false);
+final isFaceTooFarProvider = StateProvider<bool>((ref) => false);
 
 class VerificationPage extends ConsumerStatefulWidget {
   const VerificationPage({super.key});
@@ -27,6 +29,8 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
     final smileProbability = ref.watch(smileProbabilityProvider);
     final numberOfFacesDetected = ref.watch(numberOfFacesDetectedProvider);
     final isFaceCentered = ref.watch(isFaceCenteredProvider);
+    final isFaceTooClose = ref.watch(isFaceTooCloseProvider);
+    final isFaceTooFar = ref.watch(isFaceTooFarProvider);
     String alertText;
     final theme = Theme.of(context);
     final screenSize = MediaQuery.of(context).size;
@@ -39,6 +43,10 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
           alertText = 'Move your friend away!';
         } else if (isFaceCentered == false) {
           alertText = 'Center your face!';
+        } else if (isFaceTooFar == true) {
+          alertText = 'Move closer!';
+        } else if (isFaceTooClose == true) {
+          alertText = 'Move further away!';
         } else if (smileProbability < 0.5) {
           alertText = 'Smile more!';
         } else {
@@ -89,8 +97,7 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(25.0, 8.0, 8.0, 8.0),
-                child: Text(
-                    "Picture taken! Feel free to retake as many times as you wish.",
+                child: Text("Wait a moment while we verify your identity...",
                     style: theme.textTheme.displayLarge),
               ),
               imagePath != null
