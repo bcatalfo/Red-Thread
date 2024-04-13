@@ -58,6 +58,10 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
             debugPrint("Post frame callback");
             // TODO: take picture and get the file path
             _verificationState = VerificationState.verifying;
+            // TODO: replace this with actual verification
+            Future.delayed(const Duration(seconds: 2), () {
+              ref.read(isVerifiedProvider.notifier).state = true;
+            });
           });
         }
 
