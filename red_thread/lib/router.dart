@@ -23,7 +23,6 @@ GoRouter createRouter(WidgetRef ref) {
           final isAccountSetupComplete =
               ref.watch(isAccountSetupCompleteProvider);
           final matchFound = ref.watch(matchFoundProvider);
-          final isInCall = ref.watch(isInCallProvider);
 
           if (isFirstTimeUser) {
             return const WelcomePage();
