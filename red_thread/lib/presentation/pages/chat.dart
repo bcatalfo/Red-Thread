@@ -157,7 +157,7 @@ class ChatMessage extends StatelessWidget {
   }
 }
 
-class ChatInputBar extends StatefulWidget {
+class ChatInputBar extends ConsumerStatefulWidget {
   final Function(String) onSend;
 
   const ChatInputBar({Key? key, required this.onSend}) : super(key: key);
@@ -166,7 +166,7 @@ class ChatInputBar extends StatefulWidget {
   ChatInputBarState createState() => ChatInputBarState();
 }
 
-class ChatInputBarState extends State<ChatInputBar> {
+class ChatInputBarState extends ConsumerState<ChatInputBar> {
   final TextEditingController _textController = TextEditingController();
   bool _isTyping = false;
 
@@ -186,8 +186,17 @@ class ChatInputBarState extends State<ChatInputBar> {
     super.dispose();
   }
 
+  void unmatch(BuildContext context, WidgetRef ref) {
+    // Add your unmatch button logic here
+    ref.read(matchFoundProvider.notifier).state = false;
+    debugPrint("Unmatch button pressed");
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final scheme = isLight ? globalLightScheme : globalDarkScheme;
     return Container(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -201,12 +210,60 @@ class ChatInputBarState extends State<ChatInputBar> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () {
-                        // TODO: start video call
+                        // Returns you to the queue
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            backgroundColor: scheme.surfaceContainerHigh,
+                            title: Text('Unmatch with Emma?',
+                                style: theme.textTheme.headlineMedium
+                                    ?.copyWith(color: scheme.onSurface)),
+                            content: Text(
+                                'Are you sure you want to unmatch? This action cannot be undone.',
+                                style: theme.textTheme.bodyLarge
+                                    ?.copyWith(color: scheme.onSurfaceVariant)),
+                            actionsAlignment: MainAxisAlignment.center,
+                            actions: [
+                              ButtonBar(
+                                alignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      unmatch(context, ref);
+                                    },
+                                    child: Text('Unmatch',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(color: scheme.primary)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        color: scheme.primary,
+                                      ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Cancel',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(color: scheme.onPrimary),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(0),
                       ),
-                      child: const Icon(Icons.video_call),
+                      child: const Icon(Icons.block),
                     ),
                   ),
           ),
@@ -259,12 +316,6 @@ class ChatInputBarState extends State<ChatInputBar> {
 class MatchBar extends ConsumerWidget {
   const MatchBar({Key? key}) : super(key: key);
 
-  void unmatch(BuildContext context, WidgetRef ref) {
-    // Add your unmatch button logic here
-    ref.read(matchFoundProvider.notifier).state = false;
-    debugPrint("Unmatch button pressed");
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -303,55 +354,7 @@ class MatchBar extends ConsumerWidget {
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: scheme.primary,
                   )),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    backgroundColor: scheme.surfaceContainerHigh,
-                    title: Text('Unmatch with Emma?',
-                        style: theme.textTheme.headlineMedium
-                            ?.copyWith(color: scheme.onSurface)),
-                    content: Text(
-                        'Are you sure you want to unmatch? This action cannot be undone.',
-                        style: theme.textTheme.bodyLarge
-                            ?.copyWith(color: scheme.onSurfaceVariant)),
-                    actionsAlignment: MainAxisAlignment.center,
-                    actions: [
-                      ButtonBar(
-                        alignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              unmatch(context, ref);
-                            },
-                            child: Text('Unmatch',
-                                style: theme.textTheme.bodyLarge
-                                    ?.copyWith(color: scheme.primary)),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.0),
-                                color: scheme.primary,
-                              ),
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Cancel',
-                                style: theme.textTheme.bodyLarge
-                                    ?.copyWith(color: scheme.onPrimary),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
+              onPressed: () {},
               icon: Icon(Icons.block, color: scheme.primary),
             ),
           ),
