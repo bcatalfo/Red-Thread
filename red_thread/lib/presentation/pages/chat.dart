@@ -33,6 +33,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
       date: DateTime(2023, 12, 18, 12, 0, 5),
     ),
   ];
+  bool isDateScheduled = false;
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -111,6 +112,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
                   },
                 ),
               ),
+              const DateBar(),
               ChatInputBar(
                 onSend: _sendMessage,
               )
@@ -192,6 +194,11 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
     debugPrint("Unmatch button pressed");
   }
 
+  void scheduleDate(BuildContext context, WidgetRef ref) {
+    // TODO: Implement date scheduling
+    debugPrint("Date button pressed");
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -206,8 +213,8 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
             child: _isTyping
                 ? const SizedBox()
                 : SizedBox(
-                    width: 48,
-                    height: 48,
+                    width: 64,
+                    height: 64,
                     child: ElevatedButton(
                       onPressed: () {
                         // Returns you to the queue
@@ -263,7 +270,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(0),
                       ),
-                      child: const Icon(Icons.block),
+                      child: const Icon(Icons.block, size: 48),
                     ),
                   ),
           ),
@@ -282,8 +289,8 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
           ),
           const SizedBox(width: 8),
           SizedBox(
-            width: 48,
-            height: 48,
+            width: 64,
+            height: 64,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(0),
@@ -296,14 +303,61 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                 } else {
                   // Implement other button functionality
                   debugPrint("Other button pressed");
+                  // Schedule a date
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      backgroundColor: scheme.surfaceContainerHigh,
+                      title: Text('Let\'s schedule a date!',
+                          style: theme.textTheme.headlineMedium
+                              ?.copyWith(color: scheme.onSurface)),
+                      content: Text('TODO: Implement date picker here.',
+                          style: theme.textTheme.bodyLarge
+                              ?.copyWith(color: scheme.onSurfaceVariant)),
+                      actionsAlignment: MainAxisAlignment.center,
+                      actions: [
+                        ButtonBar(
+                          alignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                scheduleDate(context, ref);
+                              },
+                              child: Text('Schedule Date',
+                                  style: theme.textTheme.bodyLarge
+                                      ?.copyWith(color: scheme.primary)),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  color: scheme.primary,
+                                ),
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Cancel',
+                                  style: theme.textTheme.bodyLarge
+                                      ?.copyWith(color: scheme.onPrimary),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
                 }
               },
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 child: _isTyping
-                    ? const Icon(Icons.send, key: ValueKey('send'))
-                    : const Icon(Icons.edit_calendar_sharp,
-                        key: ValueKey('calendar')),
+                    ? const Icon(Icons.send, size: 48, key: ValueKey('send'))
+                    : const Icon(Icons.calendar_month,
+                        size: 48, key: ValueKey('schedule date')),
               ),
             ),
           ),
@@ -338,24 +392,68 @@ class MatchBar extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text('25, 3.5 miles away',
-                    style: Theme.of(context).textTheme.bodySmall),
+                Text('25, 3.5 miles away', style: theme.textTheme.bodySmall),
               ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: scheme.primary,
-                backgroundColor: scheme.surfaceContainerLow,
+            child: Text(
+              '2:30 Left',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: scheme.primary,
+                fontWeight: FontWeight.bold,
               ),
-              label: Text('Unmatch',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DateBar extends ConsumerWidget {
+  const DateBar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final scheme = isLight ? globalLightScheme : globalDarkScheme;
+
+    return Container(
+      color: scheme.surfaceContainerHighest,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Date Time',
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: scheme.primary,
-                  )),
-              onPressed: () {},
-              icon: Icon(Icons.block, color: scheme.primary),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Date Location',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Not Scheduled Yet',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: scheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
