@@ -322,15 +322,15 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                scheduleDate(context, ref);
                               },
-                              child: Text('Schedule Date',
+                              child: Text('Cancel',
                                   style: theme.textTheme.bodyLarge
                                       ?.copyWith(color: scheme.primary)),
                             ),
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
+                                scheduleDate(context, ref);
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -339,7 +339,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                 ),
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  'Cancel',
+                                  'Schedule Date',
                                   style: theme.textTheme.bodyLarge
                                       ?.copyWith(color: scheme.onPrimary),
                                 ),
