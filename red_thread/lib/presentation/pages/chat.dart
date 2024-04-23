@@ -6,6 +6,7 @@ import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'dart:async';
+import 'package:red_thread/providers.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -194,9 +195,12 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
     debugPrint("Unmatch button pressed");
   }
 
-  void scheduleDate(BuildContext context, WidgetRef ref) {
+  void scheduleDate(
+      BuildContext context, WidgetRef ref, TimeOfDay time, String location) {
     // TODO: Implement date scheduling
     debugPrint("Date button pressed");
+    ref.read(dateTimeProvider.notifier).state = time;
+    ref.read(dateLocationProvider.notifier).state = location;
   }
 
   @override
@@ -304,50 +308,85 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                   // Implement other button functionality
                   debugPrint("Other button pressed");
                   // Schedule a date
+                  final _locationController = TextEditingController();
+                  TimeOfDay? _selectedTime;
+
                   showDialog(
                     context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      backgroundColor: scheme.surfaceContainerHigh,
-                      title: Text('Let\'s schedule a date!',
-                          style: theme.textTheme.headlineMedium
-                              ?.copyWith(color: scheme.onSurface)),
-                      content: Text('TODO: Implement date picker here.',
-                          style: theme.textTheme.bodyLarge
-                              ?.copyWith(color: scheme.onSurfaceVariant)),
-                      actionsAlignment: MainAxisAlignment.center,
-                      actions: [
-                        ButtonBar(
-                          alignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Cancel',
-                                  style: theme.textTheme.bodyLarge
-                                      ?.copyWith(color: scheme.primary)),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                scheduleDate(context, ref);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  color: scheme.primary,
-                                ),
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Schedule Date',
-                                  style: theme.textTheme.bodyLarge
-                                      ?.copyWith(color: scheme.onPrimary),
-                                ),
+                    builder: (BuildContext context) => StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) =>
+                          AlertDialog(
+                        backgroundColor: scheme.surfaceContainerHigh,
+                        title: Text('Let\'s schedule a date!',
+                            style: theme.textTheme.headlineMedium
+                                ?.copyWith(color: scheme.onSurface)),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: [
+                              TextField(
+                                controller: _locationController,
+                                decoration:
+                                    InputDecoration(labelText: "Location"),
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 8),
+                              Text(
+                                _selectedTime == null
+                                    ? 'No time selected.'
+                                    : 'Selected time: ${_selectedTime!.format(context)}',
+                                style: theme.textTheme.bodyLarge
+                                    ?.copyWith(color: scheme.onSurfaceVariant),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                  ).then((selectedTime) {
+                                    if (selectedTime != null) {
+                                      _selectedTime = selectedTime;
+                                      setState(
+                                          () {}); // Call setState to update the UI
+                                    }
+                                  });
+                                },
+                                child: Text('Select Time'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_selectedTime != null &&
+                                      _locationController.text.isNotEmpty) {
+                                    // TODO: Use the selected time and location
+                                    scheduleDate(context, ref, _selectedTime!,
+                                        _locationController.text);
+                                    Navigator.of(context).pop();
+                                  } else {
+                                    // Show an error message
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Error'),
+                                          content: Text(
+                                              'Please select a time and enter a location.'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('OK'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                                child: Text('Schedule Date'),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
+                      ),
                     ),
                   );
                 }
@@ -420,7 +459,62 @@ class DateBar extends ConsumerWidget {
     final theme = Theme.of(context);
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
+    final dateTime = ref.watch(dateTimeProvider);
+    final dateLocation = ref.watch(dateLocationProvider);
+    bool isDateScheduled = (dateTime != null && dateLocation != null);
 
+    if (isDateScheduled) {
+      return Container(
+        color: scheme.surfaceContainerHighest,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Date Time',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Date Location',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    dateTime.format(context),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: scheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    dateLocation,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: scheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Container(
       color: scheme.surfaceContainerHighest,
       child: Row(
