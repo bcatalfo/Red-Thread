@@ -436,15 +436,23 @@ class MatchBar extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '2:30 Left',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: scheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+              padding: const EdgeInsets.all(8.0),
+              child: RichText(
+                text: TextSpan(
+                  text: 'Time Left: ',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: '2:30',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: scheme.primary,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ],
+                ),
+              )),
         ],
       ),
     );
