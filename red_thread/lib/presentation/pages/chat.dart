@@ -6,7 +6,6 @@ import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'dart:async';
-import 'package:red_thread/providers.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -34,7 +33,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
       date: DateTime(2023, 12, 18, 12, 0, 5),
     ),
   ];
-  bool isDateScheduled = false;
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -201,6 +199,9 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
     debugPrint("Date button pressed");
     ref.read(dateTimeProvider.notifier).state = time;
     ref.read(dateLocationProvider.notifier).state = location;
+    ref
+        .read(dateScheduleProvider.notifier)
+        .update((state) => DateSchedule.sent);
   }
 
   @override
@@ -469,85 +470,148 @@ class DateBar extends ConsumerWidget {
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
     final dateTime = ref.watch(dateTimeProvider);
     final dateLocation = ref.watch(dateLocationProvider);
-    bool isDateScheduled = (dateTime != null && dateLocation != null);
+    final dateSchedule = ref.watch(dateScheduleProvider);
 
-    if (isDateScheduled) {
-      return Container(
-        color: scheme.surfaceContainerHighest,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Date Time',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Date Location',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    dateTime.format(context),
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: scheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    dateLocation,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: scheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
+    if (dateSchedule == DateSchedule.confirmed) {
+      return dateContainer(context, theme, scheme, dateTime, dateLocation);
+    } else if (dateSchedule == DateSchedule.sent) {
+      return dateSentContainer(context, theme, scheme, dateTime, dateLocation);
+    } else if (dateSchedule == DateSchedule.received) {
+      return dateReceivedContainer(
+          context, theme, scheme, dateTime, dateLocation, ref);
+    } else {
+      return notScheduledContainer(context, scheme, theme);
     }
+  }
+
+  Widget dateContainer(BuildContext context, ThemeData theme,
+      MaterialScheme scheme, TimeOfDay? dateTime, String? dateLocation) {
     return Container(
       color: scheme.surfaceContainerHighest,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
+          dateDetailsWidget(
+              context, theme, dateTime!.format(context), dateLocation!),
+        ],
+      ),
+    );
+  }
+
+  Widget dateSentContainer(BuildContext context, ThemeData theme,
+      MaterialScheme scheme, TimeOfDay? dateTime, String? dateLocation) {
+    return Container(
+      color: scheme.surfaceContainerHighest,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  'Date Time',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Date Location',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                dateDetailsWidget(
+                    context, theme, dateTime!.format(context), dateLocation!),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(scheme.primary),
                   ),
                 ),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget dateReceivedContainer(
+      BuildContext context,
+      ThemeData theme,
+      MaterialScheme scheme,
+      TimeOfDay? dateTime,
+      String? dateLocation,
+      WidgetRef ref) {
+    // Helper function to format TimeOfDay
+    String formatTimeOfDay(TimeOfDay time) {
+      final now = DateTime.now();
+      final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+      return DateFormat('h:mm a').format(dt);
+    }
+
+    return Container(
+      color: scheme.surfaceContainerHighest,
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Date Time:',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                dateTime != null ? formatTimeOfDay(dateTime) : 'Not set',
+                style: theme.textTheme.bodyLarge,
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Date Location:',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                dateLocation ?? 'Not set',
+                style: theme.textTheme.bodyLarge,
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () => ref
+                    .read(dateScheduleProvider.notifier)
+                    .update((state) => DateSchedule.confirmed),
+                child:
+                    Text('Accept', style: TextStyle(color: scheme.onPrimary)),
+                style: TextButton.styleFrom(backgroundColor: scheme.primary),
+              ),
+              SizedBox(width: 20), // Space between the buttons
+              TextButton(
+                onPressed: () => ref
+                    .read(dateScheduleProvider.notifier)
+                    .update((state) => DateSchedule.notScheduled),
+                child: Text('Decline', style: TextStyle(color: scheme.onError)),
+                style: TextButton.styleFrom(backgroundColor: scheme.error),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget notScheduledContainer(
+      BuildContext context, MaterialScheme scheme, ThemeData theme) {
+    return Container(
+      color: scheme.surfaceContainerHighest,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -556,6 +620,30 @@ class DateBar extends ConsumerWidget {
                 color: scheme.primary,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget dateDetailsWidget(
+      BuildContext context, ThemeData theme, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            value,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
