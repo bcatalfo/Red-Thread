@@ -111,7 +111,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
                   },
                 ),
               ),
-              const DateBar(),
+              DateBar(),
               ChatInputBar(
                 onSend: _sendMessage,
               )
@@ -194,7 +194,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
   }
 
   void scheduleDate(
-      BuildContext context, WidgetRef ref, TimeOfDay time, String location) {
+      BuildContext context, WidgetRef ref, DateTime time, String location) {
     // TODO: Implement date scheduling
     debugPrint("Date button pressed");
     ref.read(dateTimeProvider.notifier).state = time;
@@ -357,7 +357,15 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                   if (_selectedTime != null &&
                                       _locationController.text.isNotEmpty) {
                                     // TODO: Use the selected time and location
-                                    scheduleDate(context, ref, _selectedTime!,
+                                    scheduleDate(
+                                        context,
+                                        ref,
+                                        DateTime(
+                                            DateTime.now().year,
+                                            DateTime.now().month,
+                                            DateTime.now().day,
+                                            _selectedTime!.hour,
+                                            _selectedTime!.minute),
                                         _locationController.text);
                                     Navigator.of(context).pop();
                                   } else {
@@ -461,7 +469,8 @@ class MatchBar extends ConsumerWidget {
 }
 
 class DateBar extends ConsumerWidget {
-  const DateBar({Key? key}) : super(key: key);
+  DateBar({Key? key}) : super(key: key);
+  final formatter = DateFormat('M/d h:mm a');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -473,19 +482,19 @@ class DateBar extends ConsumerWidget {
     final dateSchedule = ref.watch(dateScheduleProvider);
 
     if (dateSchedule == DateSchedule.confirmed) {
-      return dateContainer(context, theme, scheme, dateTime, dateLocation);
+      return dateContainer(context, theme, scheme, dateTime!, dateLocation);
     } else if (dateSchedule == DateSchedule.sent) {
-      return dateSentContainer(context, theme, scheme, dateTime, dateLocation);
+      return dateSentContainer(context, theme, scheme, dateTime!, dateLocation);
     } else if (dateSchedule == DateSchedule.received) {
       return dateReceivedContainer(
-          context, theme, scheme, dateTime, dateLocation, ref);
+          context, theme, scheme, dateTime!, dateLocation!, ref);
     } else {
       return notScheduledContainer(context, scheme, theme);
     }
   }
 
   Widget dateContainer(BuildContext context, ThemeData theme,
-      MaterialScheme scheme, TimeOfDay? dateTime, String? dateLocation) {
+      MaterialScheme scheme, DateTime dateTime, String? dateLocation) {
     return Container(
       color: scheme.surfaceContainerHighest,
       child: Row(
@@ -493,14 +502,14 @@ class DateBar extends ConsumerWidget {
         children: [
           dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
           dateDetailsWidget(
-              context, theme, dateTime!.format(context), dateLocation!),
+              context, theme, formatter.format(dateTime), dateLocation!),
         ],
       ),
     );
   }
 
   Widget dateSentContainer(BuildContext context, ThemeData theme,
-      MaterialScheme scheme, TimeOfDay? dateTime, String? dateLocation) {
+      MaterialScheme scheme, DateTime dateTime, String? dateLocation) {
     return Container(
       color: scheme.surfaceContainerHighest,
       child: Row(
@@ -512,7 +521,7 @@ class DateBar extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 dateDetailsWidget(
-                    context, theme, dateTime!.format(context), dateLocation!),
+                    context, theme, formatter.format(dateTime), dateLocation!),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CircularProgressIndicator(
@@ -531,16 +540,9 @@ class DateBar extends ConsumerWidget {
       BuildContext context,
       ThemeData theme,
       MaterialScheme scheme,
-      TimeOfDay? dateTime,
-      String? dateLocation,
+      DateTime dateTime,
+      String dateLocation,
       WidgetRef ref) {
-    // Helper function to format TimeOfDay
-    String formatTimeOfDay(TimeOfDay time) {
-      final now = DateTime.now();
-      final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-      return DateFormat('h:mm a').format(dt);
-    }
-
     return Container(
       color: scheme.surfaceContainerHighest,
       padding: const EdgeInsets.all(8.0),
@@ -557,7 +559,7 @@ class DateBar extends ConsumerWidget {
                 ),
               ),
               Text(
-                dateTime != null ? formatTimeOfDay(dateTime) : 'Not set',
+                formatter.format(dateTime),
                 style: theme.textTheme.bodyLarge,
               ),
             ],
@@ -572,7 +574,7 @@ class DateBar extends ConsumerWidget {
                 ),
               ),
               Text(
-                dateLocation ?? 'Not set',
+                dateLocation,
                 style: theme.textTheme.bodyLarge,
               ),
             ],
@@ -584,18 +586,18 @@ class DateBar extends ConsumerWidget {
               TextButton(
                 onPressed: () => ref
                     .read(dateScheduleProvider.notifier)
-                    .update((state) => DateSchedule.confirmed),
-                child:
-                    Text('Accept', style: TextStyle(color: scheme.onPrimary)),
-                style: TextButton.styleFrom(backgroundColor: scheme.primary),
+                    .update((state) => DateSchedule.notScheduled),
+                child: Text('Decline', style: TextStyle(color: scheme.onError)),
+                style: TextButton.styleFrom(backgroundColor: scheme.error),
               ),
               SizedBox(width: 20), // Space between the buttons
               TextButton(
                 onPressed: () => ref
                     .read(dateScheduleProvider.notifier)
-                    .update((state) => DateSchedule.notScheduled),
-                child: Text('Decline', style: TextStyle(color: scheme.onError)),
-                style: TextButton.styleFrom(backgroundColor: scheme.error),
+                    .update((state) => DateSchedule.confirmed),
+                child:
+                    Text('Accept', style: TextStyle(color: scheme.onPrimary)),
+                style: TextButton.styleFrom(backgroundColor: scheme.primary),
               ),
             ],
           ),
