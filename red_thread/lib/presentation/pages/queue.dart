@@ -38,7 +38,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
   }
 
   void findMatch(BuildContext context) {
-    ref.read(matchFoundProvider.notifier).state = true;
+    ref.read(matchProvider.notifier).state = 'Emma';
   }
 
   Column bodyColumn(String heading, String subheading, ThemeData theme) {
@@ -103,7 +103,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
         .inSeconds;
     final now = DateTime.now();
     final theme = Theme.of(context);
-    final matchFound = ref.watch(matchFoundProvider);
+    final matchFound = ref.watch(matchProvider) != null;
 
     // Artificially make a match happen after 5 seconds
     if (!matchFound && secsInQueue > 2) {

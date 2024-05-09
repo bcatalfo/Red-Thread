@@ -7,7 +7,7 @@ enum Gender { male, female, other }
 enum DateSchedule { notScheduled, sent, received, confirmed }
 
 // TODO: Get this from backend
-final matchFoundProvider = StateProvider<bool>((ref) => true);
+final matchProvider = StateProvider<String?>((ref) => "Michelle");
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 final needsWelcomingProvider = StateProvider<bool>((ref) => false);
 final isAuthenticatedProvider = StateProvider<bool>((ref) => true);

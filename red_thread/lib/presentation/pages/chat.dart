@@ -189,7 +189,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
 
   void unmatch(BuildContext context, WidgetRef ref) {
     // Add your unmatch button logic here
-    ref.read(matchFoundProvider.notifier).state = false;
+    ref.read(matchProvider.notifier).state = null;
     debugPrint("Unmatch button pressed");
   }
 
@@ -209,6 +209,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
     final theme = Theme.of(context);
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
+    final String match = ref.watch(matchProvider.notifier).state!;
     return Container(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -227,7 +228,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
                             backgroundColor: scheme.surfaceContainerHigh,
-                            title: Text('Unmatch with Emma?',
+                            title: Text('Unmatch with ${match}?',
                                 style: theme.textTheme.headlineMedium
                                     ?.copyWith(color: scheme.onSurface)),
                             content: Text(
@@ -423,6 +424,7 @@ class MatchBar extends ConsumerWidget {
     final theme = Theme.of(context);
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
+    final String match = ref.watch(matchProvider.notifier).state!;
 
     return Container(
       color: scheme.surfaceContainerHighest,
@@ -435,7 +437,7 @@ class MatchBar extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Emma',
+                  '${match}',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

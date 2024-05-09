@@ -20,7 +20,7 @@ GoRouter createRouter(WidgetRef ref) {
           final isAuthenticated = ref.watch(isAuthenticatedProvider);
           final isAccountSetupComplete =
               ref.watch(isAccountSetupCompleteProvider);
-          final matchFound = ref.watch(matchFoundProvider);
+          final matchFound = ref.watch(matchProvider) != null;
 
           if (isFirstTimeUser) {
             return const OnBoardingPage();
