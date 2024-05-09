@@ -1,22 +1,21 @@
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/theme.dart';
+import 'package:red_thread/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OnBoardingPage extends StatefulWidget {
+class OnBoardingPage extends ConsumerStatefulWidget {
   const OnBoardingPage({Key? key}) : super(key: key);
 
   @override
   OnBoardingPageState createState() => OnBoardingPageState();
 }
 
-class OnBoardingPageState extends State<OnBoardingPage> {
+class OnBoardingPageState extends ConsumerState<OnBoardingPage> {
   final introKey = GlobalKey<IntroductionScreenState>();
 
   void _onIntroEnd(context) {
-    /* Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomePage()),
-    ); */
-    // replace this with some riverpod state change for the routing
+    ref.read(needsWelcomingProvider.notifier).state = false;
   }
 
   Widget _buildImage(String assetName, [double width = 350]) {
