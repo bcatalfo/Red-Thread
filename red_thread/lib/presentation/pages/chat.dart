@@ -6,6 +6,7 @@ import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'dart:async';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -64,6 +65,8 @@ class ChatPageState extends ConsumerState<ChatPage> {
   }
 
   late StreamSubscription<bool> keyboardSubscription;
+  var _matchBarVisible = true;
+  var _dateBarVisible = true;
 
   @override
   void initState() {
@@ -81,6 +84,10 @@ class ChatPageState extends ConsumerState<ChatPage> {
       if (visible) {
         Future.delayed(const Duration(milliseconds: 350), _scrollToBottom);
       }
+      setState(() {
+        _matchBarVisible = !visible;
+        _dateBarVisible = !visible;
+      });
     });
   }
 
@@ -102,7 +109,13 @@ class ChatPageState extends ConsumerState<ChatPage> {
         child: KeyboardDismissOnTap(
           child: Column(
             children: [
-              const MatchBar(),
+              AnimatedVisibility(
+                visible: _matchBarVisible,
+                duration: 100.ms,
+                child: MatchBar()
+                    .animate(target: _matchBarVisible ? 1 : 0)
+                    .fade(duration: 100.ms),
+              ),
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -115,7 +128,13 @@ class ChatPageState extends ConsumerState<ChatPage> {
                   },
                 ),
               ),
-              DateBar(),
+              AnimatedVisibility(
+                visible: _dateBarVisible,
+                duration: 100.ms,
+                child: DateBar()
+                    .animate(target: _dateBarVisible ? 1 : 0)
+                    .fade(duration: 100.ms),
+              ),
               ChatInputBar(
                 onSend: _sendMessage,
               )
@@ -123,6 +142,52 @@ class ChatPageState extends ConsumerState<ChatPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class AnimatedVisibility extends StatefulWidget {
+  final Widget child;
+  final bool visible;
+  final Duration duration;
+
+  const AnimatedVisibility({
+    Key? key,
+    required this.child,
+    required this.visible,
+    required this.duration,
+  }) : super(key: key);
+
+  @override
+  _AnimatedVisibilityState createState() => _AnimatedVisibilityState();
+}
+
+class _AnimatedVisibilityState extends State<AnimatedVisibility> {
+  late bool _isVisible;
+
+  @override
+  void initState() {
+    super.initState();
+    _isVisible = widget.visible;
+  }
+
+  @override
+  void didUpdateWidget(AnimatedVisibility oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.visible) {
+      setState(() => _isVisible = true);
+    } else {
+      Future.delayed(widget.duration, () => setState(() => _isVisible = false));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      duration: widget.duration,
+      opacity: widget.visible ? 1.0 : 0.0,
+      child: _isVisible ? widget.child : SizedBox.shrink(),
     );
   }
 }
