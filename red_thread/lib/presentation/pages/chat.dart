@@ -19,19 +19,23 @@ class ChatPageState extends ConsumerState<ChatPage> {
   final messages = <ChatMessage>[
     ChatMessage(
       message: 'Where do you wanna go?',
-      author: 'Emma',
-      date: DateTime(2023, 12, 18, 12, 0, 2),
+      author: Author.you,
+      date: DateTime(2024, 5, 9, 12, 0, 2),
     ),
     ChatMessage(
       message: 'Wanna meet up at Central Park?😍',
-      author: 'Ben',
-      date: DateTime(2023, 12, 18, 12, 0, 3),
+      author: Author.me,
+      date: DateTime(2024, 5, 9, 12, 0, 3),
     ),
     ChatMessage(
       message: 'Let’s get some food first.',
-      author: 'Emma',
-      date: DateTime(2023, 12, 18, 12, 0, 5),
+      author: Author.you,
+      date: DateTime(2024, 5, 9, 12, 0, 5),
     ),
+    ChatMessage(
+        message: 'Test alert from the system',
+        author: Author.system,
+        date: DateTime.now())
   ];
 
   void _scrollToBottom() {
@@ -48,7 +52,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
   void _sendMessage(String text) {
     final newMessage = ChatMessage(
       message: text,
-      author: 'Ben', // TODO: get from backend
+      author: Author.me, // TODO: get from backend
       date: DateTime.now(),
     );
     setState(() {
@@ -123,9 +127,76 @@ class ChatPageState extends ConsumerState<ChatPage> {
   }
 }
 
+enum Author { me, you, system }
+
+class ChatBubbleClipperMe extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final double arrowWidth = 10.0;
+    final double arrowHeight = 10.0;
+    final double radius = 16.0;
+
+    Path path = Path()
+      ..moveTo(radius, size.height - arrowHeight)
+      ..arcToPoint(
+        Offset(0, size.height - arrowHeight - radius),
+        radius: Radius.circular(radius),
+      )
+      ..lineTo(0, radius)
+      ..arcToPoint(
+        Offset(radius, 0),
+        radius: Radius.circular(radius),
+      )
+      ..lineTo(size.width - 2 * arrowWidth - radius, 0)
+      ..arcToPoint(
+        Offset(size.width - 2 * arrowWidth, radius),
+        radius: Radius.circular(radius),
+      )
+      ..lineTo(size.width - 2 * arrowWidth, size.height - 2 * arrowHeight)
+      ..lineTo(size.width, size.height - arrowHeight)
+      ..lineTo(size.width - arrowWidth, size.height - arrowHeight)
+      ..close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+class ChatBubbleClipperYou extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final double arrowWidth = 10.0;
+    final double arrowHeight = 10.0;
+    final double radius = 16.0;
+
+    Path path = Path()
+      // Start at the top right of the arrow
+      ..moveTo(size.width - radius, size.height - arrowHeight)
+      ..arcToPoint(Offset(size.width, size.height - arrowHeight - radius),
+          radius: Radius.circular(radius), clockwise: false)
+      ..lineTo(size.width, radius) // Right edge
+      ..arcToPoint(Offset(size.width - radius, 0),
+          radius: Radius.circular(radius), clockwise: false)
+      ..lineTo(2 * arrowWidth + radius, 0) // Top edge
+      ..arcToPoint(Offset(2 * arrowWidth, radius),
+          radius: Radius.circular(radius), clockwise: false)
+      ..lineTo(2 * arrowWidth, size.height - 2 * arrowHeight)
+      ..lineTo(0, size.height - arrowHeight)
+      ..lineTo(arrowWidth, size.height - arrowHeight)
+      ..close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
 class ChatMessage extends StatelessWidget {
   final String message;
-  final String author;
+  final Author author;
   final DateTime date;
 
   const ChatMessage({
@@ -140,21 +211,103 @@ class ChatMessage extends StatelessWidget {
     final theme = Theme.of(context);
     final DateFormat formatter = DateFormat('M/d/yyyy h:mm a');
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Row(
-          children: [
-            Text(author,
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(width: 8.0),
-            Text(formatter.format(date), style: theme.textTheme.bodySmall),
-          ],
-        ),
-        Text(message, style: theme.textTheme.bodyLarge),
-      ],
-    );
+    switch (author) {
+      case Author.me:
+        return Align(
+          alignment: Alignment.centerRight,
+          child: ClipPath(
+            clipper: ChatBubbleClipperMe(),
+            child: Card(
+              elevation: 1,
+              color: theme.colorScheme.surfaceVariant,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 8.0, 24.0, 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      formatter.format(date),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      message,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      case Author.you:
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: ClipPath(
+            clipper: ChatBubbleClipperYou(),
+            child: Card(
+              elevation: 1,
+              color: theme.colorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 8, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      formatter.format(date),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      message,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      case Author.system:
+        return Center(
+          child: Card(
+            elevation: 1,
+            color: theme.colorScheme.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    formatter.format(date),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
+                  Text(
+                    message,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      default:
+        return const SizedBox();
+    }
   }
 }
 
