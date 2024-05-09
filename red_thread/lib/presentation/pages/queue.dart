@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
-import 'package:red_thread/widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
-
-const queueOpensAt = TimeOfDay(hour: 0, minute: 00);
-const queueClosesAt = TimeOfDay(hour: 23, minute: 59);
 
 class QueuePage extends ConsumerStatefulWidget {
   const QueuePage({super.key});
@@ -17,21 +13,19 @@ class QueuePage extends ConsumerStatefulWidget {
 }
 
 class QueuePageState extends ConsumerState<QueuePage> {
-  Timer? _inQueueTimer; // increments secsInQueue every second
-  Timer? _queueOpensTimer; // updates UI every second
+  Timer? timer; // updates UI every second
 
   @override
   void initState() {
     super.initState();
-    _queueOpensTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    _inQueueTimer?.cancel();
-    _queueOpensTimer?.cancel();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -44,18 +38,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
   }
 
   void findMatch(BuildContext context) {
-    ref.read(isQueueVisibleProvider.notifier).state = true;
-    // TODO: set the secs in queue to zero and match found to true AFTER ACCEPTING THE MATCH
-    // Potentially rename match found to match accepted and change the routing logic to reflect that
-    //ref.read(secsInQueueProvider.notifier).state = 0;
-    //ref.read(matchFoundProvider.notifier).state = true;
-  }
-
-  void acceptMatch(BuildContext context) {
-    // wait two seconds for a little animation to play then navigate to the call page
-    Future.delayed(const Duration(seconds: 2), () {
-      ref.read(inQueueProvider.notifier).state = false;
-    });
+    ref.read(matchFoundProvider.notifier).state = true;
   }
 
   Column bodyColumn(String heading, String subheading, ThemeData theme) {
@@ -73,12 +56,11 @@ class QueuePageState extends ConsumerState<QueuePage> {
         const SizedBox(
           height: 25,
         ),
-        const QueuePop(),
       ],
     );
   }
 
-  SizedBox fab(bool inQueue, bool queueOpen, ThemeData theme) => SizedBox(
+  SizedBox fab(bool inQueue, ThemeData theme) => SizedBox(
       width: 100,
       height: 100,
       child: FittedBox(
@@ -89,19 +71,14 @@ class QueuePageState extends ConsumerState<QueuePage> {
             context.push('/verification');
             return;
           }
-          if (inQueue) {
-            _inQueueTimer?.cancel();
-            ref.watch(secsInQueueProvider.notifier).state = 0; // Reset timer
-          } else {
-            _inQueueTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-              ref.read(secsInQueueProvider.notifier).state++;
-            });
-          }
           ref.read(inQueueProvider.notifier).state = !inQueue;
+          if (inQueue) {
+            ref.read(whenJoinedQueueProvider.notifier).state = null;
+          } else {
+            ref.read(whenJoinedQueueProvider.notifier).state = DateTime.now();
+          }
         },
-        backgroundColor: queueOpen
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.primaryContainer.withOpacity(0.38),
+        backgroundColor: theme.colorScheme.primaryContainer,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -121,17 +98,15 @@ class QueuePageState extends ConsumerState<QueuePage> {
   @override
   Widget build(BuildContext context) {
     final inQueue = ref.watch(inQueueProvider);
-    final secsInQueue = ref.watch(secsInQueueProvider);
+    final secsInQueue = DateTime.now()
+        .difference(ref.read(whenJoinedQueueProvider) ?? DateTime.now())
+        .inSeconds;
     final now = DateTime.now();
-    final queueOpen = now.isAfter(DateTime(now.year, now.month, now.day,
-            queueOpensAt.hour, queueOpensAt.minute)) &&
-        now.isBefore(DateTime(now.year, now.month, now.day, queueClosesAt.hour,
-            queueClosesAt.minute));
     final theme = Theme.of(context);
     final matchFound = ref.watch(matchFoundProvider);
 
     // Artificially make a match happen after 5 seconds
-    if (queueOpen && !matchFound && secsInQueue > 2) {
+    if (!matchFound && secsInQueue > 2) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         findMatch(context);
       });
@@ -140,36 +115,22 @@ class QueuePageState extends ConsumerState<QueuePage> {
     Column body;
     if (inQueue) {
       // TODO: Edge case where the queue closes while the user is in queue
-      assert(queueOpen);
       body = bodyColumn(
           'You have been in the queue for ${formatDuration(Duration(seconds: secsInQueue))}',
           'Sit back and relax while we find you a match.',
           theme);
-    } else if (queueOpen) {
+    } else {
       // The queue is open but the user is not in the queue
       body = bodyColumn('The queue is open!',
           'Tap the button below to join the queue.', theme);
-    } else {
-      // The queue is closed
-      // TODO: Calculate the 6PM from _queueOpensAt
-      final timeUntil = now.isBefore(DateTime(now.year, now.month, now.day,
-              queueOpensAt.hour, queueOpensAt.minute))
-          ? DateTime(now.year, now.month, now.day, queueOpensAt.hour,
-                  queueOpensAt.minute)
-              .difference(now)
-          : DateTime(now.year, now.month, now.day + 1, queueOpensAt.hour,
-                  queueOpensAt.minute)
-              .difference(now);
-      body = bodyColumn('Queue opens in ${formatDuration(timeUntil)}',
-          'The queue opens at 6PM every day.', theme);
     }
-    final floatingActionButton = fab(inQueue, queueOpen, theme);
+    final floatingActionButton = fab(inQueue, theme);
     return Scaffold(
       drawer: myDrawer(context, ref),
       appBar: myAppBar(context, ref),
       body: body,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: queueOpen ? floatingActionButton : null,
+      floatingActionButton: floatingActionButton,
     );
   }
 }
