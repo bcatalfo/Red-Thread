@@ -68,6 +68,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
             onTap: () {
               // TODO: Actually log out
               ref.read(isAuthenticatedProvider.notifier).state = false;
+              ref.read(needsWelcomingProvider.notifier).state = true;
             },
           ),
           ListTile(
@@ -96,6 +97,8 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                               Navigator.of(context).pop();
                               ref.read(isAuthenticatedProvider.notifier).state =
                                   false;
+                              ref.read(needsWelcomingProvider.notifier).state =
+                                  true;
                             },
                             child: Text('Delete',
                                 style: theme.textTheme.bodyLarge?.copyWith(
