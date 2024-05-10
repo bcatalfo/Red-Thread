@@ -17,45 +17,45 @@ class ChatPage extends ConsumerStatefulWidget {
 
 class ChatPageState extends ConsumerState<ChatPage> {
   final _scrollController = ScrollController();
-  var areTimestampsVisible = true;
-  var messages = <ChatMessage>[
+  var areTimestampsVisible = false;
+  final messages = <ChatMessage>[
     ChatMessage(
       message: 'Where do you wanna go?',
       author: Author.you,
       date: DateTime(2024, 5, 9, 12, 2, 0),
-      areTimestampsVisible: true,
+      areTimestampsVisible: false,
     ),
     ChatMessage(
       message: 'Wanna meet up at Central Park?😍',
       author: Author.me,
       date: DateTime(2024, 5, 9, 12, 3, 0),
-      areTimestampsVisible: true,
+      areTimestampsVisible: false,
     ),
     ChatMessage(
       message: 'Let’s get some food first.',
       author: Author.you,
       date: DateTime(2024, 5, 9, 12, 5, 0),
-      areTimestampsVisible: true,
+      areTimestampsVisible: false,
     ),
     ChatMessage(
         message: 'Test alert from the system',
         author: Author.system,
         date: DateTime(2024, 5, 9, 2, 7, 0),
-        areTimestampsVisible: true),
+        areTimestampsVisible: false),
     // write a long message from Author.you
     ChatMessage(
       message:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
       author: Author.you,
       date: DateTime(2024, 5, 9, 2, 11, 0),
-      areTimestampsVisible: true,
+      areTimestampsVisible: false,
     ),
     ChatMessage(
       message:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
       author: Author.me,
       date: DateTime(2024, 5, 9, 2, 13, 0),
-      areTimestampsVisible: true,
+      areTimestampsVisible: false,
     ),
   ];
 
@@ -370,7 +370,7 @@ class ChatMessage extends ConsumerWidget {
                     ),
                   ),
                 )
-              : const SizedBox(),
+              : const SizedBox.shrink(),
         ]);
 
       case Author.you:
@@ -405,38 +405,45 @@ class ChatMessage extends ConsumerWidget {
                         ),
                       ),
                     )
-                  : const SizedBox(),
+                  : const SizedBox.shrink(),
             ]);
       case Author.system:
-        return Center(
-          child: Card(
-            elevation: 1,
-            color: theme.colorScheme.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    formatter.format(date),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onPrimary,
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Center(
+                child: Card(
+                  elevation: 1,
+                  color: theme.colorScheme.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      message,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  Text(
-                    message,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            areTimestampsVisible
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      formatter.format(date),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ],
         );
       default:
         return const SizedBox();
