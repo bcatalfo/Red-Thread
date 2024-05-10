@@ -40,8 +40,23 @@ class ChatPageState extends ConsumerState<ChatPage> {
     ChatMessage(
         message: 'Test alert from the system',
         author: Author.system,
-        date: DateTime.now(),
+        date: DateTime(2024, 5, 9, 2, 7, 0),
         areTimestampsVisible: true),
+    // write a long message from Author.you
+    ChatMessage(
+      message:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
+      author: Author.you,
+      date: DateTime(2024, 5, 9, 2, 11, 0),
+      areTimestampsVisible: true,
+    ),
+    ChatMessage(
+      message:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
+      author: Author.me,
+      date: DateTime(2024, 5, 9, 2, 13, 0),
+      areTimestampsVisible: true,
+    ),
   ];
 
   void _scrollToBottom() {
@@ -146,7 +161,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
               AnimatedVisibility(
                 visible: _matchBarVisible,
                 duration: 100.ms,
-                child: MatchBar()
+                child: const MatchBar()
                     .animate(target: _matchBarVisible ? 1 : 0)
                     .fade(duration: 100.ms),
               ),
@@ -233,7 +248,7 @@ class _AnimatedVisibilityState extends State<AnimatedVisibility> {
     return AnimatedOpacity(
       duration: widget.duration,
       opacity: widget.visible ? 1.0 : 0.0,
-      child: _isVisible ? widget.child : SizedBox.shrink(),
+      child: _isVisible ? widget.child : const SizedBox.shrink(),
     );
   }
 }
@@ -327,17 +342,19 @@ class ChatMessage extends ConsumerWidget {
     switch (author) {
       case Author.me:
         return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          ClipPath(
-            clipper: ChatBubbleClipperMe(),
-            child: Card(
-              elevation: 1,
-              color: theme.colorScheme.surfaceVariant,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 4.0, 24.0, 8.0),
-                child: Text(
-                  message,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+          Flexible(
+            child: ClipPath(
+              clipper: ChatBubbleClipperMe(),
+              child: Card(
+                elevation: 1,
+                color: theme.colorScheme.surfaceVariant,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 4.0, 24.0, 8.0),
+                  child: Text(
+                    message,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ),
@@ -359,19 +376,20 @@ class ChatMessage extends ConsumerWidget {
       case Author.you:
         return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipPath(
-                clipper: ChatBubbleClipperYou(),
-                child: Card(
-                  elevation: 1,
-                  color: theme.colorScheme.surface,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24.0, 4.0, 8.0, 8.0),
-                    child: Text(
-                      message,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+              Flexible(
+                child: ClipPath(
+                  clipper: ChatBubbleClipperYou(),
+                  child: Card(
+                    elevation: 1,
+                    color: theme.colorScheme.surface,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24.0, 4.0, 8.0, 8.0),
+                      child: Text(
+                        message,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -595,10 +613,10 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                             children: [
                               TextField(
                                 controller: _locationController,
-                                decoration:
-                                    InputDecoration(labelText: "Location"),
+                                decoration: const InputDecoration(
+                                    labelText: "Location"),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
                                 _selectedTime == null
                                     ? 'No time selected.'
@@ -619,7 +637,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                     }
                                   });
                                 },
-                                child: Text('Select Time'),
+                                child: const Text('Select Time'),
                               ),
                               ElevatedButton(
                                 onPressed: () {
@@ -643,12 +661,12 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text('Error'),
-                                          content: Text(
+                                          title: const Text('Error'),
+                                          content: const Text(
                                               'Please select a time and enter a location.'),
                                           actions: <Widget>[
                                             TextButton(
-                                              child: Text('OK'),
+                                              child: const Text('OK'),
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
@@ -659,7 +677,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                     );
                                   }
                                 },
-                                child: Text('Schedule Date'),
+                                child: const Text('Schedule Date'),
                               ),
                             ],
                           ),
@@ -849,7 +867,7 @@ class DateBar extends ConsumerWidget {
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -857,17 +875,17 @@ class DateBar extends ConsumerWidget {
                 onPressed: () => ref
                     .read(dateScheduleProvider.notifier)
                     .update((state) => DateSchedule.notScheduled),
-                child: Text('Decline', style: TextStyle(color: scheme.onError)),
                 style: TextButton.styleFrom(backgroundColor: scheme.error),
+                child: Text('Decline', style: TextStyle(color: scheme.onError)),
               ),
-              SizedBox(width: 20), // Space between the buttons
+              const SizedBox(width: 20), // Space between the buttons
               TextButton(
                 onPressed: () => ref
                     .read(dateScheduleProvider.notifier)
                     .update((state) => DateSchedule.confirmed),
+                style: TextButton.styleFrom(backgroundColor: scheme.primary),
                 child:
                     Text('Accept', style: TextStyle(color: scheme.onPrimary)),
-                style: TextButton.styleFrom(backgroundColor: scheme.primary),
               ),
             ],
           ),
