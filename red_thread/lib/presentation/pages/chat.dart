@@ -512,8 +512,8 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
             child: _isTyping
                 ? const SizedBox()
                 : SizedBox(
-                    width: 64,
-                    height: 64,
+                    width: 48,
+                    height: 48,
                     child: ElevatedButton(
                       onPressed: () {
                         // Returns you to the queue
@@ -569,7 +569,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(0),
                       ),
-                      child: const Icon(Icons.block, size: 48),
+                      child: const Icon(Icons.block, size: 32),
                     ),
                   ),
           ),
@@ -588,8 +588,8 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
           ),
           const SizedBox(width: 8),
           SizedBox(
-            width: 64,
-            height: 64,
+            width: 48,
+            height: 48,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(0),
@@ -697,9 +697,9 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 child: _isTyping
-                    ? const Icon(Icons.send, size: 48, key: ValueKey('send'))
+                    ? const Icon(Icons.send, size: 32, key: ValueKey('send'))
                     : const Icon(Icons.calendar_month,
-                        size: 48, key: ValueKey('schedule date')),
+                        size: 32, key: ValueKey('schedule date')),
               ),
             ),
           ),
