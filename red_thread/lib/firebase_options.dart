@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '994545713514',
     projectId: 'red-thread-422420',
     storageBucket: 'red-thread-422420.appspot.com',
+    iosClientId: '994545713514-h2aflgvhr29j1pudeik8pu7a9mi6tusd.apps.googleusercontent.com',
     iosBundleId: 'com.catalfotech.redthread',
   );
+
 }

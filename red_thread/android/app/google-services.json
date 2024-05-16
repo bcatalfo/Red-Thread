@@ -12,7 +12,12 @@
           "package_name": "com.catalfotech.redthread"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "994545713514-kih14c1mp8dgeqahm84hvv66qhqs9dva.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBVdHciVZ6RZ-BjE0AZ0jPgCUlYLyLSwHM"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "994545713514-kih14c1mp8dgeqahm84hvv66qhqs9dva.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "994545713514-h2aflgvhr29j1pudeik8pu7a9mi6tusd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.catalfotech.redthread"
+              }
+            }
+          ]
         }
       }
     }
