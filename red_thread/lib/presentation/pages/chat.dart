@@ -17,45 +17,40 @@ class ChatPage extends ConsumerStatefulWidget {
 
 class ChatPageState extends ConsumerState<ChatPage> {
   final _scrollController = ScrollController();
-  var areTimestampsVisible = false;
+  var _timestampSize = 0.0;
   final messages = <ChatMessage>[
     ChatMessage(
       message: 'Where do you wanna go?',
       author: Author.you,
       date: DateTime(2024, 5, 9, 12, 2, 0),
-      areTimestampsVisible: false,
     ),
     ChatMessage(
       message: 'Wanna meet up at Central Park?😍',
       author: Author.me,
       date: DateTime(2024, 5, 9, 12, 3, 0),
-      areTimestampsVisible: false,
     ),
     ChatMessage(
       message: 'Let’s get some food first.',
       author: Author.you,
       date: DateTime(2024, 5, 9, 12, 5, 0),
-      areTimestampsVisible: false,
     ),
     ChatMessage(
-        message: 'Test alert from the system',
-        author: Author.system,
-        date: DateTime(2024, 5, 9, 2, 7, 0),
-        areTimestampsVisible: false),
+      message: 'Test alert from the system',
+      author: Author.system,
+      date: DateTime(2024, 5, 9, 2, 7, 0),
+    ),
     // write a long message from Author.you
     ChatMessage(
       message:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
       author: Author.you,
       date: DateTime(2024, 5, 9, 2, 11, 0),
-      areTimestampsVisible: false,
     ),
     ChatMessage(
       message:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
       author: Author.me,
       date: DateTime(2024, 5, 9, 2, 13, 0),
-      areTimestampsVisible: false,
     ),
   ];
 
@@ -75,7 +70,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
       message: text,
       author: Author.me, // TODO: get from backend
       date: DateTime.now(),
-      areTimestampsVisible: areTimestampsVisible,
     );
     setState(() {
       messages.add(newMessage);
@@ -83,34 +77,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
     // wait for the new message to appear before scrolling to the bottom
     // TODO: instead of using a set timeout, use a listener for when the layout is done
     Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
-  }
-
-  void hideTimestamps() {
-    setState(() {
-      areTimestampsVisible = false;
-      // replace each message in messages with a new message where areTimestampsVisible is false
-      messages.asMap().forEach((index, message) {
-        messages[index] = ChatMessage(
-            message: message.message,
-            author: message.author,
-            date: message.date,
-            areTimestampsVisible: false);
-      });
-    });
-  }
-
-  void showTimestamps() {
-    setState(() {
-      areTimestampsVisible = true;
-      // replace each message in messages with a new message where areTimestampsVisible is true
-      messages.asMap().forEach((index, message) {
-        messages[index] = ChatMessage(
-            message: message.message,
-            author: message.author,
-            date: message.date,
-            areTimestampsVisible: true);
-      });
-    });
   }
 
   late StreamSubscription<bool> keyboardSubscription;
@@ -160,31 +126,88 @@ class ChatPageState extends ConsumerState<ChatPage> {
             children: [
               AnimatedVisibility(
                 visible: _matchBarVisible,
-                duration: 100.ms,
+                duration: 300.ms,
                 child: const MatchBar()
                     .animate(target: _matchBarVisible ? 1 : 0)
-                    .fade(duration: 100.ms),
+                    .fade(duration: 300.ms),
               ),
               Expanded(
                 child: GestureDetector(
                   onHorizontalDragUpdate: (details) {
-                    if (details.primaryDelta! > 8) {
-                      debugPrint('Swiped right');
-                      hideTimestamps();
-                    } else if (details.primaryDelta! < -8) {
-                      debugPrint('Swiped left');
-                      showTimestamps();
+                    if (_timestampSize + details.primaryDelta! <= 0 &&
+                        (_timestampSize >= -100 || details.primaryDelta! > 0)) {
+                      setState(() {
+                        _timestampSize += details.primaryDelta!;
+                      });
                     }
+                  },
+                  onHorizontalDragEnd: (details) {
+                    Future.delayed(Duration.zero, () async {
+                      for (double i = _timestampSize; i <= 0; i += 1) {
+                        await Future.delayed(Duration(milliseconds: 1));
+                        setState(() {
+                          _timestampSize = i;
+                        });
+                      }
+                      setState(() {
+                        _timestampSize = 0;
+                      });
+                    });
                   },
                   child: ListView.builder(
                     controller: _scrollController,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      //var visible = ref.watch(areTimestampsVisibleProvider);
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: messages[index],
-                      );
+                      switch (messages[index].author) {
+                        case Author.me:
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Flexible(child: messages[index]),
+                              SizedBox(
+                                width: _timestampSize.abs(),
+                                height: 24,
+                                child: Opacity(
+                                  opacity: (_timestampSize / -100).clamp(0, 1),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      DateFormat('h:mm a')
+                                          .format(messages[index].date),
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        case Author.you || Author.system:
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(child: messages[index]),
+                              SizedBox(
+                                width: _timestampSize.abs(),
+                                height: 24,
+                                child: Opacity(
+                                  opacity: (_timestampSize / -100).clamp(0, 1),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      DateFormat('h:mm a')
+                                          .format(messages[index].date),
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                      }
                     },
                   ),
                 ),
@@ -258,25 +281,25 @@ enum Author { me, you, system }
 class ChatBubbleClipperMe extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final double arrowWidth = 8.0;
-    final double arrowHeight = 8.0;
-    final double radius = 16.0;
+    const double arrowWidth = 8.0;
+    const double arrowHeight = 8.0;
+    const double radius = 16.0;
 
     Path path = Path()
       ..moveTo(radius, size.height - arrowHeight)
       ..arcToPoint(
         Offset(0, size.height - arrowHeight - radius),
-        radius: Radius.circular(radius),
+        radius: const Radius.circular(radius),
       )
       ..lineTo(0, radius)
       ..arcToPoint(
-        Offset(radius, 0),
-        radius: Radius.circular(radius),
+        const Offset(radius, 0),
+        radius: const Radius.circular(radius),
       )
       ..lineTo(size.width - 2 * arrowWidth - radius, 0)
       ..arcToPoint(
         Offset(size.width - 2 * arrowWidth, radius),
-        radius: Radius.circular(radius),
+        radius: const Radius.circular(radius),
       )
       ..lineTo(size.width - 2 * arrowWidth, size.height - 2 * arrowHeight)
       ..lineTo(size.width, size.height - arrowHeight)
@@ -293,21 +316,21 @@ class ChatBubbleClipperMe extends CustomClipper<Path> {
 class ChatBubbleClipperYou extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final double arrowWidth = 8.0;
-    final double arrowHeight = 8.0;
-    final double radius = 16.0;
+    const double arrowWidth = 8.0;
+    const double arrowHeight = 8.0;
+    const double radius = 16.0;
 
     Path path = Path()
       // Start at the top right of the arrow
       ..moveTo(size.width - radius, size.height - arrowHeight)
       ..arcToPoint(Offset(size.width, size.height - arrowHeight - radius),
-          radius: Radius.circular(radius), clockwise: false)
+          radius: const Radius.circular(radius), clockwise: false)
       ..lineTo(size.width, radius) // Right edge
       ..arcToPoint(Offset(size.width - radius, 0),
-          radius: Radius.circular(radius), clockwise: false)
+          radius: const Radius.circular(radius), clockwise: false)
       ..lineTo(2 * arrowWidth + radius, 0) // Top edge
-      ..arcToPoint(Offset(2 * arrowWidth, radius),
-          radius: Radius.circular(radius), clockwise: false)
+      ..arcToPoint(const Offset(2 * arrowWidth, radius),
+          radius: const Radius.circular(radius), clockwise: false)
       ..lineTo(2 * arrowWidth, size.height - 2 * arrowHeight)
       ..lineTo(0, size.height - arrowHeight)
       ..lineTo(arrowWidth, size.height - arrowHeight)
@@ -321,129 +344,77 @@ class ChatBubbleClipperYou extends CustomClipper<Path> {
 }
 
 class ChatMessage extends ConsumerWidget {
+  // TODO: This shouldn't be a row. It also shouldn't have the timestamps.
   final String message;
   final Author author;
   final DateTime date;
-  final bool areTimestampsVisible;
 
   const ChatMessage(
       {Key? key,
       required this.message,
       required this.author,
-      required this.date,
-      required this.areTimestampsVisible})
+      required this.date})
       : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final DateFormat formatter = DateFormat('h:mm a');
 
     switch (author) {
       case Author.me:
-        return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          Flexible(
-            child: ClipPath(
-              clipper: ChatBubbleClipperMe(),
-              child: Card(
-                elevation: 1,
-                color: theme.colorScheme.surfaceVariant,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 4.0, 24.0, 8.0),
-                  child: Text(
-                    message,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+        return ClipPath(
+          clipper: ChatBubbleClipperMe(),
+          child: Card(
+            elevation: 1,
+            color: theme.colorScheme.surfaceVariant,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 24.0, 8.0),
+              child: Text(
+                message,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
           ),
-          areTimestampsVisible
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Text(
-                    formatter.format(date),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ]);
+        );
 
       case Author.you:
-        return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: ClipPath(
-                  clipper: ChatBubbleClipperYou(),
-                  child: Card(
-                    elevation: 1,
-                    color: theme.colorScheme.surface,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24.0, 4.0, 8.0, 8.0),
-                      child: Text(
-                        message,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              areTimestampsVisible
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                        formatter.format(date),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ]);
-      case Author.system:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Center(
-                child: Card(
-                  elevation: 1,
-                  color: theme.colorScheme.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      message,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onPrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+        return ClipPath(
+          clipper: ChatBubbleClipperYou(),
+          child: Card(
+            elevation: 1,
+            color: theme.colorScheme.surface,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24.0, 4.0, 8.0, 8.0),
+              child: Text(
+                message,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
-            areTimestampsVisible
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      formatter.format(date),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ],
+          ),
+        );
+      case Author.system:
+        return Center(
+          child: Card(
+            elevation: 1,
+            color: theme.colorScheme.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                message,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
         );
       default:
         return const SizedBox();
@@ -502,7 +473,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
     final theme = Theme.of(context);
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
-    final String match = ref.watch(matchProvider.notifier).state!;
+    final String? match = ref.watch(matchProvider);
     return Container(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -717,7 +688,7 @@ class MatchBar extends ConsumerWidget {
     final theme = Theme.of(context);
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
-    final String match = ref.watch(matchProvider.notifier).state!;
+    final String? match = ref.watch(matchProvider);
 
     return Container(
       color: scheme.surfaceContainerHighest,
