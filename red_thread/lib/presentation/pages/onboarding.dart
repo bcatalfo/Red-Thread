@@ -97,7 +97,6 @@ class OnBoardingPageState extends ConsumerState<OnBoardingPage> {
           title: "No Profile Needed",
           body:
               "All you need to do is show up. No swiping, no profiles, just dates.",
-          image: _buildImage('hot chinese.jpeg'),
           decoration: pageDecoration,
         ),
         PageViewModel(
