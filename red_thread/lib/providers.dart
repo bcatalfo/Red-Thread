@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,7 +11,8 @@ enum DateSchedule { notScheduled, sent, received, confirmed }
 final matchProvider = StateProvider<String?>((ref) => "Michelle");
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 final needsWelcomingProvider = StateProvider<bool>((ref) => false);
-final isAuthenticatedProvider = StateProvider<bool>((ref) => true);
+final isAuthenticatedProvider =
+    StateProvider<bool>((ref) => FirebaseAuth.instance.currentUser != null);
 final isAccountSetupCompleteProvider = StateProvider<bool>((ref) => true);
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
 final inQueueProvider = StateProvider<bool>((ref) => false);

@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:red_thread/providers.dart';
@@ -88,9 +90,24 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 ),
                 const SizedBox(height: 40),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      ref.read(isAuthenticatedProvider.notifier).state = true;
+                      try {
+                        final credential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                                email: _usernameController.text,
+                                password: _passwordController.text);
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'user-not-found') {
+                          print('No user found for that email.');
+                        } else if (e.code == 'wrong-password') {
+                          print('Wrong password provided for that user.');
+                        }
+                      } catch (e) {
+                        print(e);
+                      }
+                      ref.read(isAuthenticatedProvider.notifier).state =
+                          FirebaseAuth.instance.currentUser != null;
                       // Add your authentication logic here
                     }
                   },
