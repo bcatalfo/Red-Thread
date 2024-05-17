@@ -94,8 +94,8 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                         alignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
+                            onPressed: () async {
+                              await FirebaseAuth.instance.currentUser?.delete();
                               ref.read(isAuthenticatedProvider.notifier).state =
                                   false;
                               ref.read(needsWelcomingProvider.notifier).state =
