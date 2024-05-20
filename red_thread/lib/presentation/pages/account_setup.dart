@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:red_thread/providers.dart';
 
 class AccountSetupPage extends ConsumerStatefulWidget {
@@ -161,6 +162,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildTermsPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -170,25 +173,40 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Welcome to Red Thread!",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                Text("Red Thread",
+                    style: textTheme.headlineMedium?.copyWith(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold,
+                    )),
+                Text("Find love on a blind date.", style: textTheme.bodyLarge),
                 const SizedBox(height: 20),
-                const Text(
-                    "Welcome to Red Thread! [Insert cool slogan here - This is a blind dating app focused on really going on dates]."),
-                const SizedBox(height: 20),
-                const Text("Community Guidelines:",
-                    style: TextStyle(fontSize: 18)),
-                const Text("- Safety is our number one priority.",
-                    style: TextStyle(fontSize: 16)),
-                const Text("- We emphasize safety and privacy.",
-                    style: TextStyle(fontSize: 16)),
-                const Text(
-                    "- Our AI will find you your perfect match. It's fate!",
-                    style: TextStyle(fontSize: 16)),
+                Text(
+                  "Community Guidelines:",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "- Your safety is our utmost priority.",
+                  style: textTheme.bodyLarge,
+                ),
+                Text(
+                  "- We are committed to protecting your privacy at all times.",
+                  style: textTheme.bodyLarge,
+                ),
+                Text(
+                  "- Respect and kindness are essential in our community.",
+                  style: textTheme.bodyLarge,
+                ),
+                Text(
+                  "- Please report any violations of our guidelines.",
+                  style: textTheme.bodyLarge,
+                ),
                 const SizedBox(height: 20),
                 CheckboxListTile(
-                  title: const Text("I agree to the terms and conditions",
-                      style: TextStyle(fontSize: 16)),
+                  title: Text(
+                    "I agree to the terms and conditions",
+                    style: textTheme.bodyLarge,
+                  ),
                   value: _agreedToTerms,
                   onChanged: (bool? value) {
                     setState(() {
@@ -200,7 +218,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
@@ -212,6 +230,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildDisplayNamePage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -221,12 +241,15 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Enter your display name",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                Text("Enter your name", style: textTheme.headlineMedium),
+                Text("This is how others will see you on Red Thread.",
+                    style: textTheme.bodyLarge),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _displayNameController,
-                  decoration: const InputDecoration(labelText: "Display Name"),
+                  decoration:
+                      const InputDecoration(labelText: "Enter your name here"),
+                  style: textTheme.headlineSmall,
                   textCapitalization: TextCapitalization.words,
                   keyboardType: TextInputType.name,
                   inputFormatters: [
@@ -256,7 +279,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
@@ -268,6 +291,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildBirthdayPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -277,15 +302,18 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Enter your birthday",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                Text("Enter your birthday", style: textTheme.headlineMedium),
+                Text(
+                    "You must be 18 years or older to use Red Thread. Your age will be shared with your matches.",
+                    style: textTheme.bodyLarge),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _birthdayController,
                   readOnly: true,
+                  style: textTheme.headlineSmall,
                   onTap: () async {
                     DateTime initialDate =
-                        DateTime.now().subtract(const Duration(days: 365 * 20));
+                        DateTime.now().subtract(const Duration(days: 365 * 25));
                     DateTime? pickedDate = await showDatePicker(
                       context: context,
                       initialDate: initialDate,
@@ -294,8 +322,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                     );
                     if (pickedDate != null) {
                       setState(() {
-                        _birthdayController.text =
-                            "${pickedDate.month}/${pickedDate.day}/${pickedDate.year}";
+                        DateFormat formatter = DateFormat.yMMMMd('en_US');
+                        _birthdayController.text = formatter.format(pickedDate);
                       });
                     }
                   },
@@ -313,7 +341,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
@@ -325,6 +353,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildGenderPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -334,11 +364,10 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Enter your gender",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                Text("Enter your gender", style: textTheme.headlineMedium),
                 const SizedBox(height: 20),
                 RadioListTile<Gender>(
-                  title: const Text('Male', style: TextStyle(fontSize: 16)),
+                  title: Text('Male', style: textTheme.headlineSmall),
                   value: Gender.male,
                   groupValue: _selectedGender,
                   onChanged: (Gender? value) {
@@ -348,7 +377,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   },
                 ),
                 RadioListTile<Gender>(
-                  title: const Text('Female', style: TextStyle(fontSize: 16)),
+                  title: Text('Female', style: textTheme.headlineSmall),
                   value: Gender.female,
                   groupValue: _selectedGender,
                   onChanged: (Gender? value) {
@@ -358,7 +387,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   },
                 ),
                 RadioListTile<Gender>(
-                  title: const Text('Other', style: TextStyle(fontSize: 16)),
+                  title: Text('Other', style: textTheme.headlineSmall),
                   value: Gender.other,
                   groupValue: _selectedGender,
                   onChanged: (Gender? value) {
@@ -370,7 +399,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
@@ -382,6 +411,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildLookingForPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -391,11 +422,11 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Enter the gender of the person you're looking for",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                Text("Enter the gender you want to match with",
+                    style: textTheme.headlineMedium),
                 const SizedBox(height: 20),
                 RadioListTile<String>(
-                  title: const Text('Male', style: TextStyle(fontSize: 16)),
+                  title: Text('Male', style: textTheme.headlineSmall),
                   value: "Male",
                   groupValue: _lookingForGender,
                   onChanged: (String? value) {
@@ -405,7 +436,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   },
                 ),
                 RadioListTile<String>(
-                  title: const Text('Female', style: TextStyle(fontSize: 16)),
+                  title: Text('Female', style: textTheme.headlineSmall),
                   value: "Female",
                   groupValue: _lookingForGender,
                   onChanged: (String? value) {
@@ -415,7 +446,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   },
                 ),
                 RadioListTile<String>(
-                  title: const Text('Both', style: TextStyle(fontSize: 16)),
+                  title: Text('Both', style: textTheme.headlineSmall),
                   value: "Both",
                   groupValue: _lookingForGender,
                   onChanged: (String? value) {
@@ -427,7 +458,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
@@ -439,6 +470,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildDistancePage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -449,10 +482,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Set max distance for match",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                    style: textTheme.headlineMedium),
+                Text("This is how far your matches can be from you.",
+                    style: textTheme.bodyLarge),
                 const SizedBox(height: 20),
                 Text("Current distance: ${_maxDistance.round()} miles",
-                    style: const TextStyle(fontSize: 16)),
+                    style: textTheme.headlineSmall),
+                const SizedBox(height: 20),
                 Slider(
                   value: _maxDistance,
                   min: 1,
@@ -468,7 +504,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
@@ -480,6 +516,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildAgeRangePage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -490,11 +528,14 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Set age range for match",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                    style: textTheme.headlineMedium),
+                Text("You will only match with people in this age range",
+                    style: textTheme.bodyLarge),
                 const SizedBox(height: 20),
                 Text(
                     "Current age range: ${_ageRange.start.round()} - ${_ageRange.end.round()}",
-                    style: const TextStyle(fontSize: 16)),
+                    style: textTheme.headlineSmall),
+                const SizedBox(height: 20),
                 RangeSlider(
                   values: _ageRange,
                   min: 18,
@@ -513,7 +554,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
@@ -525,6 +566,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildLocationPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -535,23 +578,25 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text("Share your location information",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                    style: textTheme.headlineMedium),
                 const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Logic to request location permissions
-                    },
-                    child: const Text("Share Location"),
-                  ),
-                ),
+                Text('This will help us find matches near you.',
+                    style: textTheme.bodyLarge),
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
+            ),
+            Align(
+              alignment: FractionalOffset(0.5, 0.333),
+              child: Icon(
+                Icons.location_on,
+                size: 128,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
           ],
         ),
@@ -560,6 +605,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildNotificationsPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -570,23 +617,25 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text("Turn push notifications on",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                    style: textTheme.headlineMedium),
                 const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Logic to request push notifications permissions
-                    },
-                    child: const Text("Enable Notifications"),
-                  ),
-                ),
+                Text("Get notified when you have a new match.",
+                    style: textTheme.bodyLarge),
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 64,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
+            ),
+            Align(
+              alignment: FractionalOffset(0.5, 0.333),
+              child: Icon(
+                Icons.notifications,
+                size: 128,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
           ],
         ),
@@ -595,6 +644,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildContactsPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -605,23 +655,25 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text("Invite your contacts to Red Thread",
-                    style: Theme.of(context).textTheme.headlineMedium),
+                    style: textTheme.headlineMedium),
                 const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Logic to request contacts permissions
-                    },
-                    child: const Text("Invite Contacts"),
-                  ),
-                ),
+                Text("Invite your friends to join Red Thread.",
+                    style: textTheme.bodyLarge),
               ],
             ),
             Positioned(
-              bottom: 128,
+              bottom: 48,
               left: 0,
               right: 0,
               child: _buildNavigationButtons(context),
+            ),
+            Align(
+              alignment: FractionalOffset(0.5, 0.333),
+              child: Icon(
+                Icons.contact_mail,
+                size: 128,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
           ],
         ),
