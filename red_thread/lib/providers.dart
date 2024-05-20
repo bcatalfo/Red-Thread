@@ -13,7 +13,7 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 final needsWelcomingProvider = StateProvider<bool>((ref) => false);
 final isAuthenticatedProvider =
     StateProvider<bool>((ref) => FirebaseAuth.instance.currentUser != null);
-final isAccountSetupCompleteProvider = StateProvider<bool>((ref) => true);
+final isAccountSetupCompleteProvider = StateProvider<bool>((ref) => false);
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);
