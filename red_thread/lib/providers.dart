@@ -8,7 +8,7 @@ enum Gender { male, female, other }
 enum DateSchedule { notScheduled, sent, received, confirmed }
 
 // TODO: Get this from backend
-final matchProvider = StateProvider<String?>((ref) => "Michelle");
+final matchProvider = StateProvider<String?>((ref) => null);
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 final needsWelcomingProvider = StateProvider<bool>((ref) => false);
 final isAuthenticatedProvider =
@@ -19,6 +19,6 @@ final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);
 final dateTimeProvider = StateProvider<DateTime?>(
     (ref) => DateTime.now().add(const Duration(days: 1)));
-final dateLocationProvider = StateProvider<String?>((ref) => "your moms house");
+final dateLocationProvider = StateProvider<String?>((ref) => "Starbucks");
 final dateScheduleProvider =
     StateProvider<DateSchedule>((ref) => DateSchedule.received);
