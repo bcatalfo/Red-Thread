@@ -20,10 +20,6 @@ void main() async {
 class BagoolApp extends ConsumerWidget {
   const BagoolApp({super.key});
 
-  static Future<void> join(BuildContext context, WidgetRef ref) async {
-    debugPrint('ur mom');
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
