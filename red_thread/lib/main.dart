@@ -15,6 +15,7 @@ void main() async {
   );
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+  // TODO: Don't ask for permissions here! Do it in the account setup page!!!
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: false,
