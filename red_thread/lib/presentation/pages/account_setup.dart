@@ -51,6 +51,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
 
   void _nextStep() {
     if (_formKeys[_currentStep].currentState!.validate()) {
+      FocusScope.of(context).unfocus(); // Dismiss the keyboard
       if (_currentStep < _formKeys.length - 1) {
         setState(() {
           _currentStep++;
@@ -68,6 +69,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   void _previousStep() {
+    FocusScope.of(context).unfocus(); // Dismiss the keyboard
     if (_currentStep > 0) {
       setState(() {
         _currentStep--;
