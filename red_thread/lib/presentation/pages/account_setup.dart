@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:red_thread/providers.dart';
 
 class AccountSetupPage extends ConsumerStatefulWidget {
@@ -317,38 +316,89 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               children: [
                 Text("Enter your birthday", style: textTheme.headlineMedium),
                 Text(
-                    "You must be 18 years or older to use Red Thread. Your age will be shared with your matches.",
-                    style: textTheme.bodyLarge),
+                  "You must be 18 years or older to use Red Thread. Your age will be shared with your matches.",
+                  style: textTheme.bodyLarge,
+                ),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _birthdayController,
-                  readOnly: true,
-                  style: textTheme.headlineSmall,
-                  onTap: () async {
-                    DateTime initialDate =
-                        DateTime.now().subtract(const Duration(days: 365 * 25));
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: initialDate,
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        DateFormat formatter = DateFormat.yMMMMd('en_US');
-                        _birthdayController.text = formatter.format(pickedDate);
-                      });
-                    }
-                  },
                   decoration: const InputDecoration(
-                    hintText: 'MM/DD/YYYY',
+                    hintText: 'MM / DD / YYYY',
                     labelText: "Birthday",
                   ),
+                  style: textTheme.headlineSmall,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(8),
+                    TextInputFormatter.withFunction((oldValue, newValue) {
+                      final text = newValue.text;
+                      StringBuffer newText = StringBuffer();
+                      if (text.length >= 1) {
+                        newText.write(text.substring(0, 1));
+                      }
+                      if (text.length >= 2) {
+                        newText.write(text.substring(1, 2));
+                      }
+                      if (text.length >= 3) {
+                        newText.write('/');
+                        newText.write(text.substring(2, 3));
+                      }
+                      if (text.length >= 4) {
+                        newText.write(text.substring(3, 4));
+                      }
+                      if (text.length >= 5) {
+                        newText.write('/');
+                        newText.write(text.substring(4, 5));
+                      }
+                      if (text.length >= 6) {
+                        newText.write(text.substring(5, 6));
+                      }
+                      if (text.length >= 7) {
+                        newText.write(text.substring(6, 7));
+                      }
+                      if (text.length >= 8) {
+                        newText.write(text.substring(7, 8));
+                      }
+                      return newValue.copyWith(
+                        text: newText.toString(),
+                        selection:
+                            TextSelection.collapsed(offset: newText.length),
+                      );
+                    }),
+                  ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your birthday';
                     }
+                    final parts = value.split('/');
+                    if (parts.length != 3)
+                      return 'Enter date in MM / DD / YYYY format';
+                    final month = int.tryParse(parts[0]);
+                    final day = int.tryParse(parts[1]);
+                    final year = int.tryParse(parts[2]);
+                    if (month == null || day == null || year == null)
+                      return 'Invalid date';
+                    if (month < 1 || month > 12)
+                      return 'Month must be between 01 and 12';
+                    if (day < 1 || day > 31)
+                      return 'Day must be between 01 and 31';
+                    if (year.toString().length != 4)
+                      return 'Year must be four digits';
+                    final birthday = DateTime(year, month, day);
+                    final now = DateTime.now();
+                    final age = now.year -
+                        birthday.year -
+                        (now.month < birthday.month ||
+                                (now.month == birthday.month &&
+                                    now.day < birthday.day)
+                            ? 1
+                            : 0);
+                    if (age < 18) return 'You must be 18 years or older';
                     return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {}); // Trigger rebuild to update button state
                   },
                 ),
               ],
