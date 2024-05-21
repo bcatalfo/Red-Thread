@@ -82,23 +82,6 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     }
   }
 
-  bool _isCurrentStepValid() {
-    switch (_currentStep) {
-      case 0:
-        return _agreedToTerms;
-      case 1:
-        return _displayNameController.text.isNotEmpty;
-      case 2:
-        return _birthdayController.text.isNotEmpty;
-      case 3:
-        return _selectedGender != null;
-      case 4:
-        return _lookingForGender != null;
-      default:
-        return true;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,6 +151,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[0],
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
             Column(
@@ -202,18 +186,45 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   style: textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 20),
-                CheckboxListTile(
-                  title: Text(
-                    "I agree to the terms and conditions",
-                    style: textTheme.bodyLarge,
-                  ),
-                  value: _agreedToTerms,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _agreedToTerms = value ?? false;
-                    });
+                FormField<bool>(
+                  initialValue: _agreedToTerms,
+                  validator: (value) {
+                    if (value != true) {
+                      return 'You must agree to the terms and conditions';
+                    }
+                    return null;
                   },
-                  controlAffinity: ListTileControlAffinity.leading,
+                  builder: (formFieldState) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CheckboxListTile(
+                          title: Text(
+                            "I agree to the terms and conditions",
+                            style: textTheme.bodyLarge,
+                          ),
+                          value: formFieldState.value,
+                          onChanged: (bool? value) {
+                            formFieldState.didChange(value);
+                            setState(() {
+                              _agreedToTerms = value ?? false;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
+                        if (formFieldState.hasError)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              formFieldState.errorText ?? '',
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -236,6 +247,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[1],
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
             Column(
@@ -297,6 +309,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[2],
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
             Column(
@@ -359,6 +372,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[3],
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
             Column(
@@ -417,6 +431,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[4],
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
             Column(
@@ -476,6 +491,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[5],
+        autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
             Column(
@@ -522,6 +538,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[6],
+        autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
             Column(
@@ -572,6 +589,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[7],
+        autovalidateMode: AutovalidateMode.always,
         child: Stack(
           children: [
             Column(
@@ -611,6 +629,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[8],
+        autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
             Column(
@@ -649,6 +668,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKeys[9],
+        autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
             Column(
@@ -682,10 +702,16 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Widget _buildNavigationButtons(BuildContext context) {
+    bool isValid = _formKeys[_currentStep].currentState?.validate() ?? false;
+
+    if (_currentStep >= 5) {
+      isValid = true;
+    }
+
     return Column(
       children: <Widget>[
         ElevatedButton(
-          onPressed: _isCurrentStepValid() ? _nextStep : null,
+          onPressed: isValid ? _nextStep : null,
           style: ElevatedButton.styleFrom(
             minimumSize:
                 const Size.fromHeight(50), // Set minimum height for button
