@@ -18,7 +18,10 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
       builder: (context, constraints) => Column(
         children: [
           DrawerHeader(
-              child: Image.asset('assets/images/iTunesArtwork-1024.png')),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(32),
+                child: Image.asset('assets/images/red thread.png')),
+          ),
           ListTile(
             leading:
                 Icon(Icons.home, size: theme.textTheme.displayMedium?.fontSize),
