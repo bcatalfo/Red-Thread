@@ -136,22 +136,17 @@ AppBar myAppBar(BuildContext context, WidgetRef ref) {
       children: [
         const Spacer(),
         Container(
-          width: screenWidth * 0.5,
-          height: screenHeight * 0.05,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: themeMode == ThemeMode.light
-                ? globalLightScheme.surfaceVariant
-                : globalDarkScheme.surfaceVariant,
-            borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Text('Red Thread',
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: themeMode == ThemeMode.light
+                        ? globalLightScheme.primary
+                        : globalDarkScheme.primary)),
           ),
-          child: Text('Red Thread',
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: themeMode == ThemeMode.light
-                      ? globalLightScheme.primary
-                      : globalDarkScheme.primary)),
         ),
       ],
     ),
