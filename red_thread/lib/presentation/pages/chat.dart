@@ -454,6 +454,8 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
   void unmatch(BuildContext context, WidgetRef ref) {
     // Add your unmatch button logic here
     ref.read(matchProvider.notifier).state = null;
+    ref.read(inQueueProvider.notifier).state = false;
+    ref.read(whenJoinedQueueProvider.notifier).state = null;
     debugPrint("Unmatch button pressed");
   }
 
