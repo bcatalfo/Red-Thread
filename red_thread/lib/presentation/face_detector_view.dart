@@ -6,6 +6,7 @@ import 'package:red_thread/utils/coordinates_translator.dart';
 import 'detector_view.dart';
 import 'package:red_thread/presentation/pages/verification.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:red_thread/providers.dart';
 
 class FaceDetectorView extends StatefulWidget {
   const FaceDetectorView({super.key});
@@ -129,6 +130,9 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
         isFaceTooFar = faceWidth < 175;
         ref.read(isFaceTooFarProvider.notifier).state = isFaceTooFar;
         ref.read(isFaceTooCloseProvider.notifier).state = isFaceTooClose;
+        if (isFaceCentered && !isFaceTooClose && !isFaceTooFar) {
+          ref.read(faceImageProvider.notifier).state = inputImage;
+        }
       }
     }
     if (inputImage.metadata?.size != null &&
