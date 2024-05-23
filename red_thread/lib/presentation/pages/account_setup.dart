@@ -158,13 +158,6 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Red Thread",
-                    style: textTheme.headlineMedium?.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                    )),
-                Text("Find love on a blind date.", style: textTheme.bodyLarge),
-                const SizedBox(height: 20),
                 Text(
                   "Community Guidelines:",
                   style: textTheme.headlineMedium,
