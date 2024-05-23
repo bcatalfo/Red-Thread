@@ -23,9 +23,12 @@ class LoginPageState extends ConsumerState<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              'assets/images/red thread.png',
-              height: 40.0,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.asset(
+                'assets/images/red thread.png',
+                height: 40.0,
+              ),
             ),
             SizedBox(width: 16.0),
             Text(

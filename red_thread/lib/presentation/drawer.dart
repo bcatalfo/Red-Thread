@@ -137,15 +137,18 @@ AppBar myAppBar(BuildContext context, WidgetRef ref) {
     title: Row(
       children: [
         const Spacer(),
-        Image.asset(
-          'assets/images/red thread.png',
-          height: 24.0,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4.0),
+          child: Image.asset(
+            'assets/images/red thread.png',
+            height: 24.0,
+          ),
         ),
-        SizedBox(width: 12.0),
+        const SizedBox(width: 12.0),
         Container(
           alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+          child: const Padding(
+            padding: EdgeInsets.only(right: 16.0),
             child: Text('Red Thread',
                 style: TextStyle(
                     fontSize: 24,
