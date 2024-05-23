@@ -137,6 +137,11 @@ AppBar myAppBar(BuildContext context, WidgetRef ref) {
     title: Row(
       children: [
         const Spacer(),
+        Image.asset(
+          'assets/images/red thread.png',
+          height: 24.0,
+        ),
+        SizedBox(width: 12.0),
         Container(
           alignment: Alignment.center,
           child: Padding(
@@ -145,9 +150,7 @@ AppBar myAppBar(BuildContext context, WidgetRef ref) {
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: themeMode == ThemeMode.light
-                        ? globalLightScheme.primary
-                        : globalDarkScheme.primary)),
+                    color: Color(0xffff5757))),
           ),
         ),
       ],
