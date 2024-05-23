@@ -3,8 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:red_thread/providers.dart';
-import 'package:red_thread/presentation/theme.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,10 +12,6 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class LoginPageState extends ConsumerState<LoginPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
@@ -25,157 +19,107 @@ class LoginPageState extends ConsumerState<LoginPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Container(
-            width: 289,
-            height: 61,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: themeMode == ThemeMode.light
-                  ? globalLightScheme.surfaceVariant
-                  : globalDarkScheme.surfaceVariant,
-              borderRadius: BorderRadius.circular(16),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/red thread.png',
+              height: 40.0,
             ),
-            child: Text('Red Thread',
-                style: TextStyle(
-                    fontSize: 48,
-                    color: themeMode == ThemeMode.light
-                        ? globalLightScheme.primary
-                        : globalDarkScheme.primary)),
-          ),
+            SizedBox(width: 16.0),
+            Text(
+              'Red Thread',
+              style: theme.textTheme.displayLarge?.copyWith(
+                fontSize: 48,
+                color: Color(0xffff5757),
+              ),
+            ),
+          ],
         ),
       ),
-      body: SingleChildScrollView(
+      body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              //mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
-                const Text(
-                  "Login to Your Account",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  'Find love on a blind date',
+                  style: theme.textTheme.headlineSmall,
+                ),
+                Spacer(),
+                Text(
+                  'By tapping "Create Account" or "Log In", you agree to our [Terms of Service](catalfo tech terms of service link). To view our usage of personal information please view our [privacy policy](catalfo tech privacy policy link).',
+                  style: theme.textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 40),
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    border: OutlineInputBorder(),
+                Spacer(),
+                SizedBox(
+                  height: 16,
+                ),
+                TextButton(
+                  onPressed: () {},
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        theme.colorScheme.primaryContainer),
+                    padding: MaterialStateProperty.all(
+                        EdgeInsets.symmetric(vertical: 16.0)),
+                    minimumSize: MaterialStateProperty.all(Size(double.infinity,
+                        0)), // This makes the button stretch horizontally
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
+                  child: Text(
+                    'Create Account',
+                    style: theme.textTheme.headlineMedium
+                        ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      try {
-                        final credential = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: _usernameController.text,
-                                password: _passwordController.text);
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'user-not-found') {
-                          print('No user found for that email.');
-                        } else if (e.code == 'wrong-password') {
-                          print('Wrong password provided for that user.');
-                        }
-                      } catch (e) {
-                        print(e);
-                      }
-                      ref.read(isAuthenticatedProvider.notifier).state =
-                          FirebaseAuth.instance.currentUser != null;
-                      // Add your authentication logic here
-                    }
-                  },
-                  child: const Text("Login"),
+                SizedBox(
+                  height: 16,
                 ),
-                const SizedBox(height: 20),
-                DividerWithText(
-                    text: 'OR', dividerColor: theme.colorScheme.outline),
-                const SizedBox(height: 20),
-                // TODO: Implement sign in logic
-                SignInButton(
-                    themeMode == ThemeMode.light
-                        ? Buttons.google
-                        : Buttons.googleDark,
-                    onPressed: () {}),
-                const SizedBox(height: 20),
-                SignInButton(
-                    themeMode == ThemeMode.light
-                        ? Buttons.apple
-                        : Buttons.appleDark,
-                    onPressed: () {}),
-              ],
-            ),
-          ),
+                TextButton(
+                  onPressed: () {
+                    // TODO: Implement login
+                    ref.read(isAuthenticatedProvider.notifier).state = true;
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        theme.colorScheme.primaryContainer),
+                    padding: MaterialStateProperty.all(
+                        EdgeInsets.symmetric(vertical: 16.0)),
+                    minimumSize: MaterialStateProperty.all(Size(double.infinity,
+                        0)), // This makes the button stretch horizontally
+                  ),
+                  child: Text(
+                    'Login',
+                    style: theme.textTheme.headlineMedium
+                        ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                TextButton(
+                  onPressed: () {},
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(
+                        EdgeInsets.symmetric(vertical: 16.0)),
+                    minimumSize: MaterialStateProperty.all(Size(double.infinity,
+                        0)), // This makes the button stretch horizontally
+                  ),
+                  child: Text(
+                    'Having trouble logging in?',
+                    style: theme.textTheme.bodyLarge
+                        ?.copyWith(color: theme.colorScheme.onSurface),
+                  ),
+                ),
+                SizedBox(
+                  height: 64,
+                ),
+              ]),
         ),
       ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-}
-
-class DividerWithText extends StatelessWidget {
-  final String text;
-  final Color dividerColor;
-
-  const DividerWithText({
-    Key? key,
-    required this.text,
-    this.dividerColor = Colors.black,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Divider(
-            color: dividerColor,
-            thickness: 1,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(text),
-        ),
-        Expanded(
-          child: Divider(
-            color: dividerColor,
-            thickness: 1,
-          ),
-        ),
-      ],
     );
   }
 }
