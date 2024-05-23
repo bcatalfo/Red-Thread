@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
@@ -51,6 +52,9 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
           alertText = 'Smile more!';
         } else {
           alertText = 'You look great!';
+          //TODO: upload image to server
+          Uint8List? finalImage =
+              ref.read(faceImageProvider.notifier).state?.bytes;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             ref.read(numberOfFacesDetectedProvider.notifier).state = 0;
             ref.read(isFaceCenteredProvider.notifier).state = false;
