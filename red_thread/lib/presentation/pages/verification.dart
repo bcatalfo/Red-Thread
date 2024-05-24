@@ -32,9 +32,16 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
     final isFaceCentered = ref.watch(isFaceCenteredProvider);
     final isFaceTooClose = ref.watch(isFaceTooCloseProvider);
     final isFaceTooFar = ref.watch(isFaceTooFarProvider);
+    final isVerified = ref.watch(isVerifiedProvider);
     String alertText;
     final theme = Theme.of(context);
     final screenSize = MediaQuery.of(context).size;
+
+    if (isVerified) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Navigator.pop(context);
+      });
+    }
 
     switch (_verificationState) {
       case VerificationState.capturing:
@@ -70,8 +77,9 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
         }
 
         return Scaffold(
-          drawer: myDrawer(context, ref),
-          appBar: myAppBar(context, ref),
+          appBar: AppBar(
+            title: const Text("Verification"),
+          ),
           body: Column(
             children: [
               Padding(
@@ -84,23 +92,13 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
               ),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              ref.read(numberOfFacesDetectedProvider.notifier).state = 0;
-              ref.read(isFaceCenteredProvider.notifier).state = false;
-              ref.read(smileProbabilityProvider.notifier).state = 0.0;
-              Navigator.pop(context);
-            },
-            child: const Icon(Icons.cancel),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
           backgroundColor: theme.colorScheme.surface,
         );
       case VerificationState.verifying:
         return Scaffold(
-          drawer: myDrawer(context, ref),
-          appBar: myAppBar(context, ref),
+          appBar: AppBar(
+            title: const Text("Verifying..."),
+          ),
           body: Column(
             children: [
               Padding(
@@ -119,17 +117,6 @@ class VerificationPageState extends ConsumerState<VerificationPage> {
                     ),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              ref.read(numberOfFacesDetectedProvider.notifier).state = 0;
-              ref.read(isFaceCenteredProvider.notifier).state = false;
-              ref.read(smileProbabilityProvider.notifier).state = 0.0;
-              Navigator.pop(context);
-            },
-            child: const Icon(Icons.cancel),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
           backgroundColor: theme.colorScheme.surface,
         );
       case VerificationState.success:

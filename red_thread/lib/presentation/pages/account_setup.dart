@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:red_thread/providers.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class AccountSetupPage extends ConsumerStatefulWidget {
   const AccountSetupPage({Key? key}) : super(key: key);
@@ -22,10 +24,21 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   RangeValues _ageRange = const RangeValues(18, 30);
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _displayNameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _smsCodeController = TextEditingController();
+  final List<Map<String, String>> _countryCodes = [
+    {'name': 'US', 'code': '+1'},
+    {'name': 'India', 'code': '+91'},
+    {'name': 'UK', 'code': '+44'},
+    {'name': 'Japan', 'code': '+81'},
+    // Add more country codes and names as needed
+  ];
+  String _selectedCountryCode = '+1';
+
   bool _agreedToTerms = false;
 
   final _formKeys = List<GlobalKey<FormState>>.generate(
-      10, (index) => GlobalKey<FormState>());
+      13, (index) => GlobalKey<FormState>());
 
   @override
   void initState() {
@@ -49,6 +62,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     _pageController.dispose();
     _birthdayController.dispose();
     _displayNameController.dispose();
+    _phoneNumberController.dispose();
+    _smsCodeController.dispose();
     super.dispose();
   }
 
@@ -66,7 +81,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           curve: Curves.easeInOut,
         );
       } else {
-        ref.read(isAccountSetupCompleteProvider.notifier).state = true;
+        ref.read(isAuthenticatedProvider.notifier).state = true;
       }
     }
   }
@@ -140,6 +155,9 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       _buildTermsPage(context),
       _buildDisplayNamePage(context),
       _buildBirthdayPage(context),
+      _buildEnterPhoneNumberPage(context),
+      _buildEnterSMSCodePage(context),
+      _buildFaceVerificationPage(context),
       _buildGenderPage(context),
       _buildLookingForPage(context),
       _buildDistancePage(context),
@@ -415,13 +433,239 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     );
   }
 
+  Widget _buildEnterPhoneNumberPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeys[3], // Ensure correct key index
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Please enter your phone number",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: DropdownSearch<Map<String, String>>(
+                        items: _countryCodes,
+                        itemAsString: (Map<String, String> country) =>
+                            "${country['name']} ${country['code']}",
+                        selectedItem: _countryCodes[0],
+                        dropdownBuilder:
+                            (_, Map<String, String>? selectedItem) {
+                          return Text(selectedItem != null
+                              ? "${selectedItem['name']} ${selectedItem['code']}"
+                              : "Select Country Code");
+                        },
+                        popupProps: PopupProps.modalBottomSheet(
+                          showSearchBox: true,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Search Country',
+                            ),
+                          ),
+                          fit: FlexFit.tight,
+                          itemBuilder: (context, item, isSelected) {
+                            return ListTile(
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(item['name']!),
+                                  Text(item['code']!),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        onChanged: (Map<String, String>? value) {
+                          setState(() {
+                            _selectedCountryCode = value!['code']!;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 5,
+                      child: TextFormField(
+                        controller: _phoneNumberController,
+                        decoration:
+                            const InputDecoration(labelText: "Phone Number"),
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(
+                              12), // Maximum 12 characters including hyphens
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+                          TextInputFormatter.withFunction((oldValue, newValue) {
+                            final text = newValue.text;
+                            final digitsOnly =
+                                text.replaceAll(RegExp(r'\D'), '');
+                            if (digitsOnly.length > 10) {
+                              return oldValue;
+                            }
+                            final buffer = StringBuffer();
+                            for (int i = 0; i < digitsOnly.length; i++) {
+                              if (i == 3 || i == 6) buffer.write('-');
+                              buffer.write(digitsOnly[i]);
+                            }
+                            return TextEditingValue(
+                              text: buffer.toString(),
+                              selection: TextSelection.collapsed(
+                                  offset: buffer.length),
+                            );
+                          }),
+                        ],
+                        validator: (value) {
+                          final digitsOnly =
+                              value?.replaceAll(RegExp(r'\D'), '');
+                          if (digitsOnly == null || digitsOnly.length != 10) {
+                            return 'Please enter a valid phone number';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(
+                              () {}); // Trigger rebuild to update button state
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "To verify your identity, we will send a code via SMS. Message and data rates may apply. Please be aware.",
+                  style: textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 48,
+              left: 0,
+              right: 0,
+              child: _buildNavigationButtons(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnterSMSCodePage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeys[4], // Ensure correct key index
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Please enter the SMS code",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _smsCodeController,
+                  decoration: InputDecoration(
+                    labelText: "SMS Code",
+                    hintText: "_ _ _ _ _ _",
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(
+                        11), // Maximum 11 characters (6 digits + 5 spaces)
+                    FilteringTextInputFormatter.digitsOnly,
+                    SmsCodeInputFormatter(),
+                  ],
+                  validator: (value) {
+                    final digitsOnly = value?.replaceAll(' ', '');
+                    if (digitsOnly == null || digitsOnly.length != 6) {
+                      return 'Please enter a valid 6-digit code';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {}); // Trigger rebuild to update button state
+                  },
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 48,
+              left: 0,
+              right: 0,
+              child: _buildNavigationButtons(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFaceVerificationPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeys[5],
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Face Verification", style: textTheme.headlineMedium),
+                const SizedBox(height: 20),
+                Text(
+                  "To ensure the safety of our community, we require all users to verify their identity using facial recognition.",
+                  style: textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.push('/verification');
+                    },
+                    child: Text('Start Face Verification'),
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 48,
+              left: 0,
+              right: 0,
+              child: _buildNavigationButtons(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildGenderPage(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[3],
+        key: _formKeys[6],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -480,7 +724,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[4],
+        key: _formKeys[7],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -540,7 +784,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[5],
+        key: _formKeys[8],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -587,7 +831,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[6],
+        key: _formKeys[9],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -638,7 +882,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[7],
+        key: _formKeys[10],
         autovalidateMode: AutovalidateMode.always,
         child: Stack(
           children: [
@@ -678,7 +922,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[8],
+        key: _formKeys[11],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -717,7 +961,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[9],
+        key: _formKeys[12],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -754,8 +998,12 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   Widget _buildNavigationButtons(BuildContext context) {
     bool isValid = _formKeys[_currentStep].currentState?.validate() ?? false;
 
-    if (_currentStep >= 5) {
+    if (_currentStep >= 8) {
       isValid = true;
+    }
+
+    if (_currentStep == 5) {
+      isValid = ref.read(isVerifiedProvider);
     }
 
     return Column(
@@ -770,6 +1018,26 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           child: Text(_currentStep < _formKeys.length - 1 ? 'Next' : 'Finish'),
         ),
       ],
+    );
+  }
+}
+
+class SmsCodeInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final text =
+        newValue.text.replaceAll(' ', ''); // Remove any existing spaces
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      if (i > 0 && i % 1 == 0 && i < 6) {
+        buffer.write(' '); // Insert space after every digit
+      }
+      buffer.write(text[i]);
+    }
+    return TextEditingValue(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
     );
   }
 }

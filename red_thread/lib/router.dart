@@ -39,13 +39,6 @@ GoRouter createRouter(WidgetRef ref) {
       ),
       GoRoute(
         path: '/verification',
-        // TODO: once verification is finished redirect to /
-        redirect: (context, state) {
-          final isVerified = ref.watch(isVerifiedProvider);
-          if (isVerified) {
-            return '/';
-          }
-        },
         builder: (context, state) => const VerificationPage(),
       ),
       GoRoute(
