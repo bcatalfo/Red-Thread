@@ -46,6 +46,9 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   @override
   void dispose() {
     _animationController.dispose();
+    _pageController.dispose();
+    _birthdayController.dispose();
+    _displayNameController.dispose();
     super.dispose();
   }
 
