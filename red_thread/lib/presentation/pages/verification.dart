@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/face_detector_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';

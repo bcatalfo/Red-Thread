@@ -354,7 +354,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                     TextInputFormatter.withFunction((oldValue, newValue) {
                       final text = newValue.text;
                       StringBuffer newText = StringBuffer();
-                      if (text.length >= 1) {
+                      if (text.isNotEmpty) {
                         newText.write(text.substring(0, 1));
                       }
                       if (text.length >= 2) {
@@ -392,19 +392,24 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                       return 'Please enter your birthday';
                     }
                     final parts = value.split('/');
-                    if (parts.length != 3)
+                    if (parts.length != 3) {
                       return 'Enter date in MM / DD / YYYY format';
+                    }
                     final month = int.tryParse(parts[0]);
                     final day = int.tryParse(parts[1]);
                     final year = int.tryParse(parts[2]);
-                    if (month == null || day == null || year == null)
+                    if (month == null || day == null || year == null) {
                       return 'Invalid date';
-                    if (month < 1 || month > 12)
+                    }
+                    if (month < 1 || month > 12) {
                       return 'Month must be between 01 and 12';
-                    if (day < 1 || day > 31)
+                    }
+                    if (day < 1 || day > 31) {
                       return 'Day must be between 01 and 31';
-                    if (year.toString().length != 4)
+                    }
+                    if (year.toString().length != 4) {
                       return 'Year must be four digits';
+                    }
                     final birthday = DateTime(year, month, day);
                     final now = DateTime.now();
                     final age = now.year -
@@ -470,7 +475,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                         },
                         popupProps: PopupProps.modalBottomSheet(
                           showSearchBox: true,
-                          searchFieldProps: TextFieldProps(
+                          searchFieldProps: const TextFieldProps(
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Search Country',
@@ -583,7 +588,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _smsCodeController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "SMS Code",
                     hintText: "_ _ _ _ _ _",
                   ),
@@ -644,7 +649,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                     onPressed: () {
                       context.push('/verification');
                     },
-                    child: Text('Start Face Verification'),
+                    child: const Text('Start Face Verification'),
                   ),
                 ),
               ],
@@ -905,7 +910,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               child: _buildNavigationButtons(context),
             ),
             Align(
-              alignment: FractionalOffset(0.5, 0.333),
+              alignment: const FractionalOffset(0.5, 0.333),
               child: Icon(
                 Icons.location_on,
                 size: 128,
@@ -945,7 +950,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               child: _buildNavigationButtons(context),
             ),
             Align(
-              alignment: FractionalOffset(0.5, 0.333),
+              alignment: const FractionalOffset(0.5, 0.333),
               child: Icon(
                 Icons.notifications,
                 size: 128,
@@ -984,7 +989,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               child: _buildNavigationButtons(context),
             ),
             Align(
-              alignment: FractionalOffset(0.5, 0.333),
+              alignment: const FractionalOffset(0.5, 0.333),
               child: Icon(
                 Icons.contact_mail,
                 size: 128,

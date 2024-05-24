@@ -144,7 +144,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
                   onHorizontalDragEnd: (details) {
                     Future.delayed(Duration.zero, () async {
                       for (double i = _timestampSize; i <= 0; i += 1) {
-                        await Future.delayed(Duration(milliseconds: 1));
+                        await Future.delayed(const Duration(milliseconds: 1));
                         setState(() {
                           _timestampSize = i;
                         });
@@ -495,7 +495,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
                             backgroundColor: scheme.surfaceContainerHigh,
-                            title: Text('Unmatch with ${match}?',
+                            title: Text('Unmatch with $match?',
                                 style: theme.textTheme.headlineMedium
                                     ?.copyWith(color: scheme.onSurface)),
                             content: Text(
@@ -577,8 +577,8 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                   // Implement other button functionality
                   debugPrint("Other button pressed");
                   // Schedule a date
-                  final _locationController = TextEditingController();
-                  TimeOfDay? _selectedTime;
+                  final locationController = TextEditingController();
+                  TimeOfDay? selectedTime;
 
                   showDialog(
                     context: context,
@@ -593,15 +593,15 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                           child: ListBody(
                             children: [
                               TextField(
-                                controller: _locationController,
+                                controller: locationController,
                                 decoration: const InputDecoration(
                                     labelText: "Location"),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                _selectedTime == null
+                                selectedTime == null
                                     ? 'No time selected.'
-                                    : 'Selected time: ${_selectedTime!.format(context)}',
+                                    : 'Selected time: ${selectedTime.format(context)}',
                                 style: theme.textTheme.bodyLarge
                                     ?.copyWith(color: scheme.onSurfaceVariant),
                               ),
@@ -612,7 +612,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                     initialTime: TimeOfDay.now(),
                                   ).then((selectedTime) {
                                     if (selectedTime != null) {
-                                      _selectedTime = selectedTime;
+                                      selectedTime = selectedTime;
                                       setState(
                                           () {}); // Call setState to update the UI
                                     }
@@ -622,8 +622,8 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  if (_selectedTime != null &&
-                                      _locationController.text.isNotEmpty) {
+                                  if (selectedTime != null &&
+                                      locationController.text.isNotEmpty) {
                                     // TODO: Use the selected time and location
                                     scheduleDate(
                                         context,
@@ -632,9 +632,9 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                             DateTime.now().year,
                                             DateTime.now().month,
                                             DateTime.now().day,
-                                            _selectedTime!.hour,
-                                            _selectedTime!.minute),
-                                        _locationController.text);
+                                            selectedTime.hour,
+                                            selectedTime.minute),
+                                        locationController.text);
                                     Navigator.of(context).pop();
                                   } else {
                                     // Show an error message
@@ -704,7 +704,7 @@ class MatchBar extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${match}',
+                  '$match',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

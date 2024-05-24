@@ -29,11 +29,11 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 height: 24.0,
               ),
             ),
-            SizedBox(width: 8.0),
+            const SizedBox(width: 8.0),
             Text(
               'Red Thread',
               style: theme.textTheme.displayLarge?.copyWith(
-                color: Color(0xffff5757),
+                color: const Color(0xffff5757),
               ),
             ),
           ],
@@ -44,7 +44,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            SizedBox(
+            const SizedBox(
               height: 48,
             ),
             Padding(
@@ -55,7 +55,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 textAlign: TextAlign.center,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             RichText(
               text: TextSpan(
                 style: theme.textTheme.bodyLarge,
@@ -75,7 +75,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                         }
                       },
                   ),
-                  TextSpan(
+                  const TextSpan(
                     text:
                         '. To view our usage of personal information please view our ',
                   ),
@@ -95,14 +95,14 @@ class LoginPageState extends ConsumerState<LoginPage> {
                         }
                       },
                   ),
-                  TextSpan(
+                  const TextSpan(
                     text: '.',
                   ),
                 ],
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             TextButton(
@@ -114,8 +114,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 backgroundColor: MaterialStateProperty.all(
                     theme.colorScheme.primaryContainer),
                 padding: MaterialStateProperty.all(
-                    EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(Size(double.infinity,
+                    const EdgeInsets.symmetric(vertical: 8.0)),
+                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
@@ -125,7 +125,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             TextButton(
@@ -137,8 +137,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 backgroundColor: MaterialStateProperty.all(
                     theme.colorScheme.primaryContainer),
                 padding: MaterialStateProperty.all(
-                    EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(Size(double.infinity,
+                    const EdgeInsets.symmetric(vertical: 8.0)),
+                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
@@ -148,7 +148,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             TextButton(
@@ -160,8 +160,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 backgroundColor: MaterialStateProperty.all(
                     theme.colorScheme.primaryContainer),
                 padding: MaterialStateProperty.all(
-                    EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(Size(double.infinity,
+                    const EdgeInsets.symmetric(vertical: 8.0)),
+                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
@@ -171,7 +171,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 48,
             ),
           ]),
