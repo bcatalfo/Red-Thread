@@ -78,11 +78,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
         _currentStep--;
       });
       _animationController.forward(from: 0.0);
-      _pageController.animateToPage(
-        _currentStep,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
+      _pageController
+          .animateToPage(
+            _currentStep,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          )
+          .then((value) => setState(() {}));
     }
   }
 
