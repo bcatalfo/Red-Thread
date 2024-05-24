@@ -9,7 +9,6 @@ import 'package:red_thread/presentation/pages/about.dart';
 import 'package:red_thread/presentation/pages/welcome.dart';
 import 'package:red_thread/presentation/pages/account_setup.dart';
 import 'package:red_thread/providers.dart';
-import 'package:red_thread/presentation/pages/register.dart';
 import 'package:red_thread/presentation/pages/login.dart';
 
 GoRouter createRouter(WidgetRef ref) {
@@ -19,15 +18,10 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/',
         builder: (context, state) {
           final isAuthenticated = ref.watch(isAuthenticatedProvider);
-          final isAccountSetupComplete =
-              ref.watch(isAccountSetupCompleteProvider);
           final matchFound = ref.watch(matchProvider) != null;
 
           if (!isAuthenticated) {
             return const WelcomePage();
-          }
-          if (!isAccountSetupComplete) {
-            return const AccountSetupPage();
           }
           if (!matchFound) {
             return const QueuePage();
@@ -67,7 +61,7 @@ GoRouter createRouter(WidgetRef ref) {
       ),
       GoRoute(
         path: "/register",
-        builder: (context, state) => const RegisterPage(),
+        builder: (context, state) => const AccountSetupPage(),
       ),
     ],
   );
