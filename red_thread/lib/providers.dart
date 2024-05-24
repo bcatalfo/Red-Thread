@@ -11,7 +11,6 @@ enum DateSchedule { notScheduled, sent, received, confirmed }
 // TODO: Get this from backend
 final matchProvider = StateProvider<String?>((ref) => null);
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
-final needsWelcomingProvider = StateProvider<bool>((ref) => false);
 final isAuthenticatedProvider = StateProvider<bool>((ref) => false);
 final isAccountSetupCompleteProvider = StateProvider<bool>((ref) => false);
 final isVerifiedProvider = StateProvider<bool>((ref) => false);

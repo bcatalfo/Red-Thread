@@ -2,7 +2,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/presentation/pages/chat.dart';
 import 'package:red_thread/presentation/pages/contact_us.dart';
-import 'package:red_thread/presentation/pages/onboarding.dart';
 import 'package:red_thread/presentation/pages/verification.dart';
 import 'package:red_thread/presentation/pages/queue.dart';
 import 'package:red_thread/presentation/pages/about.dart';
@@ -16,15 +15,11 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(
         path: '/',
         builder: (context, state) {
-          final isFirstTimeUser = ref.watch(needsWelcomingProvider);
           final isAuthenticated = ref.watch(isAuthenticatedProvider);
           final isAccountSetupComplete =
               ref.watch(isAccountSetupCompleteProvider);
           final matchFound = ref.watch(matchProvider) != null;
 
-          if (isFirstTimeUser) {
-            return const OnBoardingPage();
-          }
           if (!isAuthenticated) {
             return const LoginPage();
           }

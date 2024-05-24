@@ -100,8 +100,6 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                               await FirebaseAuth.instance.currentUser?.delete();
                               ref.read(isAuthenticatedProvider.notifier).state =
                                   false;
-                              ref.read(needsWelcomingProvider.notifier).state =
-                                  true;
                             },
                             child: Text('Delete',
                                 style: theme.textTheme.bodyLarge?.copyWith(
