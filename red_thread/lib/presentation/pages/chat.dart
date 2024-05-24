@@ -456,6 +456,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
     ref.read(matchProvider.notifier).state = null;
     ref.read(inQueueProvider.notifier).state = false;
     ref.read(whenJoinedQueueProvider.notifier).state = null;
+    ref.read(isVerifiedProvider.notifier).state = false;
     debugPrint("Unmatch button pressed");
   }
 
