@@ -1,17 +1,17 @@
-import "package:flutter/gestures.dart";
+import 'package:flutter/gestures.dart';
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:red_thread/providers.dart";
-import "package:url_launcher/url_launcher.dart";
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class WelcomePage extends ConsumerStatefulWidget {
+  const WelcomePage({Key? key}) : super(key: key);
 
   @override
-  LoginPageState createState() => LoginPageState();
+  WelcomePageState createState() => WelcomePageState();
 }
 
-class LoginPageState extends ConsumerState<LoginPage> {
+class WelcomePageState extends ConsumerState<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -41,7 +41,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
             SizedBox(
@@ -59,7 +59,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
             RichText(
               text: TextSpan(
                 style: theme.textTheme.bodyLarge,
-                text: 'By logging in you agree to our ',
+                text: 'By tapping "Login" or "Register", you agree to our ',
                 children: [
                   TextSpan(
                     text: 'Terms of Service',
@@ -107,8 +107,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
             ),
             TextButton(
               onPressed: () {
-                // TODO: Apple sign in
-                ref.read(isAuthenticatedProvider.notifier).state = true;
+                context.push('/login');
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(
@@ -119,7 +118,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
-                'Login with Apple',
+                'Login',
                 style: theme.textTheme.headlineMedium
                     ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center,
@@ -130,8 +129,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
             ),
             TextButton(
               onPressed: () {
-                // TODO: Google sign in
-                ref.read(isAuthenticatedProvider.notifier).state = true;
+                context.push('/register');
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(
@@ -142,32 +140,27 @@ class LoginPageState extends ConsumerState<LoginPage> {
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
-                'Login with Google',
+                'Register',
                 style: theme.textTheme.headlineMedium
                     ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center,
               ),
             ),
             SizedBox(
-              height: 16,
+              height: 8,
             ),
             TextButton(
-              onPressed: () {
-                // TODO: Phone number sign in
-                ref.read(isAuthenticatedProvider.notifier).state = true;
-              },
+              onPressed: () {},
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    theme.colorScheme.primaryContainer),
                 padding: MaterialStateProperty.all(
                     EdgeInsets.symmetric(vertical: 8.0)),
                 minimumSize: MaterialStateProperty.all(Size(double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
-                'Login with your Phone Number',
-                style: theme.textTheme.headlineMedium
-                    ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
+                'Having trouble logging in?',
+                style: theme.textTheme.bodyLarge
+                    ?.copyWith(color: theme.colorScheme.onSurface),
                 textAlign: TextAlign.center,
               ),
             ),

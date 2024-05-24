@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/presentation/pages/chat.dart';
@@ -5,9 +6,11 @@ import 'package:red_thread/presentation/pages/contact_us.dart';
 import 'package:red_thread/presentation/pages/verification.dart';
 import 'package:red_thread/presentation/pages/queue.dart';
 import 'package:red_thread/presentation/pages/about.dart';
-import 'package:red_thread/presentation/pages/login.dart';
+import 'package:red_thread/presentation/pages/welcome.dart';
 import 'package:red_thread/presentation/pages/account_setup.dart';
 import 'package:red_thread/providers.dart';
+import 'package:red_thread/presentation/pages/register.dart';
+import 'package:red_thread/presentation/pages/login.dart';
 
 GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
@@ -21,7 +24,7 @@ GoRouter createRouter(WidgetRef ref) {
           final matchFound = ref.watch(matchProvider) != null;
 
           if (!isAuthenticated) {
-            return const LoginPage();
+            return const WelcomePage();
           }
           if (!isAccountSetupComplete) {
             return const AccountSetupPage();
@@ -50,6 +53,21 @@ GoRouter createRouter(WidgetRef ref) {
           }
         },
         builder: (context, state) => const VerificationPage(),
+      ),
+      GoRoute(
+        path: "/login",
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+              child: const LoginPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              });
+        },
+      ),
+      GoRoute(
+        path: "/register",
+        builder: (context, state) => const RegisterPage(),
       ),
     ],
   );
