@@ -304,7 +304,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your display name';
+                      return 'Please enter your name';
                     }
                     return null;
                   },
