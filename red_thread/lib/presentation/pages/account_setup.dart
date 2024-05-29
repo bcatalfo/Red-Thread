@@ -686,34 +686,57 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               children: [
                 Text("Enter your gender", style: textTheme.headlineMedium),
                 const SizedBox(height: 20),
-                RadioListTile<Gender>(
-                  title: Text('Male', style: textTheme.headlineSmall),
-                  value: Gender.male,
-                  groupValue: _selectedGender,
-                  onChanged: (Gender? value) {
-                    setState(() {
-                      _selectedGender = value;
-                    });
+                FormField<Gender>(
+                  validator: (value) {
+                    if (_selectedGender == null) {
+                      return "Please select a gender";
+                    }
+                    return null;
                   },
-                ),
-                RadioListTile<Gender>(
-                  title: Text('Female', style: textTheme.headlineSmall),
-                  value: Gender.female,
-                  groupValue: _selectedGender,
-                  onChanged: (Gender? value) {
-                    setState(() {
-                      _selectedGender = value;
-                    });
-                  },
-                ),
-                RadioListTile<Gender>(
-                  title: Text('Other', style: textTheme.headlineSmall),
-                  value: Gender.other,
-                  groupValue: _selectedGender,
-                  onChanged: (Gender? value) {
-                    setState(() {
-                      _selectedGender = value;
-                    });
+                  builder: (formFieldState) {
+                    return Column(
+                      children: [
+                        RadioListTile<Gender>(
+                          title: Text('Male', style: textTheme.headlineSmall),
+                          value: Gender.male,
+                          groupValue: _selectedGender,
+                          onChanged: (Gender? value) {
+                            setState(() {
+                              _selectedGender = value;
+                              formFieldState.didChange(value);
+                            });
+                          },
+                        ),
+                        RadioListTile<Gender>(
+                          title: Text('Female', style: textTheme.headlineSmall),
+                          value: Gender.female,
+                          groupValue: _selectedGender,
+                          onChanged: (Gender? value) {
+                            setState(() {
+                              _selectedGender = value;
+                              formFieldState.didChange(value);
+                            });
+                          },
+                        ),
+                        RadioListTile<Gender>(
+                          title: Text('Other', style: textTheme.headlineSmall),
+                          value: Gender.other,
+                          groupValue: _selectedGender,
+                          onChanged: (Gender? value) {
+                            setState(() {
+                              _selectedGender = value;
+                              formFieldState.didChange(value);
+                            });
+                          },
+                        ),
+                        if (formFieldState.hasError)
+                          Text(
+                            formFieldState.errorText!,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.error),
+                          ),
+                      ],
+                    );
                   },
                 ),
               ],
