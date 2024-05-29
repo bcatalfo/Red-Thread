@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +23,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   String? _lookingForGender;
   double _maxDistance = 50;
   RangeValues _ageRange = const RangeValues(18, 30);
+  //List<Contact> _contacts = [];
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -67,7 +69,10 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     super.dispose();
   }
 
-  void _nextStep() {
+  Future<void> _nextStep({Future<void> Function()? onNext}) async {
+    if (onNext != null) {
+      await onNext();
+    }
     if (_formKeys[_currentStep].currentState!.validate()) {
       FocusScope.of(context).unfocus(); // Dismiss the keyboard
       if (_currentStep < _formKeys.length - 1) {
@@ -963,6 +968,39 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     );
   }
 
+  Future<void> _getContacts() async {
+    // TODO: Make this actually get the user's contacts
+    final completer = Completer<void>();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Allow Access to Contacts'),
+          content: Text('This app would like to access your contacts.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                completer.completeError('Permission denied');
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                completer.complete();
+              },
+              child: Text('Allow'),
+            ),
+          ],
+        );
+      },
+    );
+
+    await completer.future;
+  }
+
   Widget _buildContactsPage(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
@@ -990,7 +1028,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               bottom: 48,
               left: 0,
               right: 0,
-              child: _buildNavigationButtons(context),
+              child: _buildNavigationButtons(context, onNext: _getContacts),
             ),
             Align(
               alignment: const FractionalOffset(0.5, 0.333),
@@ -1006,7 +1044,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     );
   }
 
-  Widget _buildNavigationButtons(BuildContext context) {
+  Widget _buildNavigationButtons(BuildContext context,
+      {Future<void> Function()? onNext}) {
     bool isValid = _formKeys[_currentStep].currentState?.validate() ?? false;
 
     if (_currentStep >= 8) {
@@ -1020,7 +1059,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Column(
       children: <Widget>[
         ElevatedButton(
-          onPressed: isValid ? _nextStep : null,
+          onPressed: isValid ? () => _nextStep(onNext: onNext) : null,
           style: ElevatedButton.styleFrom(
             minimumSize:
                 const Size.fromHeight(50), // Set minimum height for button
