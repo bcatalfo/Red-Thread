@@ -20,7 +20,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   late Animation<double> _progressAnimation;
   int _currentStep = 0;
   Gender? _selectedGender;
-  String? _lookingForGender;
+  Set<Gender> _selectedGenders = {};
   double _maxDistance = 50;
   RangeValues _ageRange = const RangeValues(18, 30);
   //List<Contact> _contacts = [];
@@ -766,37 +766,69 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Enter the gender you want to match with",
+                Text("Select the gender(s) you're interested in",
                     style: textTheme.headlineMedium),
                 const SizedBox(height: 20),
-                RadioListTile<String>(
-                  title: Text('Male', style: textTheme.headlineSmall),
-                  value: "Male",
-                  groupValue: _lookingForGender,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _lookingForGender = value;
-                    });
+                FormField<Set<Gender>>(
+                  validator: (value) {
+                    if (_selectedGenders.isEmpty) {
+                      return "Please select at least one gender";
+                    }
+                    return null;
                   },
-                ),
-                RadioListTile<String>(
-                  title: Text('Female', style: textTheme.headlineSmall),
-                  value: "Female",
-                  groupValue: _lookingForGender,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _lookingForGender = value;
-                    });
-                  },
-                ),
-                RadioListTile<String>(
-                  title: Text('Both', style: textTheme.headlineSmall),
-                  value: "Both",
-                  groupValue: _lookingForGender,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _lookingForGender = value;
-                    });
+                  builder: (formFieldState) {
+                    return Column(
+                      children: [
+                        CheckboxListTile(
+                          title: Text('Male', style: textTheme.headlineSmall),
+                          value: _selectedGenders.contains(Gender.male),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedGenders.add(Gender.male);
+                              } else {
+                                _selectedGenders.remove(Gender.male);
+                              }
+                              formFieldState.didChange(_selectedGenders);
+                            });
+                          },
+                        ),
+                        CheckboxListTile(
+                          title: Text('Female', style: textTheme.headlineSmall),
+                          value: _selectedGenders.contains(Gender.female),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedGenders.add(Gender.female);
+                              } else {
+                                _selectedGenders.remove(Gender.female);
+                              }
+                              formFieldState.didChange(_selectedGenders);
+                            });
+                          },
+                        ),
+                        CheckboxListTile(
+                          title: Text('Other', style: textTheme.headlineSmall),
+                          value: _selectedGenders.contains(Gender.other),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedGenders.add(Gender.other);
+                              } else {
+                                _selectedGenders.remove(Gender.other);
+                              }
+                              formFieldState.didChange(_selectedGenders);
+                            });
+                          },
+                        ),
+                        if (formFieldState.hasError)
+                          Text(
+                            formFieldState.errorText!,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.error),
+                          ),
+                      ],
+                    );
                   },
                 ),
               ],
