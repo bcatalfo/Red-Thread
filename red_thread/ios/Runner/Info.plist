@@ -35,7 +35,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This allows RedThread to make video calls and send your pictures directly from your camera.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>RedThread syncs phone numbers from your contacts to RedThread servers to help you connect with other RedThread users and to provide a better experience</string>
+	<string>Red Thread requires access to your contacts to ensure you don't match with people you already know.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This enables you to send your location to your contacts.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
