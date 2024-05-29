@@ -35,7 +35,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     {'name': 'Japan', 'code': '+81'},
     // Add more country codes and names as needed
   ];
-  String _selectedCountryCode = '+1';
+  Map<String, String> _selectedCountryCode = {'name': 'US', 'code': '+1'};
 
   bool _agreedToTerms = false;
 
@@ -471,7 +471,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                         items: _countryCodes,
                         itemAsString: (Map<String, String> country) =>
                             "${country['name']} ${country['code']}",
-                        selectedItem: _countryCodes[0],
+                        selectedItem: _selectedCountryCode,
                         dropdownBuilder:
                             (_, Map<String, String>? selectedItem) {
                           return Text(selectedItem != null
@@ -502,7 +502,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                         ),
                         onChanged: (Map<String, String>? value) {
                           setState(() {
-                            _selectedCountryCode = value!['code']!;
+                            _selectedCountryCode = value!;
                           });
                         },
                       ),
