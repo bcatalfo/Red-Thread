@@ -975,11 +975,15 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("Invite your contacts to Red Thread",
-                    style: textTheme.headlineMedium),
+                Text(
+                  "Don't match with people you know",
+                  style: textTheme.headlineMedium,
+                ),
                 const SizedBox(height: 20),
-                Text("Invite your friends to join Red Thread.",
-                    style: textTheme.bodyLarge),
+                Text(
+                  "By sharing your contacts with us, we can make sure that you don't match with people you already know.",
+                  style: textTheme.bodyLarge,
+                ),
               ],
             ),
             Positioned(
