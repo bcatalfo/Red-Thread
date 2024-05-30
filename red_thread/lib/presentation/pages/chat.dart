@@ -709,30 +709,169 @@ class MatchBar extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                // TODO: Hook this up with providers
                 Text('25, 3.5 miles away', style: theme.textTheme.bodySmall),
               ],
             ),
           ),
           Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: RichText(
-                text: TextSpan(
-                  text: 'Time Left: ',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: '2:30',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: scheme.primary,
-                          fontWeight: FontWeight.bold,
-                        )),
-                  ],
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton.icon(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ReportDialog();
+                  },
+                );
+              },
+              icon: Icon(Icons.flag, color: scheme.primary),
+              label: Text(
+                'Report',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: scheme.primary,
+                  fontWeight: FontWeight.bold,
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
+    );
+  }
+}
+
+class ReportDialog extends StatefulWidget {
+  @override
+  _ReportDialogState createState() => _ReportDialogState();
+}
+
+class _ReportDialogState extends State<ReportDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final Set<String> _selectedReasons = {};
+  String? _otherReason;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).textTheme;
+
+    return AlertDialog(
+      title: Text('Report User'),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Select the reason(s) for reporting:',
+                style: theme.bodyLarge,
+              ),
+              CheckboxListTile(
+                title: Text('Sexual Harassment', style: theme.bodyMedium),
+                value: _selectedReasons.contains('Sexual Harassment'),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedReasons.add('Sexual Harassment');
+                    } else {
+                      _selectedReasons.remove('Sexual Harassment');
+                    }
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: Text('Disrespecting Privacy', style: theme.bodyMedium),
+                value: _selectedReasons.contains('Disrespecting Privacy'),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedReasons.add('Disrespecting Privacy');
+                    } else {
+                      _selectedReasons.remove('Disrespecting Privacy');
+                    }
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: Text('Inappropriate Behavior', style: theme.bodyMedium),
+                value: _selectedReasons.contains('Inappropriate Behavior'),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedReasons.add('Inappropriate Behavior');
+                    } else {
+                      _selectedReasons.remove('Inappropriate Behavior');
+                    }
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: Text('Scamming or Fraud', style: theme.bodyMedium),
+                value: _selectedReasons.contains('Scamming or Fraud'),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedReasons.add('Scamming or Fraud');
+                    } else {
+                      _selectedReasons.remove('Scamming or Fraud');
+                    }
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: Text('Other', style: theme.bodyMedium),
+                value: _selectedReasons.contains('Other'),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedReasons.add('Other');
+                    } else {
+                      _selectedReasons.remove('Other');
+                    }
+                  });
+                },
+              ),
+              if (_selectedReasons.contains('Other'))
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Please specify'),
+                  onChanged: (value) {
+                    setState(() {
+                      _otherReason = value;
+                    });
+                  },
+                  validator: (value) {
+                    if (_selectedReasons.contains('Other') &&
+                        (value == null || value.isEmpty)) {
+                      return 'Please specify the reason';
+                    }
+                    return null;
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              // TODO: Handle report submission
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Report submitted')),
+              );
+            }
+          },
+          child: Text('Submit'),
+        ),
+      ],
     );
   }
 }
