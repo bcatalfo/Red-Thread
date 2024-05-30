@@ -212,15 +212,15 @@ class ChatPageState extends ConsumerState<ChatPage> {
                   ),
                 ),
               ),
+              ChatInputBar(
+                onSend: _sendMessage,
+              ),
               AnimatedVisibility(
                 visible: _dateBarVisible,
                 duration: 100.ms,
                 child: DateBar()
                     .animate(target: _dateBarVisible ? 1 : 0)
                     .fade(duration: 100.ms),
-              ),
-              ChatInputBar(
-                onSend: _sendMessage,
               )
             ],
           ),
@@ -889,8 +889,10 @@ class DateBar extends ConsumerWidget {
     final dateLocation = ref.watch(dateLocationProvider);
     final dateSchedule = ref.watch(dateScheduleProvider);
 
+    // TODO: Make it something special when you are on the date
     if (dateSchedule == DateSchedule.confirmed) {
-      return dateContainer(context, theme, scheme, dateTime!, dateLocation);
+      return dateContainer(
+          context, theme, scheme, dateTime!, dateLocation, ref);
     } else if (dateSchedule == DateSchedule.sent) {
       return dateSentContainer(context, theme, scheme, dateTime!, dateLocation);
     } else if (dateSchedule == DateSchedule.received) {
@@ -901,16 +903,96 @@ class DateBar extends ConsumerWidget {
     }
   }
 
-  Widget dateContainer(BuildContext context, ThemeData theme,
-      MaterialScheme scheme, DateTime dateTime, String? dateLocation) {
+  Widget dateContainer(
+      BuildContext context,
+      ThemeData theme,
+      MaterialScheme scheme,
+      DateTime dateTime,
+      String? dateLocation,
+      WidgetRef ref) {
     return Container(
       color: scheme.surfaceContainerHighest,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
-          dateDetailsWidget(
-              context, theme, formatter.format(dateTime), dateLocation!),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
+              dateDetailsWidget(
+                  context, theme, formatter.format(dateTime), dateLocation!),
+            ],
+          ),
+          //const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Cancel Date'),
+                        content:
+                            Text('Are you sure you want to cancel the date?'),
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  ref
+                                      .read(dateScheduleProvider.notifier)
+                                      .update(
+                                          (state) => DateSchedule.notScheduled);
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Yes'),
+                                style: TextButton.styleFrom(
+                                  backgroundColor: scheme.secondary,
+                                  foregroundColor: scheme.onSecondary,
+                                ),
+                              ),
+                              const SizedBox(
+                                  width: 16), // Space between the buttons
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('No'),
+                                style: TextButton.styleFrom(
+                                  backgroundColor: scheme.primary,
+                                  foregroundColor: scheme.onPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Text('Cancel'),
+                style: TextButton.styleFrom(
+                  backgroundColor: scheme.secondary,
+                  foregroundColor: scheme.onSecondary,
+                ),
+              ),
+              const Spacer(), // Add space between the Cancel and Check In buttons
+              TextButton(
+                onPressed: () {
+                  // Placeholder for check-in functionality
+                },
+                child: Text('Check In'),
+                style: TextButton.styleFrom(
+                  backgroundColor: scheme.primary,
+                  foregroundColor: scheme.onPrimary,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -953,41 +1035,19 @@ class DateBar extends ConsumerWidget {
       WidgetRef ref) {
     return Container(
       color: scheme.surfaceContainerHighest,
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Date Time:',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                formatter.format(dateTime),
-                style: theme.textTheme.bodyLarge,
-              ),
+              dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
+              dateDetailsWidget(
+                  context, theme, formatter.format(dateTime), dateLocation!),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Date Location:',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                dateLocation,
-                style: theme.textTheme.bodyLarge,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+          //const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -995,7 +1055,10 @@ class DateBar extends ConsumerWidget {
                 onPressed: () => ref
                     .read(dateScheduleProvider.notifier)
                     .update((state) => DateSchedule.notScheduled),
-                style: TextButton.styleFrom(backgroundColor: scheme.error),
+                style: TextButton.styleFrom(
+                  backgroundColor: scheme.secondary,
+                  foregroundColor: scheme.onSecondary,
+                ),
                 child: Text('Decline', style: TextStyle(color: scheme.onError)),
               ),
               const SizedBox(width: 20), // Space between the buttons
@@ -1003,7 +1066,10 @@ class DateBar extends ConsumerWidget {
                 onPressed: () => ref
                     .read(dateScheduleProvider.notifier)
                     .update((state) => DateSchedule.confirmed),
-                style: TextButton.styleFrom(backgroundColor: scheme.primary),
+                style: TextButton.styleFrom(
+                  backgroundColor: scheme.primary,
+                  foregroundColor: scheme.onPrimary,
+                ),
                 child:
                     Text('Accept', style: TextStyle(color: scheme.onPrimary)),
               ),
