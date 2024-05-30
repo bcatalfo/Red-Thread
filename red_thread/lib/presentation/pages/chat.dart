@@ -344,7 +344,6 @@ class ChatBubbleClipperYou extends CustomClipper<Path> {
 }
 
 class ChatMessage extends ConsumerWidget {
-  // TODO: This shouldn't be a row. It also shouldn't have the timestamps.
   final String message;
   final Author author;
   final DateTime date;
@@ -462,7 +461,6 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
 
   void scheduleDate(
       BuildContext context, WidgetRef ref, DateTime time, String location) {
-    // TODO: Implement date scheduling
     debugPrint("Date button pressed");
     ref.read(dateTimeProvider.notifier).state = time;
     ref.read(dateLocationProvider.notifier).state = location;
@@ -568,7 +566,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(0),
               ),
-              onPressed: () {
+              onPressed: () async {
                 if (_isTyping) {
                   widget.onSend(_textController.text);
                   _textController.clear();
@@ -578,9 +576,10 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                   debugPrint("Other button pressed");
                   // Schedule a date
                   final locationController = TextEditingController();
+                  DateTime? selectedDate;
                   TimeOfDay? selectedTime;
 
-                  showDialog(
+                  await showDialog(
                     context: context,
                     builder: (BuildContext context) => StatefulBuilder(
                       builder: (BuildContext context, StateSetter setState) =>
@@ -598,42 +597,95 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                     labelText: "Location"),
                               ),
                               const SizedBox(height: 8),
-                              Text(
-                                selectedTime == null
-                                    ? 'No time selected.'
-                                    : 'Selected time: ${selectedTime.format(context)}',
-                                style: theme.textTheme.bodyLarge
-                                    ?.copyWith(color: scheme.onSurfaceVariant),
+                              TextButton(
+                                onPressed: () async {
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime(2101),
+                                  );
+                                  if (date != null) {
+                                    setState(() {
+                                      selectedDate = date;
+                                    });
+                                  }
+                                },
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: selectedDate == null
+                                            ? 'Select Date'
+                                            : 'Selected date: ',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                                color: scheme.onSurfaceVariant),
+                                      ),
+                                      if (selectedDate != null)
+                                        TextSpan(
+                                          text:
+                                              '${selectedDate!.toLocal().month}/${selectedDate!.toLocal().day}/${selectedDate!.toLocal().year}',
+                                          style: theme.textTheme.bodyLarge
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: scheme.onSurface),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  showTimePicker(
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () async {
+                                  final time = await showTimePicker(
                                     context: context,
                                     initialTime: TimeOfDay.now(),
-                                  ).then((selectedTime) {
-                                    if (selectedTime != null) {
-                                      selectedTime = selectedTime;
-                                      setState(
-                                          () {}); // Call setState to update the UI
-                                    }
-                                  });
+                                  );
+                                  if (time != null) {
+                                    setState(() {
+                                      selectedTime = time;
+                                    });
+                                  }
                                 },
-                                child: const Text('Select Time'),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: selectedTime == null
+                                            ? 'Select Time'
+                                            : 'Selected time: ',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                                color: scheme.onSurfaceVariant),
+                                      ),
+                                      if (selectedTime != null)
+                                        TextSpan(
+                                          text:
+                                              '${selectedTime!.format(context)}',
+                                          style: theme.textTheme.bodyLarge
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: scheme.onSurface),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
+                              const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: () {
-                                  if (selectedTime != null &&
+                                  if (selectedDate != null &&
+                                      selectedTime != null &&
                                       locationController.text.isNotEmpty) {
-                                    // TODO: Use the selected time and location
-                                    scheduleDate(
-                                        context,
-                                        ref,
-                                        DateTime(
-                                            DateTime.now().year,
-                                            DateTime.now().month,
-                                            DateTime.now().day,
-                                            selectedTime.hour,
-                                            selectedTime.minute),
+                                    final dateTime = DateTime(
+                                      selectedDate!.year,
+                                      selectedDate!.month,
+                                      selectedDate!.day,
+                                      selectedTime!.hour,
+                                      selectedTime!.minute,
+                                    );
+                                    scheduleDate(context, ref, dateTime,
                                         locationController.text);
                                     Navigator.of(context).pop();
                                   } else {
@@ -644,7 +696,7 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                                         return AlertDialog(
                                           title: const Text('Error'),
                                           content: const Text(
-                                              'Please select a time and enter a location.'),
+                                              'Please select a date, time, and enter a location.'),
                                           actions: <Widget>[
                                             TextButton(
                                               child: const Text('OK'),
