@@ -1,8 +1,8 @@
-import "package:flutter/gestures.dart";
+import "package:dropdown_search/dropdown_search.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:red_thread/providers.dart";
-import "package:url_launcher/url_launcher.dart";
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -11,172 +11,366 @@ class LoginPage extends ConsumerStatefulWidget {
   LoginPageState createState() => LoginPageState();
 }
 
-class LoginPageState extends ConsumerState<LoginPage> {
+class LoginPageState extends ConsumerState<LoginPage>
+    with SingleTickerProviderStateMixin {
+  final PageController _pageController = PageController();
+  late AnimationController _animationController;
+  late Animation<double> _progressAnimation;
+  int _currentStep = 0;
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _smsCodeController = TextEditingController();
+  final List<Map<String, String>> _countryCodes = [
+    {'name': 'US', 'code': '+1'},
+    {'name': 'India', 'code': '+91'},
+    {'name': 'UK', 'code': '+44'},
+    {'name': 'Japan', 'code': '+81'},
+    // Add more country codes and names as needed
+  ];
+  Map<String, String> _selectedCountryCode = {'name': 'US', 'code': '+1'};
+
+  final _formKeys =
+      List<GlobalKey<FormState>>.generate(2, (index) => GlobalKey<FormState>());
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _progressAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOutBack,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _pageController.dispose();
+    _phoneNumberController.dispose();
+    _smsCodeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _nextStep({Future<void> Function()? onNext}) async {
+    if (onNext != null) {
+      await onNext();
+    }
+    if (_formKeys[_currentStep].currentState!.validate()) {
+      FocusScope.of(context).unfocus(); // Dismiss the keyboard
+      if (_currentStep < _formKeys.length - 1) {
+        setState(() {
+          _currentStep++;
+        });
+        _animationController.forward(from: 0.0);
+        _pageController
+            .animateToPage(
+              _currentStep,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            )
+            .then((value) => setState(() {}));
+      } else {
+        ref.read(isAuthenticatedProvider.notifier).state = true;
+      }
+    }
+  }
+
+  void _previousStep() {
+    FocusScope.of(context).unfocus(); // Dismiss the keyboard
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep--;
+      });
+      _animationController.forward(from: 0.0);
+      _pageController
+          .animateToPage(
+            _currentStep,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          )
+          .then((value) => setState(() {}));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4.0),
-              child: Image.asset(
-                'assets/images/red thread.png',
-                height: 24.0,
-              ),
+        title: const Text("Login"),
+        leading: _currentStep > 0
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: _previousStep,
+              )
+            : null,
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return SizedBox(
+                  height:
+                      10.0, // Increase the height to make it more noticeable
+                  child: LinearProgressIndicator(
+                    value: (_currentStep - 1 + _progressAnimation.value) /
+                        _formKeys.length,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).primaryColor,
+                    ),
+                    backgroundColor: Colors.grey[300],
+                    minHeight: 8, // Ensuring the increased height
+                  ),
+                );
+              },
             ),
-            const SizedBox(width: 8.0),
-            Text(
-              'Red Thread',
-              style: theme.textTheme.displayLarge?.copyWith(
-                color: const Color(0xffff5757),
-              ),
+          ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: _buildPages(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildPages(BuildContext context) {
+    return [
+      _buildEnterPhoneNumberPage(context),
+      _buildEnterSMSCodePage(context),
+    ];
+  }
+
+  Widget _buildEnterPhoneNumberPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeys[0], // Ensure correct key index
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Please enter your phone number",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: DropdownSearch<Map<String, String>>(
+                        items: _countryCodes,
+                        itemAsString: (Map<String, String> country) =>
+                            "${country['name']} ${country['code']}",
+                        selectedItem: _selectedCountryCode,
+                        dropdownBuilder:
+                            (_, Map<String, String>? selectedItem) {
+                          return Text(selectedItem != null
+                              ? "${selectedItem['name']} ${selectedItem['code']}"
+                              : "Select Country Code");
+                        },
+                        popupProps: PopupProps.modalBottomSheet(
+                          showSearchBox: true,
+                          searchFieldProps: const TextFieldProps(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Search Country',
+                            ),
+                          ),
+                          fit: FlexFit.tight,
+                          itemBuilder: (context, item, isSelected) {
+                            return ListTile(
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(item['name']!),
+                                  Text(item['code']!),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        onChanged: (Map<String, String>? value) {
+                          setState(() {
+                            _selectedCountryCode = value!;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 5,
+                      child: TextFormField(
+                        controller: _phoneNumberController,
+                        decoration:
+                            const InputDecoration(labelText: "Phone Number"),
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(
+                              12), // Maximum 12 characters including hyphens
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+                          TextInputFormatter.withFunction((oldValue, newValue) {
+                            final text = newValue.text;
+                            final digitsOnly =
+                                text.replaceAll(RegExp(r'\D'), '');
+                            if (digitsOnly.length > 10) {
+                              return oldValue;
+                            }
+                            final buffer = StringBuffer();
+                            for (int i = 0; i < digitsOnly.length; i++) {
+                              if (i == 3 || i == 6) buffer.write('-');
+                              buffer.write(digitsOnly[i]);
+                            }
+                            return TextEditingValue(
+                              text: buffer.toString(),
+                              selection: TextSelection.collapsed(
+                                  offset: buffer.length),
+                            );
+                          }),
+                        ],
+                        validator: (value) {
+                          final digitsOnly =
+                              value?.replaceAll(RegExp(r'\D'), '');
+                          if (digitsOnly == null || digitsOnly.length != 10) {
+                            return 'Please enter a valid phone number';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(
+                              () {}); // Trigger rebuild to update button state
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "To verify your identity, we will send a code via SMS. Message and data rates may apply. Please be aware.",
+                  style: textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 48,
+              left: 0,
+              right: 0,
+              child: _buildNavigationButtons(context),
             ),
           ],
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            const SizedBox(
-              height: 48,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Find love on a blind date',
-                style: theme.textTheme.headlineLarge,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const Spacer(),
-            RichText(
-              text: TextSpan(
-                style: theme.textTheme.bodyLarge,
-                text: 'By logging in you agree to our ',
-                children: [
-                  TextSpan(
-                    text: 'Terms of Service',
-                    style: TextStyle(color: theme.colorScheme.primary),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        final url = Uri.parse(
-                            'https://catalfotechnologies.com/terms.html');
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url);
-                        } else {
-                          throw 'Could not launch $url';
-                        }
-                      },
+    );
+  }
+
+  Widget _buildEnterSMSCodePage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeys[1], // Ensure correct key index
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Please enter the SMS code",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _smsCodeController,
+                  decoration: const InputDecoration(
+                    labelText: "SMS Code",
+                    hintText: "_ _ _ _ _ _",
                   ),
-                  const TextSpan(
-                    text:
-                        '. To view our usage of personal information please view our ',
-                  ),
-                  TextSpan(
-                    text: 'privacy policy',
-                    style: TextStyle(
-                        color: theme.colorScheme
-                            .primary), // Change to your desired link color
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        final url = Uri.parse(
-                            'https://catalfotechnologies.com/privacy.html');
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url);
-                        } else {
-                          throw 'Could not launch $url';
-                        }
-                      },
-                  ),
-                  const TextSpan(
-                    text: '.',
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(
+                        11), // Maximum 11 characters (6 digits + 5 spaces)
+                    FilteringTextInputFormatter.digitsOnly,
+                    SmsCodeInputFormatter(),
+                  ],
+                  validator: (value) {
+                    final digitsOnly = value?.replaceAll(' ', '');
+                    if (digitsOnly == null || digitsOnly.length != 6) {
+                      return 'Please enter a valid 6-digit code';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {}); // Trigger rebuild to update button state
+                  },
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 32,
+            Positioned(
+              bottom: 48,
+              left: 0,
+              right: 0,
+              child: _buildNavigationButtons(context),
             ),
-            TextButton(
-              onPressed: () {
-                // TODO: Apple sign in
-                ref.read(isAuthenticatedProvider.notifier).state = true;
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    theme.colorScheme.primaryContainer),
-                padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
-                    0)), // This makes the button stretch horizontally
-              ),
-              child: Text(
-                'Login with Apple',
-                style: theme.textTheme.headlineMedium
-                    ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextButton(
-              onPressed: () {
-                // TODO: Google sign in
-                ref.read(isAuthenticatedProvider.notifier).state = true;
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    theme.colorScheme.primaryContainer),
-                padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
-                    0)), // This makes the button stretch horizontally
-              ),
-              child: Text(
-                'Login with Google',
-                style: theme.textTheme.headlineMedium
-                    ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextButton(
-              onPressed: () {
-                // TODO: Phone number sign in
-                ref.read(isAuthenticatedProvider.notifier).state = true;
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    theme.colorScheme.primaryContainer),
-                padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
-                    0)), // This makes the button stretch horizontally
-              ),
-              child: Text(
-                'Login with your Phone Number',
-                style: theme.textTheme.headlineMedium
-                    ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(
-              height: 48,
-            ),
-          ]),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNavigationButtons(BuildContext context,
+      {Future<void> Function()? onNext}) {
+    bool isValid = _formKeys[_currentStep].currentState?.validate() ?? false;
+
+    return Column(
+      children: <Widget>[
+        ElevatedButton(
+          onPressed: isValid ? () => _nextStep(onNext: onNext) : null,
+          style: ElevatedButton.styleFrom(
+            minimumSize:
+                const Size.fromHeight(50), // Set minimum height for button
+            textStyle: const TextStyle(fontSize: 20), // Set font size
+          ),
+          child: Text(_currentStep < _formKeys.length - 1 ? 'Next' : 'Finish'),
+        ),
+      ],
+    );
+  }
+}
+
+class SmsCodeInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final text =
+        newValue.text.replaceAll(' ', ''); // Remove any existing spaces
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      if (i > 0 && i % 1 == 0 && i < 6) {
+        buffer.write(' '); // Insert space after every digit
+      }
+      buffer.write(text[i]);
+    }
+    return TextEditingValue(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
     );
   }
 }
