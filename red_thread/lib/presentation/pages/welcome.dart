@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WelcomePage extends ConsumerStatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final i18l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +33,7 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
             ),
             const SizedBox(width: 8.0),
             Text(
-              'Red Thread',
+              i18l.appName,
               style: theme.textTheme.displayLarge?.copyWith(
                 color: const Color(0xffff5757),
               ),
@@ -50,7 +52,7 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'Find love on a blind date',
+                i18l.slogan,
                 style: theme.textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
@@ -114,11 +116,12 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
                     theme.colorScheme.primaryContainer),
                 padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
+                minimumSize: MaterialStateProperty.all(const Size(
+                    double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
-                'Login',
+                i18l.login,
                 style: theme.textTheme.headlineMedium
                     ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center,
@@ -136,11 +139,12 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
                     theme.colorScheme.primaryContainer),
                 padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
+                minimumSize: MaterialStateProperty.all(const Size(
+                    double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(
-                'Register',
+                i18l.register,
                 style: theme.textTheme.headlineMedium
                     ?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center,
@@ -154,7 +158,8 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
               style: ButtonStyle(
                 padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(double.infinity,
+                minimumSize: MaterialStateProperty.all(const Size(
+                    double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
               child: Text(

@@ -7,6 +7,8 @@ import 'package:red_thread/router.dart';
 import 'package:red_thread/presentation/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +53,8 @@ class BagoolApp extends ConsumerWidget {
       theme: MaterialTheme.light(),
       darkTheme: MaterialTheme.dark(),
       themeMode: themeMode,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }
