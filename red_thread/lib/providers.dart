@@ -10,8 +10,9 @@ enum DateSchedule { notScheduled, sent, received, confirmed }
 // TODO: Get this from backend
 final matchProvider = StateProvider<String?>((ref) => null);
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
-final isAuthenticatedProvider = StateProvider<bool>((ref) => false);
+final isAuthenticatedProvider = StateProvider<bool>((ref) => true);
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
+final isDayAfterDateProvider = StateProvider<bool>((ref) => true);
 final faceImageProvider = StateProvider<InputImage?>((ref) => null);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);

@@ -10,6 +10,7 @@ import 'package:red_thread/presentation/pages/welcome.dart';
 import 'package:red_thread/presentation/pages/account_setup.dart';
 import 'package:red_thread/providers.dart';
 import 'package:red_thread/presentation/pages/login.dart';
+import 'package:red_thread/presentation/pages/survey.dart';
 
 GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
@@ -19,9 +20,13 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (context, state) {
           final isAuthenticated = ref.watch(isAuthenticatedProvider);
           final matchFound = ref.watch(matchProvider) != null;
+          final isDayAfterDate = ref.watch(isDayAfterDateProvider);
 
           if (!isAuthenticated) {
             return const WelcomePage();
+          }
+          if (isDayAfterDate) {
+            return const SurveyPage();
           }
           if (!matchFound) {
             return const QueuePage();
@@ -55,6 +60,10 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(
         path: "/register",
         builder: (context, state) => const AccountSetupPage(),
+      ),
+      GoRoute(
+        path: "/survey",
+        builder: (context, state) => const SurveyPage(),
       ),
     ],
   );
