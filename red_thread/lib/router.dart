@@ -11,6 +11,7 @@ import 'package:red_thread/presentation/pages/account_setup.dart';
 import 'package:red_thread/providers.dart';
 import 'package:red_thread/presentation/pages/login.dart';
 import 'package:red_thread/presentation/pages/survey.dart';
+import 'package:red_thread/presentation/pages/settings.dart';
 
 GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
@@ -64,6 +65,10 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(
         path: "/survey",
         builder: (context, state) => const SurveyPage(),
+      ),
+      GoRoute(
+        path: "/settings",
+        builder: (context, state) => const SettingsPage(),
       ),
     ],
   );

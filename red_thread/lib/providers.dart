@@ -12,7 +12,7 @@ final matchProvider = StateProvider<String?>((ref) => null);
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 final isAuthenticatedProvider = StateProvider<bool>((ref) => true);
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
-final isDayAfterDateProvider = StateProvider<bool>((ref) => true);
+final isDayAfterDateProvider = StateProvider<bool>((ref) => false);
 final faceImageProvider = StateProvider<InputImage?>((ref) => null);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);

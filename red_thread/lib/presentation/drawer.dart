@@ -63,6 +63,14 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                         ThemeMode.light;
                   },
                 ),
+          ListTile(
+            leading: Icon(Icons.settings,
+                size: theme.textTheme.displayMedium?.fontSize),
+            title: Text('Settings', style: theme.textTheme.displayMedium),
+            onTap: () {
+              context.push('/settings');
+            },
+          ),
           const Spacer(),
           ListTile(
             leading: Icon(Icons.logout,
