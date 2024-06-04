@@ -562,9 +562,11 @@ class MatchBar extends ConsumerWidget {
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
                   backgroundColor: scheme.surfaceContainerHigh,
-                  title: Text('Unmatch with $match?',
-                      style: theme.textTheme.headlineMedium
-                          ?.copyWith(color: scheme.onSurface)),
+                  title: Center(
+                    child: Text('Unmatch with $match?',
+                        style: theme.textTheme.headlineMedium
+                            ?.copyWith(color: scheme.onSurface)),
+                  ),
                   content: Text(
                       'Are you sure you want to unmatch? This action cannot be undone.',
                       style: theme.textTheme.bodyLarge
@@ -864,7 +866,8 @@ class DateBar extends ConsumerWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Cancel Date'),
+                        title: Center(child: Text('Cancel Date')),
+                        backgroundColor: scheme.surfaceContainerHigh,
                         content:
                             Text('Are you sure you want to cancel the date?'),
                         actions: [
@@ -879,11 +882,9 @@ class DateBar extends ConsumerWidget {
                                           (state) => DateSchedule.notScheduled);
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('Yes'),
-                                style: TextButton.styleFrom(
-                                  backgroundColor: scheme.secondary,
-                                  foregroundColor: scheme.onSecondary,
-                                ),
+                                child: Text('Yes',
+                                    style: theme.textTheme.bodyLarge
+                                        ?.copyWith(color: scheme.primary)),
                               ),
                               const SizedBox(
                                   width: 16), // Space between the buttons
@@ -891,10 +892,17 @@ class DateBar extends ConsumerWidget {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('No'),
-                                style: TextButton.styleFrom(
-                                  backgroundColor: scheme.primary,
-                                  foregroundColor: scheme.onPrimary,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    color: scheme.primary,
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Cancel',
+                                    style: theme.textTheme.bodyLarge
+                                        ?.copyWith(color: scheme.onPrimary),
+                                  ),
                                 ),
                               ),
                             ],
