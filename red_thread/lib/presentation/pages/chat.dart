@@ -81,6 +81,20 @@ class ChatPageState extends ConsumerState<ChatPage> {
     super.dispose();
   }
 
+  Widget _buildDateSeparator(DateTime date) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Text(
+          DateFormat('EEEE, MMM d').format(date),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
@@ -128,56 +142,19 @@ class ChatPageState extends ConsumerState<ChatPage> {
                     controller: _scrollController,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      switch (messages[index].author) {
-                        case Author.me:
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Flexible(child: messages[index]),
-                              SizedBox(
-                                width: _timestampSize.abs(),
-                                height: 24,
-                                child: Opacity(
-                                  opacity: (_timestampSize / -100).clamp(0, 1),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      DateFormat('h:mm a')
-                                          .format(messages[index].date),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          );
-                        case Author.you || Author.system:
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(child: messages[index]),
-                              SizedBox(
-                                width: _timestampSize.abs(),
-                                height: 24,
-                                child: Opacity(
-                                  opacity: (_timestampSize / -100).clamp(0, 1),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      DateFormat('h:mm a')
-                                          .format(messages[index].date),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          );
+                      List<Widget> messageWidgets = [];
+                      if (index == 0 ||
+                          messages[index].date.day !=
+                              messages[index - 1].date.day) {
+                        messageWidgets
+                            .add(_buildDateSeparator(messages[index].date));
                       }
+                      messageWidgets.add(_buildMessageWidget(messages[index]));
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: messageWidgets,
+                      );
                     },
                   ),
                 ),
@@ -197,6 +174,59 @@ class ChatPageState extends ConsumerState<ChatPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildMessageWidget(ChatMessage message) {
+    switch (message.author) {
+      case Author.me:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Flexible(child: message),
+            SizedBox(
+              width: _timestampSize.abs(),
+              height: 24,
+              child: Opacity(
+                opacity: (_timestampSize / -100).clamp(0, 1),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    DateFormat('h:mm a').format(message.date),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+      case Author.you || Author.system:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(child: message),
+            SizedBox(
+              width: _timestampSize.abs(),
+              height: 24,
+              child: Opacity(
+                opacity: (_timestampSize / -100).clamp(0, 1),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    DateFormat('h:mm a').format(message.date),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+    }
   }
 }
 

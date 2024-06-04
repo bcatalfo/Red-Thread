@@ -52,19 +52,19 @@ final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => [
       ChatMessage(
         message: 'Test alert from the system',
         author: Author.system,
-        date: DateTime(2024, 5, 9, 2, 7, 0),
+        date: DateTime(2024, 5, 10, 2, 7, 0),
       ),
       // write a long message from Author.you
       ChatMessage(
         message:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
         author: Author.you,
-        date: DateTime(2024, 5, 9, 2, 11, 0),
+        date: DateTime(2024, 5, 10, 2, 11, 0),
       ),
       ChatMessage(
         message:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
         author: Author.me,
-        date: DateTime(2024, 5, 9, 2, 13, 0),
+        date: DateTime(2024, 5, 11, 2, 13, 0),
       ),
     ]);
