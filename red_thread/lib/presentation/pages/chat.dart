@@ -637,22 +637,34 @@ class MatchBar extends ConsumerWidget {
   }
 }
 
-class ReportDialog extends StatefulWidget {
+class ReportDialog extends ConsumerStatefulWidget {
   @override
   _ReportDialogState createState() => _ReportDialogState();
 }
 
-class _ReportDialogState extends State<ReportDialog> {
+class _ReportDialogState extends ConsumerState<ReportDialog> {
   final _formKey = GlobalKey<FormState>();
   final Set<String> _selectedReasons = {};
   String? _otherReason;
 
+  void unmatch(WidgetRef ref) {
+    ref.read(matchProvider.notifier).state = null;
+    ref.read(inQueueProvider.notifier).state = false;
+    ref.read(whenJoinedQueueProvider.notifier).state = null;
+    ref.read(isVerifiedProvider.notifier).state = false;
+    debugPrint("Unmatch after report");
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
+    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final scheme = isLight ? globalLightScheme : globalDarkScheme;
 
     return AlertDialog(
-      title: Text('Report User'),
+      backgroundColor: scheme.surfaceContainerHigh,
+      title: Text('Report User',
+          style: theme.headlineMedium?.copyWith(color: scheme.onSurface)),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -748,24 +760,42 @@ class _ReportDialogState extends State<ReportDialog> {
           ),
         ),
       ),
+      actionsAlignment: MainAxisAlignment.center,
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              // TODO: Handle report submission
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Report submitted')),
-              );
-            }
-          },
-          child: Text('Submit'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel',
+                  style: theme.bodyLarge?.copyWith(color: scheme.primary)),
+            ),
+            const SizedBox(width: 16), // Space between the buttons
+            TextButton(
+              onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  unmatch(ref);
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Report submitted')),
+                  );
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  color: scheme.primary,
+                ),
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Submit',
+                  style: theme.bodyLarge?.copyWith(color: scheme.onPrimary),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
