@@ -24,6 +24,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   Set<Gender> _selectedGenders = {};
   double _maxDistance = 50;
   RangeValues _ageRange = const RangeValues(18, 30);
+  String newVerificationId = '';
   //List<Contact> _contacts = [];
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _displayNameController = TextEditingController();
@@ -623,7 +624,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               bottom: 48,
               left: 0,
               right: 0,
-              child: _buildNavigationButtons(context),
+              child: _buildNavigationButtons(context, onNext: _verifySMSCode),
             ),
           ],
         ),
@@ -1073,7 +1074,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       },
       codeSent: (String verificationId, int? resendToken) {
         completer.complete();
-
+        newVerificationId = verificationId;
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -1096,6 +1097,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
         completer.completeError('Verification timed out');
       },
     );
+    return completer.future;
   }
 
   Future<void> _getContacts() async {
@@ -1199,6 +1201,39 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
         ),
       ],
     );
+  }
+
+  Future<void> _verifySMSCode() {
+    debugPrint(_smsCodeController.text.replaceAll(' ', ''));
+
+    debugPrint(newVerificationId);
+    final completer = Completer<void>();
+    final credential = PhoneAuthProvider.credential(
+      verificationId: newVerificationId,
+      smsCode: _smsCodeController.text.replaceAll(' ', ''),
+    );
+    FirebaseAuth.instance.signInWithCredential(credential).then((value) {
+      completer.complete();
+    }).catchError((error) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Verification Failed'),
+              content: Text(error.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          });
+      completer.completeError(error);
+    });
+    return completer.future;
   }
 }
 
