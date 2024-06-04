@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -565,7 +566,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               bottom: 48,
               left: 0,
               right: 0,
-              child: _buildNavigationButtons(context),
+              child:
+                  _buildNavigationButtons(context, onNext: _phoneVerification),
             ),
           ],
         ),
@@ -1020,6 +1022,79 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _phoneVerification() async {
+    final completer = Completer<void>();
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: _selectedCountryCode['code']! + _phoneNumberController.text,
+      verificationCompleted: (PhoneAuthCredential credential) {
+        completer.complete();
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Verification Completed'),
+              content: Text('Phone number automatically verified'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        completer.completeError(e);
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Verification Failed'),
+              content: Text(e.message ?? 'An unknown error occurred'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        completer.complete();
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Verification Code Sent'),
+              content: Text('A verification code has been sent to your phone'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        completer.completeError('Verification timed out');
+      },
     );
   }
 
