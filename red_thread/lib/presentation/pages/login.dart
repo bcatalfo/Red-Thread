@@ -1,4 +1,7 @@
+import "dart:async";
+
 import "package:dropdown_search/dropdown_search.dart";
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -27,6 +30,7 @@ class LoginPageState extends ConsumerState<LoginPage>
     // Add more country codes and names as needed
   ];
   Map<String, String> _selectedCountryCode = {'name': 'US', 'code': '+1'};
+  String newVerificationId = '';
 
   final _formKeys =
       List<GlobalKey<FormState>>.generate(2, (index) => GlobalKey<FormState>());
@@ -151,6 +155,113 @@ class LoginPageState extends ConsumerState<LoginPage>
     ];
   }
 
+  Future<void> _verifySMSCode() async {
+    debugPrint(_smsCodeController.text.replaceAll(' ', ''));
+
+    debugPrint(newVerificationId);
+    final completer = Completer<void>();
+    final credential = PhoneAuthProvider.credential(
+      verificationId: newVerificationId,
+      smsCode: _smsCodeController.text.replaceAll(' ', ''),
+    );
+    FirebaseAuth.instance.signInWithCredential(credential).then((value) {
+      completer.complete();
+    }).catchError((error) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Verification Failed'),
+              content: Text(error.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          });
+      completer.completeError(error);
+    });
+    return completer.future;
+  }
+
+  Future<void> _phoneVerification() async {
+    final completer = Completer<void>();
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: _selectedCountryCode['code']! + _phoneNumberController.text,
+      verificationCompleted: (PhoneAuthCredential credential) {
+        completer.complete();
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Verification Completed'),
+              content: Text('Phone number automatically verified'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        completer.completeError(e);
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Verification Failed'),
+              content: Text(e.message ?? 'An unknown error occurred'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        completer.complete();
+        newVerificationId = verificationId;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Verification Code Sent'),
+              content: Text('A verification code has been sent to your phone'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        completer.completeError('Verification timed out');
+      },
+    );
+    return completer.future;
+  }
+
   Widget _buildEnterPhoneNumberPage(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
@@ -271,7 +382,8 @@ class LoginPageState extends ConsumerState<LoginPage>
               bottom: 48,
               left: 0,
               right: 0,
-              child: _buildNavigationButtons(context),
+              child:
+                  _buildNavigationButtons(context, onNext: _phoneVerification),
             ),
           ],
         ),
@@ -327,7 +439,7 @@ class LoginPageState extends ConsumerState<LoginPage>
               bottom: 48,
               left: 0,
               right: 0,
-              child: _buildNavigationButtons(context),
+              child: _buildNavigationButtons(context, onNext: _verifySMSCode),
             ),
           ],
         ),
