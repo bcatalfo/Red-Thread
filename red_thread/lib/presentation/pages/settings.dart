@@ -10,9 +10,17 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class SettingsPageState extends ConsumerState<SettingsPage> {
-  Set<Gender> _selectedGenders = {};
-  double _maxDistance = 50;
-  RangeValues _ageRange = const RangeValues(18, 30);
+  late Set<Gender> _localSelectedGenders;
+  late double _localMaxDistance;
+  late RangeValues _localAgeRange;
+
+  @override
+  void initState() {
+    super.initState();
+    _localSelectedGenders = Set.from(ref.read(selectedGendersProvider));
+    _localMaxDistance = ref.read(maxDistanceProvider);
+    _localAgeRange = ref.read(ageRangeProvider);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +28,18 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       appBar: AppBar(
         title: const Text("Settings"),
       ),
-      body: Column(
-        children: [
-          _buildLookingForPage(context),
-          const Divider(),
-          _buildDistancePage(context),
-          const Divider(),
-          _buildAgeRangePage(context),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildLookingForPage(context),
+            const Divider(),
+            _buildDistancePage(context),
+            const Divider(),
+            _buildAgeRangePage(context),
+            const Divider(),
+            _buildSaveButton(context),
+          ],
+        ),
       ),
     );
   }
@@ -37,75 +49,85 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Select the gender(s) you're interested in",
-              style: textTheme.headlineMedium),
-          const SizedBox(height: 20),
-          FormField<Set<Gender>>(
-            validator: (value) {
-              if (_selectedGenders.isEmpty) {
-                return "Please select at least one gender";
-              }
-              return null;
-            },
-            builder: (formFieldState) {
-              return Column(
+      child: Form(
+        key: GlobalKey<FormState>(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+                "Interested in gender(s)",
+                style: textTheme.headlineMedium,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 10.0,
+                runSpacing: 10.0, // Adds vertical padding between lines
                 children: [
-                  CheckboxListTile(
-                    title: Text('Male', style: textTheme.headlineSmall),
-                    value: _selectedGenders.contains(Gender.male),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedGenders.add(Gender.male);
-                        } else {
-                          _selectedGenders.remove(Gender.male);
-                        }
-                        formFieldState.didChange(_selectedGenders);
-                      });
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: Text('Female', style: textTheme.headlineSmall),
-                    value: _selectedGenders.contains(Gender.female),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedGenders.add(Gender.female);
-                        } else {
-                          _selectedGenders.remove(Gender.female);
-                        }
-                        formFieldState.didChange(_selectedGenders);
-                      });
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: Text('Other', style: textTheme.headlineSmall),
-                    value: _selectedGenders.contains(Gender.other),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedGenders.add(Gender.other);
-                        } else {
-                          _selectedGenders.remove(Gender.other);
-                        }
-                        formFieldState.didChange(_selectedGenders);
-                      });
-                    },
-                  ),
-                  if (formFieldState.hasError)
-                    Text(
-                      formFieldState.errorText!,
-                      style:
-                          TextStyle(color: Theme.of(context).colorScheme.error),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: FilterChip(
+                      label: Text('Male', style: textTheme.headlineSmall),
+                      selected: _localSelectedGenders.contains(Gender.male),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            _localSelectedGenders.add(Gender.male);
+                          } else {
+                            _localSelectedGenders.remove(Gender.male);
+                          }
+                        });
+                      },
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: FilterChip(
+                      label: Text('Female', style: textTheme.headlineSmall),
+                      selected: _localSelectedGenders.contains(Gender.female),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            _localSelectedGenders.add(Gender.female);
+                          } else {
+                            _localSelectedGenders.remove(Gender.female);
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: FilterChip(
+                      label: Text('Other', style: textTheme.headlineSmall),
+                      selected: _localSelectedGenders.contains(Gender.other),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            _localSelectedGenders.add(Gender.other);
+                          } else {
+                            _localSelectedGenders.remove(Gender.other);
+                          }
+                        });
+                      },
+                    ),
+                  ),
                 ],
-              );
-            },
-          ),
-        ],
+              ),
+            ),
+            if (_localSelectedGenders.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  "Please select at least one gender",
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -118,22 +140,27 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Set max distance for match", style: textTheme.headlineMedium),
-          Text("This is how far your matches can be from you.",
-              style: textTheme.bodyLarge),
+          Center(
+            child: Text(
+              "Max Distance",
+              style: textTheme.headlineMedium,
+            ),
+          ),
           const SizedBox(height: 20),
-          Text("Current distance: ${_maxDistance.round()} miles",
-              style: textTheme.headlineSmall),
+          Text(
+            "Current distance: ${_localMaxDistance.round()} miles",
+            style: textTheme.headlineSmall,
+          ),
           const SizedBox(height: 20),
           Slider(
-            value: _maxDistance,
+            value: _localMaxDistance,
             min: 1,
             max: 100,
             divisions: 99,
-            label: "${_maxDistance.round()} miles",
+            label: "${_localMaxDistance.round()} miles",
             onChanged: (double value) {
               setState(() {
-                _maxDistance = value;
+                _localMaxDistance = value;
               });
             },
           ),
@@ -150,30 +177,66 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Set age range for match", style: textTheme.headlineMedium),
-          Text("You will only match with people in this age range",
-              style: textTheme.bodyLarge),
+          Center(
+            child: Text(
+              "Age Range",
+              style: textTheme.headlineMedium,
+            ),
+          ),
           const SizedBox(height: 20),
           Text(
-              "Current age range: ${_ageRange.start.round()} - ${_ageRange.end.round()}",
-              style: textTheme.headlineSmall),
+            "Current age range: ${_localAgeRange.start.round()} - ${_localAgeRange.end.round()}",
+            style: textTheme.headlineSmall,
+          ),
           const SizedBox(height: 20),
           RangeSlider(
-            values: _ageRange,
+            values: _localAgeRange,
             min: 18,
             max: 100,
             divisions: 82,
             labels: RangeLabels(
-              "${_ageRange.start.round()}",
-              "${_ageRange.end.round()}",
+              "${_localAgeRange.start.round()}",
+              "${_localAgeRange.end.round()}",
             ),
             onChanged: (RangeValues values) {
               setState(() {
-                _ageRange = values;
+                _localAgeRange = values;
               });
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ElevatedButton(
+        onPressed: () {
+          if (_localSelectedGenders.isNotEmpty) {
+            ref.read(selectedGendersProvider.notifier).state =
+                _localSelectedGenders;
+            ref.read(maxDistanceProvider.notifier).state = _localMaxDistance;
+            ref.read(ageRangeProvider.notifier).state = _localAgeRange;
+          } else {
+            // Show validation error
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Error"),
+                content: const Text("Please select at least one gender."),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+        child: const Text("Save Settings"),
       ),
     );
   }

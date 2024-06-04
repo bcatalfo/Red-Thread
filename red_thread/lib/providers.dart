@@ -21,3 +21,10 @@ final dateTimeProvider = StateProvider<DateTime?>(
 final dateLocationProvider = StateProvider<String?>((ref) => "Starbucks");
 final dateScheduleProvider =
     StateProvider<DateSchedule>((ref) => DateSchedule.received);
+
+// New providers for settings
+final selectedGendersProvider =
+    StateProvider<Set<Gender>>((ref) => {Gender.female});
+final maxDistanceProvider = StateProvider<double>((ref) => 50);
+final ageRangeProvider =
+    StateProvider<RangeValues>((ref) => const RangeValues(18, 30));
