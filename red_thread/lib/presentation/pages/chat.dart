@@ -660,11 +660,14 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
     final theme = Theme.of(context).textTheme;
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
+    final String? match = ref.watch(matchProvider);
 
     return AlertDialog(
       backgroundColor: scheme.surfaceContainerHigh,
-      title: Text('Report User',
-          style: theme.headlineMedium?.copyWith(color: scheme.onSurface)),
+      title: Center(
+        child: Text('Report $match',
+            style: theme.headlineMedium?.copyWith(color: scheme.onSurface)),
+      ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
