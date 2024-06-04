@@ -1214,7 +1214,6 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     );
     FirebaseAuth.instance.signInWithCredential(credential).then((value) {
       completer.complete();
-      ref.read(isVerifiedProvider.notifier).state = true;
     }).catchError((error) {
       showDialog(
           context: context,
