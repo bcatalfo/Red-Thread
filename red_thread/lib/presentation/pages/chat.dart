@@ -18,41 +18,6 @@ class ChatPage extends ConsumerStatefulWidget {
 class ChatPageState extends ConsumerState<ChatPage> {
   final _scrollController = ScrollController();
   var _timestampSize = 0.0;
-  final messages = <ChatMessage>[
-    ChatMessage(
-      message: 'Where do you wanna go?',
-      author: Author.you,
-      date: DateTime(2024, 5, 9, 12, 2, 0),
-    ),
-    ChatMessage(
-      message: 'Wanna meet up at Central Park?😍',
-      author: Author.me,
-      date: DateTime(2024, 5, 9, 12, 3, 0),
-    ),
-    ChatMessage(
-      message: 'Let’s get some food first.',
-      author: Author.you,
-      date: DateTime(2024, 5, 9, 12, 5, 0),
-    ),
-    ChatMessage(
-      message: 'Test alert from the system',
-      author: Author.system,
-      date: DateTime(2024, 5, 9, 2, 7, 0),
-    ),
-    // write a long message from Author.you
-    ChatMessage(
-      message:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
-      author: Author.you,
-      date: DateTime(2024, 5, 9, 2, 11, 0),
-    ),
-    ChatMessage(
-      message:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
-      author: Author.me,
-      date: DateTime(2024, 5, 9, 2, 13, 0),
-    ),
-  ];
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -72,7 +37,10 @@ class ChatPageState extends ConsumerState<ChatPage> {
       date: DateTime.now(),
     );
     setState(() {
-      messages.add(newMessage);
+      ref.read(chatMessagesProvider.notifier).state = [
+        ...ref.read(chatMessagesProvider),
+        newMessage,
+      ];
     });
     // wait for the new message to appear before scrolling to the bottom
     // TODO: instead of using a set timeout, use a listener for when the layout is done
@@ -115,6 +83,8 @@ class ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final messages = ref.watch(chatMessagesProvider);
+
     return Scaffold(
       appBar: myAppBar(context, ref),
       drawer: myDrawer(context, ref),
@@ -525,6 +495,8 @@ class MatchBar extends ConsumerWidget {
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
     final String? match = ref.watch(matchProvider);
+    final age = ref.watch(matchAgeProvider);
+    final distance = ref.watch(matchDistanceProvider);
 
     return Container(
       color: scheme.surfaceContainerHighest,
@@ -543,7 +515,8 @@ class MatchBar extends ConsumerWidget {
                   ),
                 ),
                 // TODO: Hook this up with providers
-                Text('25, 3.5 miles away', style: theme.textTheme.bodySmall),
+                Text('$age, $distance miles away',
+                    style: theme.textTheme.bodySmall),
               ],
             ),
           ),
