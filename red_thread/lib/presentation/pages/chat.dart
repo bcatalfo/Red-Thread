@@ -820,7 +820,8 @@ class DateBar extends ConsumerWidget {
       return dateContainer(
           context, theme, scheme, dateTime!, dateLocation, ref);
     } else if (dateSchedule == DateSchedule.sent) {
-      return dateSentContainer(context, theme, scheme, dateTime!, dateLocation);
+      return dateSentContainer(
+          context, theme, scheme, dateTime!, dateLocation, ref);
     } else if (dateSchedule == DateSchedule.received) {
       return dateReceivedContainer(
           context, theme, scheme, dateTime!, dateLocation!, ref);
@@ -924,28 +925,143 @@ class DateBar extends ConsumerWidget {
     );
   }
 
-  Widget dateSentContainer(BuildContext context, ThemeData theme,
-      MaterialScheme scheme, DateTime dateTime, String? dateLocation) {
+  Widget dateSentContainer(
+      BuildContext context,
+      ThemeData theme,
+      MaterialScheme scheme,
+      DateTime dateTime,
+      String? dateLocation,
+      WidgetRef ref) {
     return Container(
       color: scheme.surfaceContainerHighest,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                dateDetailsWidget(
-                    context, theme, formatter.format(dateTime), dateLocation!),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(scheme.primary),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Date Time',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    formatter.format(dateTime),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Date Location',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    dateLocation!,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(scheme.primary),
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Your date is pending confirmation...',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: scheme.primary,
+              fontWeight: FontWeight.bold,
             ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: scheme.surfaceContainerHigh,
+                        title: Text('Cancel Pending Date',
+                            style: theme.textTheme.headlineMedium
+                                ?.copyWith(color: scheme.onSurface)),
+                        content: Text(
+                            'Are you sure you want to cancel the pending date?',
+                            style: theme.textTheme.bodyLarge
+                                ?.copyWith(color: scheme.onSurfaceVariant)),
+                        actionsAlignment: MainAxisAlignment.center,
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  ref
+                                      .read(dateScheduleProvider.notifier)
+                                      .update(
+                                          (state) => DateSchedule.notScheduled);
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel Date',
+                                    style: theme.textTheme.bodyLarge
+                                        ?.copyWith(color: scheme.primary)),
+                              ),
+                              const SizedBox(
+                                  width: 16), // Space between the buttons
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    color: scheme.primary,
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Close',
+                                    style: theme.textTheme.bodyLarge
+                                        ?.copyWith(color: scheme.onPrimary),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: scheme.secondary,
+                  foregroundColor: scheme.onSecondary,
+                ),
+                child: Text('Cancel Pending Date',
+                    style: TextStyle(color: scheme.onError)),
+              ),
+            ],
           ),
         ],
       ),
