@@ -450,16 +450,6 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
     super.dispose();
   }
 
-  void scheduleDate(
-      BuildContext context, WidgetRef ref, DateTime time, String location) {
-    debugPrint("Date button pressed");
-    ref.read(dateTimeProvider.notifier).state = time;
-    ref.read(dateLocationProvider.notifier).state = location;
-    ref
-        .read(dateScheduleProvider.notifier)
-        .update((state) => DateSchedule.sent);
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -488,175 +478,28 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(
-            width: 48,
-            height: 48,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(0),
-              ),
-              onPressed: () async {
-                if (_isTyping) {
-                  widget.onSend(_textController.text);
-                  _textController.clear();
-                  // TODO: Send the message to the backend
-                } else {
-                  // Implement other button functionality
-                  debugPrint("Other button pressed");
-                  // Schedule a date
-                  final locationController = TextEditingController();
-                  DateTime? selectedDate;
-                  TimeOfDay? selectedTime;
-
-                  await showDialog(
-                    context: context,
-                    builder: (BuildContext context) => StatefulBuilder(
-                      builder: (BuildContext context, StateSetter setState) =>
-                          AlertDialog(
-                        backgroundColor: scheme.surfaceContainerHigh,
-                        title: Text('Let\'s schedule a date!',
-                            style: theme.textTheme.headlineMedium
-                                ?.copyWith(color: scheme.onSurface)),
-                        content: SingleChildScrollView(
-                          child: ListBody(
-                            children: [
-                              TextField(
-                                controller: locationController,
-                                decoration: const InputDecoration(
-                                    labelText: "Location"),
-                              ),
-                              const SizedBox(height: 8),
-                              TextButton(
-                                onPressed: () async {
-                                  final date = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(2101),
-                                  );
-                                  if (date != null) {
-                                    setState(() {
-                                      selectedDate = date;
-                                    });
-                                  }
-                                },
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: selectedDate == null
-                                            ? 'Select Date'
-                                            : 'Selected date: ',
-                                        style: theme.textTheme.bodyLarge
-                                            ?.copyWith(
-                                                color: scheme.onSurfaceVariant),
-                                      ),
-                                      if (selectedDate != null)
-                                        TextSpan(
-                                          text:
-                                              '${selectedDate!.toLocal().month}/${selectedDate!.toLocal().day}/${selectedDate!.toLocal().year}',
-                                          style: theme.textTheme.bodyLarge
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: scheme.onSurface),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              TextButton(
-                                onPressed: () async {
-                                  final time = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                  );
-                                  if (time != null) {
-                                    setState(() {
-                                      selectedTime = time;
-                                    });
-                                  }
-                                },
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: selectedTime == null
-                                            ? 'Select Time'
-                                            : 'Selected time: ',
-                                        style: theme.textTheme.bodyLarge
-                                            ?.copyWith(
-                                                color: scheme.onSurfaceVariant),
-                                      ),
-                                      if (selectedTime != null)
-                                        TextSpan(
-                                          text:
-                                              '${selectedTime!.format(context)}',
-                                          style: theme.textTheme.bodyLarge
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: scheme.onSurface),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () {
-                                  if (selectedDate != null &&
-                                      selectedTime != null &&
-                                      locationController.text.isNotEmpty) {
-                                    final dateTime = DateTime(
-                                      selectedDate!.year,
-                                      selectedDate!.month,
-                                      selectedDate!.day,
-                                      selectedTime!.hour,
-                                      selectedTime!.minute,
-                                    );
-                                    scheduleDate(context, ref, dateTime,
-                                        locationController.text);
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    // Show an error message
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: const Text('Error'),
-                                          content: const Text(
-                                              'Please select a date, time, and enter a location.'),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              child: const Text('OK'),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
-                                child: const Text('Schedule Date'),
-                              ),
-                            ],
-                          ),
-                        ),
+          AnimatedSize(
+            duration: 200.ms,
+            child: _isTyping
+                ? SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(0),
                       ),
+                      onPressed: () async {
+                        if (_isTyping) {
+                          widget.onSend(_textController.text);
+                          _textController.clear();
+                          // TODO: Send the message to the backend
+                        }
+                      },
+                      child: const Icon(Icons.send,
+                          size: 32, key: ValueKey('send')),
                     ),
-                  );
-                }
-              },
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: _isTyping
-                    ? const Icon(Icons.send, size: 32, key: ValueKey('send'))
-                    : const Icon(Icons.calendar_month,
-                        size: 32, key: ValueKey('schedule date')),
-              ),
-            ),
+                  )
+                : Container(),
           ),
         ],
       ),
@@ -952,7 +795,7 @@ class DateBar extends ConsumerWidget {
       return dateReceivedContainer(
           context, theme, scheme, dateTime!, dateLocation!, ref);
     } else {
-      return notScheduledContainer(context, scheme, theme);
+      return notScheduledContainer(context, scheme, theme, ref);
     }
   }
 
@@ -1133,22 +976,37 @@ class DateBar extends ConsumerWidget {
     );
   }
 
-  Widget notScheduledContainer(
-      BuildContext context, MaterialScheme scheme, ThemeData theme) {
+  Widget notScheduledContainer(BuildContext context, MaterialScheme scheme,
+      ThemeData theme, WidgetRef ref) {
     return Container(
       color: scheme.surfaceContainerHighest,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.all(16.0),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Not Scheduled Yet',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: scheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
+          Text(
+            'No date scheduled yet.',
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: scheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () async {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) => DateDialog(),
+              );
+            },
+            icon: const Icon(Icons.calendar_today),
+            label: const Text('Schedule Date'),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: scheme.onPrimary,
+              backgroundColor: scheme.primary,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              textStyle: theme.textTheme.labelLarge?.copyWith(fontSize: 16),
             ),
           ),
         ],
@@ -1176,6 +1034,158 @@ class DateBar extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class DateDialog extends ConsumerStatefulWidget {
+  const DateDialog({Key? key}) : super(key: key);
+
+  @override
+  _DateDialogState createState() => _DateDialogState();
+}
+
+class _DateDialogState extends ConsumerState<DateDialog> {
+  final locationController = TextEditingController();
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final scheme = isLight ? globalLightScheme : globalDarkScheme;
+
+    return AlertDialog(
+      backgroundColor: scheme.surfaceContainerHigh,
+      title: Text('Let\'s schedule a date!',
+          style: theme.textTheme.headlineMedium
+              ?.copyWith(color: scheme.onSurface)),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: [
+            TextField(
+              controller: locationController,
+              decoration: const InputDecoration(labelText: "Location"),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2101),
+                );
+                if (date != null) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                }
+              },
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: selectedDate == null
+                          ? 'Select Date'
+                          : 'Selected date: ',
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: scheme.onSurfaceVariant),
+                    ),
+                    if (selectedDate != null)
+                      TextSpan(
+                        text:
+                            '${selectedDate!.toLocal().month}/${selectedDate!.toLocal().day}/${selectedDate!.toLocal().year}',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: scheme.onSurface),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () async {
+                final time = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                if (time != null) {
+                  setState(() {
+                    selectedTime = time;
+                  });
+                }
+              },
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: selectedTime == null
+                          ? 'Select Time'
+                          : 'Selected time: ',
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: scheme.onSurfaceVariant),
+                    ),
+                    if (selectedTime != null)
+                      TextSpan(
+                        text: '${selectedTime!.format(context)}',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: scheme.onSurface),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                if (selectedDate != null &&
+                    selectedTime != null &&
+                    locationController.text.isNotEmpty) {
+                  final dateTime = DateTime(
+                    selectedDate!.year,
+                    selectedDate!.month,
+                    selectedDate!.day,
+                    selectedTime!.hour,
+                    selectedTime!.minute,
+                  );
+                  ref.read(dateTimeProvider.notifier).state = dateTime;
+                  ref.read(dateLocationProvider.notifier).state =
+                      locationController.text;
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .update((state) => DateSchedule.sent);
+                  Navigator.of(context).pop();
+                } else {
+                  // Show an error message
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Error'),
+                        content: const Text(
+                            'Please select a date, time, and enter a location.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              child: const Text('Schedule Date'),
+            ),
+          ],
+        ),
       ),
     );
   }
