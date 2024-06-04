@@ -2,11 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>en</string>
-		<string>ja</string>
-	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -19,6 +14,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ja</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>red_thread</string>
 	<key>CFBundlePackageType</key>
@@ -27,6 +27,17 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app-1-994545713514-ios-ed230867b8caa9c2976513</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -40,7 +51,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This allows RedThread to make video calls and send your pictures directly from your camera.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Red Thread requires access to your contacts to ensure you don&apos;t match with people you already know.</string>
+	<string>Red Thread requires access to your contacts to ensure you don't match with people you already know.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This enables you to send your location to your contacts.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
