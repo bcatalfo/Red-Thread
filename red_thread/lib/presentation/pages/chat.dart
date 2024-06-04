@@ -1205,9 +1205,11 @@ class _DateDialogState extends ConsumerState<DateDialog> {
 
     return AlertDialog(
       backgroundColor: scheme.surfaceContainerHigh,
-      title: Text('Let\'s schedule a date!',
-          style: theme.textTheme.headlineMedium
-              ?.copyWith(color: scheme.onSurface)),
+      title: Center(
+        child: Text('Date Scheduler',
+            style: theme.textTheme.headlineMedium
+                ?.copyWith(color: scheme.onSurface)),
+      ),
       content: SingleChildScrollView(
         child: ListBody(
           children: [
