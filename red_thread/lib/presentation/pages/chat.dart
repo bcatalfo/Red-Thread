@@ -364,16 +364,16 @@ class ChatMessage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
 
     switch (author) {
       case Author.me:
         return ClipPath(
           clipper: ChatBubbleClipperMe(),
-          child: Card(
-            elevation: 1,
+          child: Container(
             color: theme.colorScheme.surfaceVariant,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 24.0, 8.0),
+              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 24.0, 12.0),
               child: Text(
                 message,
                 style: theme.textTheme.bodyLarge?.copyWith(
@@ -387,15 +387,14 @@ class ChatMessage extends ConsumerWidget {
       case Author.you:
         return ClipPath(
           clipper: ChatBubbleClipperYou(),
-          child: Card(
-            elevation: 1,
-            color: theme.colorScheme.surface,
+          child: Container(
+            color: isLight ? Colors.grey[200] : Colors.grey[800],
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24.0, 4.0, 8.0, 8.0),
+              padding: const EdgeInsets.fromLTRB(24.0, 4.0, 8.0, 12.0),
               child: Text(
                 message,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: isLight ? Colors.grey[800] : Colors.grey[200],
                 ),
               ),
             ),
