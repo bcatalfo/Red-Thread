@@ -79,6 +79,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
             onTap: () async {
               await FirebaseAuth.instance.signOut();
               ref.read(isAuthenticatedProvider.notifier).state = false;
+              ref.read(isVerifiedProvider.notifier).state = false;
             },
           ),
           ListTile(
