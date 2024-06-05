@@ -17,18 +17,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  // TODO: Don't ask for permissions here! Do it in the account setup page!!!
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
 
   // For apple platforms, ensure the APNS token is available before making any FCM plugin API calls
   final apnsToken = await FirebaseMessaging.instance.getAPNSToken();

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1010,7 +1011,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               bottom: 64,
               left: 0,
               right: 0,
-              child: _buildNavigationButtons(context),
+              child: _buildNavigationButtons(context,
+                  onNext: _askForNotifications),
             ),
             Align(
               alignment: const FractionalOffset(0.5, 0.333),
@@ -1203,7 +1205,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     );
   }
 
-  Future<void> _verifySMSCode() {
+  Future<void> _verifySMSCode() async {
     debugPrint(_smsCodeController.text.replaceAll(' ', ''));
 
     debugPrint(newVerificationId);
@@ -1235,6 +1237,39 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     });
     return completer.future;
   }
+}
+
+Future<void> _askForNotifications() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final completer = Completer<void>();
+
+  try {
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      completer.complete(); // Notify the Completer that the operation is done
+      debugPrint('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      completer.complete(); // Notify the Completer that the operation is done
+      debugPrint('User granted provisional permission');
+    } else {
+      completer.completeError(
+          'User denied permission'); // Notify the Completer with an error
+    }
+  } catch (e) {
+    completer.completeError(e); // Notify the Completer with an error
+  }
+
+  return completer.future;
 }
 
 class SmsCodeInputFormatter extends TextInputFormatter {
