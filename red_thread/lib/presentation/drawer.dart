@@ -1,4 +1,6 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +54,8 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                       Text('Dark Mode', style: theme.textTheme.displayMedium),
                   onTap: () {
                     ref.read(themeModeProvider.notifier).state = ThemeMode.dark;
+                    FirebaseAnalytics.instance
+                        .logEvent(name: 'dark_mode_enabled');
                   })
               : ListTile(
                   leading: Icon(Icons.light_mode,
@@ -61,6 +65,8 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                   onTap: () {
                     ref.read(themeModeProvider.notifier).state =
                         ThemeMode.light;
+                    FirebaseAnalytics.instance
+                        .logEvent(name: "light_mode_enabled");
                   },
                 ),
           ListTile(
@@ -80,6 +86,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
               await FirebaseAuth.instance.signOut();
               ref.read(isAuthenticatedProvider.notifier).state = false;
               ref.read(isVerifiedProvider.notifier).state = false;
+              FirebaseAnalytics.instance.logEvent(name: 'user_logged_out');
             },
           ),
           ListTile(
@@ -108,6 +115,8 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                               await FirebaseAuth.instance.currentUser?.delete();
                               ref.read(isAuthenticatedProvider.notifier).state =
                                   false;
+                              FirebaseAnalytics.instance
+                                  .logEvent(name: 'user_deleted');
                             },
                             child: Text('Delete',
                                 style: theme.textTheme.bodyLarge?.copyWith(
