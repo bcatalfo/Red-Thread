@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -927,6 +928,9 @@ class DateBar extends ConsumerWidget {
                                         author: Author.system,
                                         date: DateTime.now()),
                                   ];
+                                  FirebaseAnalytics.instance.logEvent(
+                                    name: 'date_canceled',
+                                  );
                                 },
                                 child: Text('Yes',
                                     style: theme.textTheme.bodyLarge
@@ -968,6 +972,9 @@ class DateBar extends ConsumerWidget {
               TextButton(
                 onPressed: () {
                   // Placeholder for check-in functionality
+                  FirebaseAnalytics.instance.logEvent(
+                    name: 'date_checked_in',
+                  );
                 },
                 child: Text('Check In'),
                 style: TextButton.styleFrom(
@@ -1086,6 +1093,9 @@ class DateBar extends ConsumerWidget {
                                       author: Author.system,
                                       date: DateTime.now()),
                                 ];
+                                FirebaseAnalytics.instance.logEvent(
+                                  name: 'pending_date_canceled',
+                                );
                               },
                               child: Text('Cancel Date',
                                   style: theme.textTheme.bodyLarge
@@ -1167,6 +1177,9 @@ class DateBar extends ConsumerWidget {
                         author: Author.system,
                         date: DateTime.now()),
                   ];
+                  FirebaseAnalytics.instance.logEvent(
+                    name: 'date_declined',
+                  );
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: scheme.secondary,
@@ -1187,6 +1200,9 @@ class DateBar extends ConsumerWidget {
                         author: Author.system,
                         date: DateTime.now()),
                   ];
+                  FirebaseAnalytics.instance.logEvent(
+                    name: 'date_accepted',
+                  );
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: scheme.primary,
@@ -1396,6 +1412,13 @@ class _DateDialogState extends ConsumerState<DateDialog> {
                         author: Author.system,
                         date: DateTime.now()),
                   ];
+                  FirebaseAnalytics.instance.logEvent(
+                    name: 'date_requested',
+                    parameters: {
+                      'date_time': formatter.format(dateTime),
+                      'location': locationController.text,
+                    },
+                  );
                   Navigator.of(context).pop();
                 } else {
                   // Show an error message
