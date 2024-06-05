@@ -100,7 +100,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           dbref.child('users').child(user.uid).set({
             'displayName': _displayNameController.text,
             'birthday': _birthdayController.text,
-            'phoneNumber': _phoneNumberController.text,
+            'phoneNumber':
+                _selectedCountryCode['code']! + _phoneNumberController.text,
           });
         }
         ref.read(isAuthenticatedProvider.notifier).state = true;
