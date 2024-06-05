@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,8 +75,10 @@ class QueuePageState extends ConsumerState<QueuePage> {
           ref.read(inQueueProvider.notifier).state = !inQueue;
           if (inQueue) {
             ref.read(whenJoinedQueueProvider.notifier).state = null;
+            FirebaseAnalytics.instance.logEvent(name: 'exit_queue');
           } else {
             ref.read(whenJoinedQueueProvider.notifier).state = DateTime.now();
+            FirebaseAnalytics.instance.logEvent(name: 'enter_queue');
           }
         },
         backgroundColor: theme.colorScheme.primaryContainer,
