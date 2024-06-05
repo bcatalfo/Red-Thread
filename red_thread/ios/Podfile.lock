@@ -241,6 +241,7 @@ SPEC REPOS:
     - FirebaseInstallations
     - FirebaseMessaging
     - FirebaseSharedSwift
+    - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleMLKit
     - GoogleToolboxForMac
