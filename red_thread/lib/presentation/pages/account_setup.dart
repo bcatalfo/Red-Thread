@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:red_thread/providers.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 
 class AccountSetupPage extends ConsumerStatefulWidget {
   const AccountSetupPage({Key? key}) : super(key: key);
@@ -26,7 +27,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   double _maxDistance = 50;
   RangeValues _ageRange = const RangeValues(18, 30);
   String newVerificationId = '';
-  //List<Contact> _contacts = [];
+  List<Contact> _contacts = [];
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -1102,34 +1103,23 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   }
 
   Future<void> _getContacts() async {
-    // TODO: Make this actually get the user's contacts
-    final completer = Completer<void>();
+    //TODO: upload contacts to firebase
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Allow Access to Contacts'),
-          content: Text('This app would like to access your contacts.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                completer.completeError('Permission denied');
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                completer.complete();
-              },
-              child: Text('Allow'),
-            ),
-          ],
-        );
-      },
-    );
+    final completer = Completer<void>();
+    if (await FlutterContacts.requestPermission()) {
+      // Get all contacts (lightly fetched)
+      List<Contact> contacts = await FlutterContacts.getContacts();
+
+      // Get all contacts (fully fetched)
+      contacts = await FlutterContacts.getContacts(
+          withProperties: true, withPhoto: false);
+      print(contacts);
+      print("Contacts: $contacts");
+      completer.complete();
+    } else {
+      completer.completeError('Permission denied');
+      print('Permission denied');
+    }
 
     await completer.future;
   }
