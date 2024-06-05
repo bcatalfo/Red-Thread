@@ -16,8 +16,8 @@ final isDayAfterDateProvider = StateProvider<bool>((ref) => false);
 final faceImageProvider = StateProvider<InputImage?>((ref) => null);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);
-final dateTimeProvider = StateProvider<DateTime?>(
-    (ref) => DateTime.now().add(const Duration(days: 1)));
+final dateTimeProvider =
+    StateProvider<DateTime?>((ref) => DateTime(2024, 6, 5, 17, 0));
 final dateLocationProvider = StateProvider<String?>((ref) => "Starbucks");
 final dateScheduleProvider =
     StateProvider<DateSchedule>((ref) => DateSchedule.received);
@@ -50,21 +50,8 @@ final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => [
         date: DateTime(2024, 5, 9, 12, 5, 0),
       ),
       ChatMessage(
-        message: 'Test alert from the system',
+        message: 'Date requested at Starbucks, Wednesday, June 5, 5:00 PM.',
         author: Author.system,
-        date: DateTime(2024, 5, 9, 2, 7, 0),
-      ),
-      // write a long message from Author.you
-      ChatMessage(
-        message:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
-        author: Author.you,
-        date: DateTime(2024, 5, 9, 2, 11, 0),
-      ),
-      ChatMessage(
-        message:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.',
-        author: Author.me,
-        date: DateTime(2024, 5, 9, 2, 13, 0),
+        date: DateTime(2024, 5, 9, 12, 6, 0),
       ),
     ]);

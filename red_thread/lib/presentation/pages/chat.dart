@@ -81,9 +81,29 @@ class ChatPageState extends ConsumerState<ChatPage> {
     super.dispose();
   }
 
+  Widget _buildDateSeparator(DateTime date) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Text(
+          DateFormat('EEEE, MMM d').format(date),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
+
+    ref.listen<List<ChatMessage>>(chatMessagesProvider, (previous, next) {
+      if (previous != next) {
+        Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+      }
+    });
 
     return Scaffold(
       appBar: myAppBar(context, ref),
@@ -128,56 +148,19 @@ class ChatPageState extends ConsumerState<ChatPage> {
                     controller: _scrollController,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      switch (messages[index].author) {
-                        case Author.me:
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Flexible(child: messages[index]),
-                              SizedBox(
-                                width: _timestampSize.abs(),
-                                height: 24,
-                                child: Opacity(
-                                  opacity: (_timestampSize / -100).clamp(0, 1),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      DateFormat('h:mm a')
-                                          .format(messages[index].date),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          );
-                        case Author.you || Author.system:
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(child: messages[index]),
-                              SizedBox(
-                                width: _timestampSize.abs(),
-                                height: 24,
-                                child: Opacity(
-                                  opacity: (_timestampSize / -100).clamp(0, 1),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      DateFormat('h:mm a')
-                                          .format(messages[index].date),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          );
+                      List<Widget> messageWidgets = [];
+                      if (index == 0 ||
+                          messages[index].date.day !=
+                              messages[index - 1].date.day) {
+                        messageWidgets
+                            .add(_buildDateSeparator(messages[index].date));
                       }
+                      messageWidgets.add(_buildMessageWidget(messages[index]));
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: messageWidgets,
+                      );
                     },
                   ),
                 ),
@@ -197,6 +180,59 @@ class ChatPageState extends ConsumerState<ChatPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildMessageWidget(ChatMessage message) {
+    switch (message.author) {
+      case Author.me:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Flexible(child: message),
+            SizedBox(
+              width: _timestampSize.abs(),
+              height: 24,
+              child: Opacity(
+                opacity: (_timestampSize / -100).clamp(0, 1),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    DateFormat('h:mm a').format(message.date),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+      case Author.you || Author.system:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(child: message),
+            SizedBox(
+              width: _timestampSize.abs(),
+              height: 24,
+              child: Opacity(
+                opacity: (_timestampSize / -100).clamp(0, 1),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    DateFormat('h:mm a').format(message.date),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+    }
   }
 }
 
@@ -381,6 +417,7 @@ class ChatMessage extends ConsumerWidget {
                   color: theme.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -854,6 +891,15 @@ class DateBar extends ConsumerWidget {
                                       .update(
                                           (state) => DateSchedule.notScheduled);
                                   Navigator.of(context).pop();
+                                  ref
+                                      .read(chatMessagesProvider.notifier)
+                                      .state = [
+                                    ...ref.read(chatMessagesProvider),
+                                    ChatMessage(
+                                        message: "Date canceled",
+                                        author: Author.system,
+                                        date: DateTime.now()),
+                                  ];
                                 },
                                 child: Text('Yes',
                                     style: theme.textTheme.bodyLarge
@@ -978,74 +1024,79 @@ class DateBar extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        backgroundColor: scheme.surfaceContainerHigh,
-                        title: Text('Cancel Pending Date',
+          Center(
+            child: TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: scheme.surfaceContainerHigh,
+                      title: Center(
+                        child: Text('Cancel Pending Date',
                             style: theme.textTheme.headlineMedium
                                 ?.copyWith(color: scheme.onSurface)),
-                        content: Text(
-                            'Are you sure you want to cancel the pending date?',
-                            style: theme.textTheme.bodyLarge
-                                ?.copyWith(color: scheme.onSurfaceVariant)),
-                        actionsAlignment: MainAxisAlignment.center,
-                        actions: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  ref
-                                      .read(dateScheduleProvider.notifier)
-                                      .update(
-                                          (state) => DateSchedule.notScheduled);
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Cancel Date',
-                                    style: theme.textTheme.bodyLarge
-                                        ?.copyWith(color: scheme.primary)),
-                              ),
-                              const SizedBox(
-                                  width: 16), // Space between the buttons
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    color: scheme.primary,
-                                  ),
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Close',
-                                    style: theme.textTheme.bodyLarge
-                                        ?.copyWith(color: scheme.onPrimary),
-                                  ),
+                      ),
+                      content: Text(
+                          'Are you sure you want to cancel the pending date?',
+                          style: theme.textTheme.bodyLarge
+                              ?.copyWith(color: scheme.onSurfaceVariant)),
+                      actionsAlignment: MainAxisAlignment.center,
+                      actions: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                ref.read(dateScheduleProvider.notifier).update(
+                                    (state) => DateSchedule.notScheduled);
+                                Navigator.of(context).pop();
+                                ref.read(chatMessagesProvider.notifier).state =
+                                    [
+                                  ...ref.read(chatMessagesProvider),
+                                  ChatMessage(
+                                      message: "Pending date canceled",
+                                      author: Author.system,
+                                      date: DateTime.now()),
+                                ];
+                              },
+                              child: Text('Cancel Date',
+                                  style: theme.textTheme.bodyLarge
+                                      ?.copyWith(color: scheme.primary)),
+                            ),
+                            const SizedBox(
+                                width: 16), // Space between the buttons
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  color: scheme.primary,
+                                ),
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Close',
+                                  style: theme.textTheme.bodyLarge
+                                      ?.copyWith(color: scheme.onPrimary),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: scheme.secondary,
-                  foregroundColor: scheme.onSecondary,
-                ),
-                child: Text('Cancel Pending Date',
-                    style: TextStyle(color: scheme.onError)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: scheme.secondary,
+                foregroundColor: scheme.onSecondary,
               ),
-            ],
+              child: Text('Cancel Pending Date',
+                  style: TextStyle(color: scheme.onError)),
+            ),
           ),
         ],
       ),
@@ -1078,9 +1129,18 @@ class DateBar extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
-                onPressed: () => ref
-                    .read(dateScheduleProvider.notifier)
-                    .update((state) => DateSchedule.notScheduled),
+                onPressed: () {
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .update((state) => DateSchedule.notScheduled);
+                  ref.read(chatMessagesProvider.notifier).state = [
+                    ...ref.read(chatMessagesProvider),
+                    ChatMessage(
+                        message: "Date declined",
+                        author: Author.system,
+                        date: DateTime.now()),
+                  ];
+                },
                 style: TextButton.styleFrom(
                   backgroundColor: scheme.secondary,
                   foregroundColor: scheme.onSecondary,
@@ -1089,9 +1149,18 @@ class DateBar extends ConsumerWidget {
               ),
               const SizedBox(width: 20), // Space between the buttons
               TextButton(
-                onPressed: () => ref
-                    .read(dateScheduleProvider.notifier)
-                    .update((state) => DateSchedule.confirmed),
+                onPressed: () {
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .update((state) => DateSchedule.confirmed);
+                  ref.read(chatMessagesProvider.notifier).state = [
+                    ...ref.read(chatMessagesProvider),
+                    ChatMessage(
+                        message: "Date accepted",
+                        author: Author.system,
+                        date: DateTime.now()),
+                  ];
+                },
                 style: TextButton.styleFrom(
                   backgroundColor: scheme.primary,
                   foregroundColor: scheme.onPrimary,
@@ -1286,11 +1355,20 @@ class _DateDialogState extends ConsumerState<DateDialog> {
                     selectedTime!.minute,
                   );
                   ref.read(dateTimeProvider.notifier).state = dateTime;
+                  var formatter = DateFormat('EEEE, MMMM d, h:mm a');
                   ref.read(dateLocationProvider.notifier).state =
                       locationController.text;
                   ref
                       .read(dateScheduleProvider.notifier)
                       .update((state) => DateSchedule.sent);
+                  ref.read(chatMessagesProvider.notifier).state = [
+                    ...ref.read(chatMessagesProvider),
+                    ChatMessage(
+                        message:
+                            "Date requested at ${locationController.text}, ${formatter.format(dateTime)}",
+                        author: Author.system,
+                        date: DateTime.now()),
+                  ];
                   Navigator.of(context).pop();
                 } else {
                   // Show an error message
