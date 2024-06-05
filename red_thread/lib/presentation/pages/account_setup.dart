@@ -102,6 +102,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             'birthday': _birthdayController.text,
             'phoneNumber':
                 _selectedCountryCode['code']! + _phoneNumberController.text,
+            'ageRange': {
+              'start': _ageRange.start.round(),
+              'end': _ageRange.end.round(),
+            },
+            'maxDistance': _maxDistance.round(),
+            'gender': _selectedGender.toString(),
+            'lookingFor': _selectedGenders.toString(),
           });
         }
         ref.read(isAuthenticatedProvider.notifier).state = true;
