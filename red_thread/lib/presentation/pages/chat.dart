@@ -802,6 +802,27 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Report submitted')),
                   );
+                  FirebaseAnalytics.instance.logEvent(
+                    name: 'report_user',
+                    parameters: {
+                      'reason1': _selectedReasons.isNotEmpty
+                          ? _selectedReasons.elementAt(0)
+                          : '',
+                      'reason2': _selectedReasons.length > 1
+                          ? _selectedReasons.elementAt(1)
+                          : '',
+                      'reason3': _selectedReasons.length > 2
+                          ? _selectedReasons.elementAt(2)
+                          : '',
+                      'reason4': _selectedReasons.length > 3
+                          ? _selectedReasons.elementAt(3)
+                          : '',
+                      'reason5': _selectedReasons.length > 4
+                          ? _selectedReasons.elementAt(4)
+                          : '',
+                      'other_reason': _otherReason ?? '',
+                    },
+                  );
                 }
               },
               child: Container(
