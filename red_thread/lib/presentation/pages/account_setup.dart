@@ -9,6 +9,7 @@ import 'package:red_thread/providers.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AccountSetupPage extends ConsumerStatefulWidget {
   const AccountSetupPage({Key? key}) : super(key: key);
@@ -92,6 +93,24 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             )
             .then((value) => setState(() {}));
       } else {
+        FirebaseDatabase database = FirebaseDatabase.instance;
+        DatabaseReference dbref = database.ref();
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          dbref.child('users').child(user.uid).set({
+            'displayName': _displayNameController.text,
+            'birthday': _birthdayController.text,
+            'phoneNumber':
+                _selectedCountryCode['code']! + _phoneNumberController.text,
+            'ageRange': {
+              'start': _ageRange.start.round(),
+              'end': _ageRange.end.round(),
+            },
+            'maxDistance': _maxDistance.round(),
+            'gender': _selectedGender.toString(),
+            'lookingFor': _selectedGenders.toString(),
+          });
+        }
         ref.read(isAuthenticatedProvider.notifier).state = true;
       }
     }
