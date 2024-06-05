@@ -33,8 +33,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   final TextEditingController _smsCodeController = TextEditingController();
   final List<Map<String, String>> _countryCodes = [
     {'name': 'US', 'code': '+1'},
-    {'name': 'India', 'code': '+91'},
-    {'name': 'UK', 'code': '+44'},
+    {'name': 'Canada', 'code': '+1'},
     {'name': 'Japan', 'code': '+81'},
     // Add more country codes and names as needed
   ];
