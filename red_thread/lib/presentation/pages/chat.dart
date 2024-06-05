@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -45,6 +46,12 @@ class ChatPageState extends ConsumerState<ChatPage> {
     // wait for the new message to appear before scrolling to the bottom
     // TODO: instead of using a set timeout, use a listener for when the layout is done
     Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+    FirebaseAnalytics.instance.logEvent(
+      name: "send_message",
+      parameters: {
+        "message": text,
+      },
+    );
   }
 
   late StreamSubscription<bool> keyboardSubscription;
