@@ -28,3 +28,5 @@ red_thread/macos/Podfile
 red_thread/macos/Flutter/GeneratedPluginRegistrant.swift
 red_thread/macos/Flutter/ephemeral/flutter_export_environment.sh
 red_thread/macos/Flutter/ephemeral/Flutter-Generated.xcconfig
+
+**/.DS_Store
