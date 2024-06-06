@@ -558,97 +558,96 @@ class MatchBar extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                // TODO: Hook this up with providers
                 Text('$age, $distance miles away',
                     style: theme.textTheme.bodySmall),
               ],
             ),
           ),
-          TextButton.icon(
-            icon: Icon(Icons.block, color: scheme.primary),
-            label: Text(
-              'Unmatch',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: scheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            onPressed: () {
-              // Returns you to the queue
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  backgroundColor: scheme.surfaceContainerHigh,
-                  title: Center(
-                    child: Text('Unmatch with $match?',
-                        style: theme.textTheme.headlineMedium
-                            ?.copyWith(color: scheme.onSurface)),
-                  ),
-                  content: Text(
-                      'Are you sure you want to unmatch? This action cannot be undone.',
-                      style: theme.textTheme.bodyLarge
-                          ?.copyWith(color: scheme.onSurfaceVariant)),
-                  actionsAlignment: MainAxisAlignment.center,
-                  actions: [
-                    ButtonBar(
-                      alignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            unmatch(context, ref);
-                          },
-                          child: Text('Unmatch',
-                              style: theme.textTheme.bodyLarge
-                                  ?.copyWith(color: scheme.primary)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12.0),
-                              color: scheme.primary,
+          PopupMenuButton<int>(
+            icon: Icon(Icons.more_vert, color: scheme.primary),
+            color: scheme.surfaceContainerHigh,
+            onSelected: (int result) {
+              if (result == 1) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: scheme.surfaceContainerHigh,
+                      title: Center(
+                        child: Text('Unmatch with $match?',
+                            style: theme.textTheme.headlineMedium
+                                ?.copyWith(color: scheme.onSurface)),
+                      ),
+                      content: Text(
+                          'Are you sure you want to unmatch? This action cannot be undone.',
+                          style: theme.textTheme.bodyLarge
+                              ?.copyWith(color: scheme.onSurfaceVariant)),
+                      actionsAlignment: MainAxisAlignment.center,
+                      actions: [
+                        ButtonBar(
+                          alignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                unmatch(context, ref);
+                              },
+                              child: Text('Unmatch',
+                                  style: theme.textTheme.bodyLarge
+                                      ?.copyWith(color: scheme.primary)),
                             ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Cancel',
-                              style: theme.textTheme.bodyLarge
-                                  ?.copyWith(color: scheme.onPrimary),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  color: scheme.primary,
+                                ),
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Cancel',
+                                  style: theme.textTheme.bodyLarge
+                                      ?.copyWith(color: scheme.onPrimary),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
-                    ),
-                  ],
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(0),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton.icon(
-              onPressed: () {
+                    );
+                  },
+                );
+              } else if (result == 2) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return ReportDialog();
                   },
                 );
-              },
-              icon: Icon(Icons.flag, color: scheme.primary),
-              label: Text(
-                'Report',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: scheme.primary,
-                  fontWeight: FontWeight.bold,
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+              PopupMenuItem<int>(
+                value: 1,
+                child: ListTile(
+                  leading: Icon(Icons.block, color: scheme.onSurface),
+                  title: Text('Unmatch',
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: scheme.onSurface)),
                 ),
               ),
-            ),
+              PopupMenuItem<int>(
+                value: 2,
+                child: ListTile(
+                  leading: Icon(Icons.flag, color: scheme.onSurface),
+                  title: Text('Report',
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: scheme.onSurface)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
