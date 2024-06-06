@@ -26,6 +26,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   int _currentStep = 0;
   Gender? _selectedGender;
   Set<Gender> _selectedGenders = {};
+  double latitude = 0.0;
+  double longitude = 0.0;
   double _maxDistance = 50;
   RangeValues _ageRange = const RangeValues(18, 30);
   String newVerificationId = '';
@@ -109,6 +111,10 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             'maxDistance': _maxDistance.round(),
             'gender': _selectedGender.toString(),
             'lookingFor': _selectedGenders.toString(),
+            'location': {
+              'latitude': latitude,
+              'longitude': longitude,
+            },
           });
         }
         ref.read(isAuthenticatedProvider.notifier).state = true;
@@ -1247,7 +1253,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return completer.future;
   }
 
-  Future<Object> _getLocation() async {
+  Future<void> _getLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -1282,7 +1288,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     print('Location permissions are granted');
-    return await Geolocator.getCurrentPosition();
+    await Geolocator.getCurrentPosition().then(
+      (value) {
+        latitude = value.latitude;
+        longitude = value.longitude;
+        return Future.value();
+      },
+    );
   }
 }
 
