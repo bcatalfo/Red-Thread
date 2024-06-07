@@ -246,6 +246,12 @@ class SurveyPageState extends ConsumerState<SurveyPage>
             });
             _nextStep();
           }),
+          _buildAnswerButton('Maybe 🤔', () {
+            setState(() {
+              _surveyResponses[3]['answer'] = 'Maybe 🤔';
+            });
+            _nextStep();
+          }),
           _buildAnswerButton('No 😕', () {
             setState(() {
               _surveyResponses[3]['answer'] = 'No 😕';
@@ -262,6 +268,12 @@ class SurveyPageState extends ConsumerState<SurveyPage>
           _buildAnswerButton('Yes! 😃', () {
             setState(() {
               _surveyResponses[4]['answer'] = 'Yes! 😃';
+            });
+            _nextStep();
+          }),
+          _buildAnswerButton('Maybe 🤔', () {
+            setState(() {
+              _surveyResponses[3]['answer'] = 'Maybe 🤔';
             });
             _nextStep();
           }),
