@@ -77,9 +77,7 @@ class LoginPageState extends ConsumerState<LoginPage>
               curve: Curves.easeInOut,
             )
             .then((value) => setState(() {}));
-      } else {
-        ref.read(isAuthenticatedProvider.notifier).state = true;
-      }
+      } else {}
     }
   }
 

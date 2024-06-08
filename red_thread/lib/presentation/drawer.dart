@@ -84,7 +84,6 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
             title: Text('Log Out', style: theme.textTheme.displayMedium),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
-              ref.read(isAuthenticatedProvider.notifier).state = false;
               ref.read(isVerifiedProvider.notifier).state = false;
               FirebaseAnalytics.instance.logEvent(name: 'user_logged_out');
             },
@@ -113,8 +112,6 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                           TextButton(
                             onPressed: () async {
                               await FirebaseAuth.instance.currentUser?.delete();
-                              ref.read(isAuthenticatedProvider.notifier).state =
-                                  false;
                               FirebaseAnalytics.instance
                                   .logEvent(name: 'user_deleted');
                             },

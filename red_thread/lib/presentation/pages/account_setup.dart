@@ -117,7 +117,6 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
             },
           });
         }
-        ref.read(isAuthenticatedProvider.notifier).state = true;
       }
     }
   }
@@ -191,8 +190,6 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       _buildTermsPage(context),
       _buildDisplayNamePage(context),
       _buildBirthdayPage(context),
-      _buildEnterPhoneNumberPage(context),
-      _buildEnterSMSCodePage(context),
       _buildFaceVerificationPage(context),
       _buildGenderPage(context),
       _buildLookingForPage(context),
@@ -201,12 +198,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       _buildLocationPage(context),
       _buildNotificationsPage(context),
       _buildContactsPage(context),
+      _buildEnterPhoneNumberPage(context),
+      _buildEnterSMSCodePage(context),
     ];
   }
 
   Widget _buildTermsPage(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -480,7 +478,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[3], // Ensure correct key index
+        key: _formKeys[11], // Ensure correct key index
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -609,7 +607,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[4], // Ensure correct key index
+        key: _formKeys[12], // Ensure correct key index
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -665,7 +663,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[5],
+        key: _formKeys[3],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -707,7 +705,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[6],
+        key: _formKeys[4],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -789,7 +787,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[7],
+        key: _formKeys[5],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -881,7 +879,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[8],
+        key: _formKeys[6],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -928,7 +926,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[9],
+        key: _formKeys[7],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -979,7 +977,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[10],
+        key: _formKeys[8],
         autovalidateMode: AutovalidateMode.always,
         child: Stack(
           children: [
@@ -1019,7 +1017,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[11],
+        key: _formKeys[9],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -1155,7 +1153,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[12],
+        key: _formKeys[10],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
