@@ -21,7 +21,7 @@ PODS:
     - Firebase/Analytics (= 10.25.0)
     - firebase_core
     - Flutter
-  - firebase_auth (4.20.0):
+  - firebase_auth (4.19.5):
     - Firebase/Auth (= 10.25.0)
     - firebase_core
     - Flutter
@@ -32,7 +32,7 @@ PODS:
     - Firebase/Database (= 10.25.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (14.9.4):
+  - firebase_messaging (14.9.2):
     - Firebase/Messaging (= 10.25.0)
     - firebase_core
     - Flutter
@@ -295,10 +295,10 @@ SPEC CHECKSUMS:
   camera_avfoundation: 759172d1a77ae7be0de08fc104cfb79738b8a59e
   Firebase: 0312a2352584f782ea56f66d91606891d4607f06
   firebase_analytics: cc06e24d6a2343c44f845b3112143db72d10ef78
-  firebase_auth: 5719ddc9f654b813405899480e84971bd8e61235
+  firebase_auth: 76ea642e91a9e914b3af751a416046ce1a965cf4
   firebase_core: a626d00494efa398e7c54f25f1454a64c8abf197
   firebase_database: 2713033e426b176d4fe5e7195f3d19aa1b549a91
-  firebase_messaging: 06391e8f35dc65a00c56580266285263d2861f10
+  firebase_messaging: 8999827b6efc9c3ab4b1f9dc246deaa7f13dbf88
   FirebaseAnalytics: ec00fe8b93b41dc6fe4a28784b8e51da0647a248
   FirebaseAppCheckInterop: 5da5ce93e8797a215e3f677fb0654b74e736c8b8
   FirebaseAuth: c0f93dcc570c9da2bffb576969d793e95c344fbb

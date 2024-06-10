@@ -19,11 +19,15 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(
         path: '/',
         builder: (context, state) {
-          final isAuthenticated = ref.watch(isAuthenticatedProvider);
+          final isAuthenticatedAsyncValue = ref.watch(isAuthenticatedProvider);
+          final isAuthenticated = isAuthenticatedAsyncValue.maybeWhen(
+            data: (data) => data,
+            orElse: () => false,
+          );
           final matchFound = ref.watch(matchProvider) != null;
           final isDayAfterDate = ref.watch(isDayAfterDateProvider);
 
-          if (!isAuthenticated) {
+          if (!(isAuthenticated)) {
             return const WelcomePage();
           }
           if (isDayAfterDate) {
