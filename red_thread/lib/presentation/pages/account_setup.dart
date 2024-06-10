@@ -31,7 +31,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   double _maxDistance = 50;
   RangeValues _ageRange = const RangeValues(18, 30);
   String newVerificationId = '';
-  List<Contact> _contacts = [];
+  List<Contact> contacts = [];
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -115,6 +115,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               'latitude': latitude,
               'longitude': longitude,
             },
+            'contacts': contacts.map((contact) {
+              return {
+                'name': contact.displayName,
+                'phoneNumbers':
+                    contact.phones.map((phone) => phone.number).toList(),
+              };
+            }).toList(),
           });
         }
       }
@@ -1132,7 +1139,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     final completer = Completer<void>();
     if (await FlutterContacts.requestPermission()) {
       // Get all contacts (lightly fetched)
-      List<Contact> contacts = await FlutterContacts.getContacts();
+      //List<Contact> contacts = await FlutterContacts.getContacts();
 
       // Get all contacts (fully fetched)
       contacts = await FlutterContacts.getContacts(
