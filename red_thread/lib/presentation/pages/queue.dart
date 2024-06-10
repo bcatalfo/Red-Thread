@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,9 +76,19 @@ class QueuePageState extends ConsumerState<QueuePage> {
           }
           ref.read(inQueueProvider.notifier).state = !inQueue;
           if (inQueue) {
+            FirebaseDatabase.instance
+                .ref()
+                .child('queue')
+                .child(FirebaseAuth.instance.currentUser!.uid)
+                .remove();
             ref.read(whenJoinedQueueProvider.notifier).state = null;
             FirebaseAnalytics.instance.logEvent(name: 'exit_queue');
           } else {
+            FirebaseDatabase.instance
+                .ref()
+                .child('queue')
+                .child(FirebaseAuth.instance.currentUser!.uid)
+                .set(DateTime.now().millisecondsSinceEpoch);
             ref.read(whenJoinedQueueProvider.notifier).state = DateTime.now();
             FirebaseAnalytics.instance.logEvent(name: 'enter_queue');
           }
@@ -108,12 +120,12 @@ class QueuePageState extends ConsumerState<QueuePage> {
     final theme = Theme.of(context);
     final matchFound = ref.watch(matchProvider) != null;
 
-    // Artificially make a match happen after 5 seconds
+    /*  // Artificially make a match happen after 5 seconds
     if (!matchFound && secsInQueue > 2) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         findMatch(context);
       });
-    }
+    } */
 
     Column body;
     if (inQueue) {
