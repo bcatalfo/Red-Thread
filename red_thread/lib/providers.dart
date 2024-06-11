@@ -32,7 +32,7 @@ final ageRangeProvider =
     StateProvider<RangeValues>((ref) => const RangeValues(18, 30));
 
 // Match details providers
-final matchProvider = StateProvider<String?>((ref) => "Emma");
+final matchProvider = StateProvider<String?>((ref) => null);
 final matchAgeProvider = StateProvider<int?>((ref) => 21);
 final matchDistanceProvider = StateProvider<double?>((ref) => 7.5);
 final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => [

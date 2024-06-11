@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:red_thread/presentation/drawer.dart';
@@ -40,8 +41,43 @@ class QueuePageState extends ConsumerState<QueuePage> {
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  void findMatch(BuildContext context) {
-    ref.read(matchProvider.notifier).state = 'Emma';
+  Future<void> findMatch(BuildContext context, Object? data) async {
+    String? user1ID;
+    final user1 = await FirebaseDatabase.instance
+        .ref('chats/$data/match_info/user1_id')
+        .get();
+    if (user1.exists) {
+      print('user1: ${user1.value}');
+      user1ID = user1.value.toString();
+    }
+    final distance = await FirebaseDatabase.instance
+        .ref('chats/$data/match_info/distance')
+        .get();
+    if (distance.exists) {
+      ref.read(matchDistanceProvider.notifier).state =
+          double.parse((distance.value as double?)!.toStringAsFixed(1));
+    }
+    if (user1ID == FirebaseAuth.instance.currentUser!.uid) {
+      final user2Age = await FirebaseDatabase.instance
+          .ref('chats/$data/match_info/user2_age')
+          .get();
+      ref.read(matchAgeProvider.notifier).state = user2Age.value as int?;
+      final user2Name = await FirebaseDatabase.instance
+          .ref('chats/$data/match_info/user2_name')
+          .get();
+      ref.read(matchProvider.notifier).state = user2Name.value.toString();
+      print('matchProvider: ${ref.read(matchProvider)}');
+    } else {
+      final user1Age = await FirebaseDatabase.instance
+          .ref('chats/$data/match_info/user1_age')
+          .get();
+      ref.read(matchAgeProvider.notifier).state = user1Age.value as int?;
+      final user1Name = await FirebaseDatabase.instance
+          .ref('chats/$data/match_info/user1_name')
+          .get();
+      ref.read(matchProvider.notifier).state = user1Name.value.toString();
+      print('matchProvider: ${ref.read(matchProvider)}');
+    }
   }
 
   Column bodyColumn(String heading, String subheading, ThemeData theme) {
@@ -119,7 +155,18 @@ class QueuePageState extends ConsumerState<QueuePage> {
     final now = DateTime.now();
     final theme = Theme.of(context);
     final matchFound = ref.watch(matchProvider) != null;
-
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    DatabaseReference chatRef =
+        FirebaseDatabase.instance.ref('users/$uid/chat');
+    chatRef.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      if (data != null) {
+        print('data: $data');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          findMatch(context, data);
+        });
+      }
+    });
     /*  // Artificially make a match happen after 5 seconds
     if (!matchFound && secsInQueue > 2) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
