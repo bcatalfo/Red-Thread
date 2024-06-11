@@ -294,7 +294,7 @@ class SurveyPageState extends ConsumerState<SurveyPage>
             // Record answers to Firebase Analytics
             await _recordAnswers();
             // Handle survey completion, e.g., navigate to another page, save results, etc.
-            ref.read(isDayAfterDateProvider.notifier).state = false;
+            ref.read(isSurveyDueProvider.notifier).state = false;
           }),
         ],
       ),

@@ -858,9 +858,10 @@ class DateBar extends ConsumerWidget {
     final dateSchedule = ref.watch(dateScheduleProvider);
 
     // TODO: Make it something special when you are on the date
-    if (dateSchedule == DateSchedule.confirmed) {
-      return dateContainer(
-          context, theme, scheme, dateTime!, dateLocation, ref);
+    if (dateSchedule == DateSchedule.confirmed ||
+        dateSchedule == DateSchedule.onDate) {
+      return dateContainer(context, theme, scheme, dateTime!, dateLocation,
+          dateSchedule == DateSchedule.onDate, ref);
     } else if (dateSchedule == DateSchedule.sent) {
       return dateSentContainer(
           context, theme, scheme, dateTime!, dateLocation, ref);
@@ -878,6 +879,7 @@ class DateBar extends ConsumerWidget {
       MaterialScheme scheme,
       DateTime dateTime,
       String? dateLocation,
+      bool hasCheckedIn,
       WidgetRef ref) {
     return Container(
       color: scheme.surfaceContainerHighest,
@@ -948,7 +950,7 @@ class DateBar extends ConsumerWidget {
                                   ),
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    'Cancel',
+                                    'No',
                                     style: theme.textTheme.bodyLarge
                                         ?.copyWith(color: scheme.onPrimary),
                                   ),
@@ -971,11 +973,139 @@ class DateBar extends ConsumerWidget {
               TextButton(
                 onPressed: () {
                   // Placeholder for check-in functionality
-                  FirebaseAnalytics.instance.logEvent(
-                    name: 'date_checked_in',
-                  );
+                  if (hasCheckedIn) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Center(child: Text('End Date')),
+                            backgroundColor: scheme.surfaceContainerHigh,
+                            content:
+                                Text('Are you sure you want to end the date?'),
+                            actions: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      ref
+                                          .read(dateScheduleProvider.notifier)
+                                          .update((state) =>
+                                              DateSchedule.notScheduled);
+                                      Navigator.of(context).pop();
+                                      ref
+                                          .read(chatMessagesProvider.notifier)
+                                          .state = [
+                                        ...ref.read(chatMessagesProvider),
+                                        ChatMessage(
+                                            message: "Date ended",
+                                            author: Author.system,
+                                            date: DateTime.now()),
+                                      ];
+                                      ref
+                                          .read(isSurveyDueProvider.notifier)
+                                          .state = true;
+                                      // TODO: Make the other person have to do the survey to and network this!
+                                      FirebaseAnalytics.instance.logEvent(
+                                        name: 'date_ended',
+                                      );
+                                    },
+                                    child: Text('Yes',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(color: scheme.primary)),
+                                  ),
+                                  const SizedBox(
+                                      width: 16), // Space between the buttons
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        color: scheme.primary,
+                                      ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'No',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(color: scheme.onPrimary),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        });
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Center(child: Text('Check In')),
+                            backgroundColor: scheme.surfaceContainerHigh,
+                            content: Text(
+                                'Are you sure you want to check in to the date? This means that you are at the location and will notify your match that you are there.'),
+                            actions: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      ref
+                                          .read(dateScheduleProvider.notifier)
+                                          .update(
+                                              (state) => DateSchedule.onDate);
+                                      Navigator.of(context).pop();
+                                      ref
+                                          .read(chatMessagesProvider.notifier)
+                                          .state = [
+                                        ...ref.read(chatMessagesProvider),
+                                        ChatMessage(
+                                            message: "You have checked in",
+                                            author: Author.system,
+                                            date: DateTime.now()),
+                                      ];
+                                      FirebaseAnalytics.instance.logEvent(
+                                        name: 'date_checked_in',
+                                      );
+                                    },
+                                    child: Text('Yes',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(color: scheme.primary)),
+                                  ),
+                                  const SizedBox(
+                                      width: 16), // Space between the buttons
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        color: scheme.primary,
+                                      ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'No',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(color: scheme.onPrimary),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        });
+                  }
                 },
-                child: Text('Check In'),
+                child: hasCheckedIn ? Text('End Date') : Text("I'm Here"),
                 style: TextButton.styleFrom(
                   backgroundColor: scheme.primary,
                   foregroundColor: scheme.onPrimary,
@@ -1096,7 +1226,7 @@ class DateBar extends ConsumerWidget {
                                   name: 'pending_date_canceled',
                                 );
                               },
-                              child: Text('Cancel Date',
+                              child: Text('Yes',
                                   style: theme.textTheme.bodyLarge
                                       ?.copyWith(color: scheme.primary)),
                             ),
@@ -1113,7 +1243,7 @@ class DateBar extends ConsumerWidget {
                                 ),
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  'Close',
+                                  'No',
                                   style: theme.textTheme.bodyLarge
                                       ?.copyWith(color: scheme.onPrimary),
                                 ),

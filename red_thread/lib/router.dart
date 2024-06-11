@@ -25,12 +25,12 @@ GoRouter createRouter(WidgetRef ref) {
             orElse: () => false,
           );
           final matchFound = ref.watch(matchProvider) != null;
-          final isDayAfterDate = ref.watch(isDayAfterDateProvider);
+          final isSurveyDue = ref.watch(isSurveyDueProvider);
 
           if (!(isAuthenticated)) {
             return const WelcomePage();
           }
-          if (isDayAfterDate) {
+          if (isSurveyDue) {
             return const SurveyPage();
           }
           if (!matchFound) {

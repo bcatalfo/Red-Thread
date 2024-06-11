@@ -7,14 +7,14 @@ import 'package:red_thread/presentation/pages/chat.dart';
 // TODO: replace other with non-binary
 enum Gender { male, female, other }
 
-enum DateSchedule { notScheduled, sent, received, confirmed }
+enum DateSchedule { notScheduled, sent, received, confirmed, onDate }
 
 // TODO: Get this from backend
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 final isAuthenticatedProvider = StreamProvider<bool>((ref) =>
     FirebaseAuth.instance.authStateChanges().map((user) => user != null));
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
-final isDayAfterDateProvider = StateProvider<bool>((ref) => false);
+final isSurveyDueProvider = StateProvider<bool>((ref) => false);
 final faceImageProvider = StateProvider<InputImage?>((ref) => null);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);
@@ -32,7 +32,7 @@ final ageRangeProvider =
     StateProvider<RangeValues>((ref) => const RangeValues(18, 30));
 
 // Match details providers
-final matchProvider = StateProvider<String?>((ref) => null);
+final matchProvider = StateProvider<String?>((ref) => "Emma");
 final matchAgeProvider = StateProvider<int?>((ref) => 21);
 final matchDistanceProvider = StateProvider<double?>((ref) => 7.5);
 final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => [
