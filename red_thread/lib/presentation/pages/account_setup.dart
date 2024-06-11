@@ -97,6 +97,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       } else {
         FirebaseDatabase database = FirebaseDatabase.instance;
         DatabaseReference dbref = database.ref();
+        final fcmToken = await FirebaseMessaging.instance.getToken();
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           dbref.child('users').child(user.uid).set({
@@ -115,6 +116,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               'latitude': latitude,
               'longitude': longitude,
             },
+            'fcmToken': fcmToken,
             'contacts': contacts.map((contact) {
               return {
                 'name': contact.displayName,
