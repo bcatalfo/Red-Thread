@@ -36,6 +36,8 @@ def match_users_and_create_chat(user1, user2):
         'users': {user1['id']: True, user2['id']: True},
         'match_info': {
             'distance': distance,
+            'user1_id': user1['id'],
+            'user2_id': user2['id'],
             'user1_name': user1['displayName'],
             'user2_name': user2['displayName'],
             'user1_age': user1['age'],
