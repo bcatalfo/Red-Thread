@@ -1,11 +1,10 @@
 import firebase_admin
 from firebase_admin import credentials, db, messaging
 from geopy.distance import great_circle
-import numpy as np
 import datetime
 import re
+import json
 
-# Initialize Firebase
 cred = credentials.Certificate('red-thread-422420-firebase-adminsdk-ndqik-31d32cdc87.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://red-thread-422420-default-rtdb.firebaseio.com/'
@@ -226,3 +225,41 @@ def match_users(event, context):
 
     print("Matchmaking process complete")
     return 'Matchmaking complete', 200
+
+def notify_new_message(data, context):
+    print("New message detected...")
+    
+    # Print the full event and context to debug their structures
+    print(f"Data: {data}")
+    print(f"Context: {context}")
+    
+    # Extract the delta (new data after the change)
+    message_data = data["delta"]
+    print(f"Delta: {json.dumps(message_data)}")
+
+    chat_id = context.resource.split('/')[6]
+    sender_id = message_data["senderId"]
+    text = message_data["text"]
+    
+    print(f"Chat ID: {chat_id}")
+    print(f"Sender ID: {sender_id}")
+    print(f"Message: {text}")
+
+    chat_ref = db.reference(f'chats/{chat_id}')
+    chat_data = chat_ref.get()
+
+    print(f"Chat data: {chat_data}")
+
+    sender_ref = db.reference(f'users/{sender_id}')
+    sender_data = sender_ref.get()
+    sender_name = sender_data['displayName']
+
+    for user_id in chat_data['users']:
+        if user_id != sender_id:
+            user_ref = db.reference(f'users/{user_id}')
+            user_data = user_ref.get()
+            print(f"User data for {user_id}: {user_data}")
+            if 'fcmToken' in user_data:
+                send_push_notification(user_data['fcmToken'], sender_name, text)
+
+# Deploy the function with the updated command
