@@ -1,5 +1,4 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -466,10 +465,6 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
-    final scheme = isLight ? globalLightScheme : globalDarkScheme;
-    final String? match = ref.watch(matchProvider);
     return Container(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -525,11 +520,11 @@ class MatchBar extends ConsumerWidget {
   const MatchBar({Key? key}) : super(key: key);
 
   void unmatch(BuildContext context, WidgetRef ref) {
-    // Add your unmatch button logic here
-    ref.read(matchProvider.notifier).state = null;
-    ref.read(inQueueProvider.notifier).state = false;
-    ref.read(whenJoinedQueueProvider.notifier).state = null;
-    ref.read(isVerifiedProvider.notifier).state = false;
+    // TODO: Implement unmatch functionality
+    // ref.read(matchProvider.notifier).state = null;
+    // ref.read(inQueueProvider.notifier).state = false;
+    // ref.read(whenJoinedQueueProvider.notifier).state = null;
+    // ref.read(isVerifiedProvider.notifier).state = false;
     debugPrint("Unmatch button pressed");
   }
 
@@ -538,7 +533,7 @@ class MatchBar extends ConsumerWidget {
     final theme = Theme.of(context);
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
-    final String? match = ref.watch(matchProvider);
+    final match = ref.watch(matchNameProvider);
     final age = ref.watch(matchAgeProvider);
     final distance = ref.watch(matchDistanceProvider);
 
@@ -552,14 +547,26 @@ class MatchBar extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '$match',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                match.when(
+                  data: (match) => Text(
+                    '$match',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  loading: () => const CircularProgressIndicator(),
+                  error: (e, _) => Text('Error: $e'),
                 ),
-                Text('$age, $distance miles away',
-                    style: theme.textTheme.bodySmall),
+                age.when(
+                  data: (age) => distance.when(
+                    data: (distance) => Text('$age, $distance miles away',
+                        style: theme.textTheme.bodySmall),
+                    loading: () => const CircularProgressIndicator(),
+                    error: (e, _) => Text('Error: $e'),
+                  ),
+                  loading: () => const CircularProgressIndicator(),
+                  error: (e, _) => Text('Error: $e'),
+                ),
               ],
             ),
           ),
@@ -666,10 +673,11 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
   String? _otherReason;
 
   void unmatch(WidgetRef ref) {
-    ref.read(matchProvider.notifier).state = null;
-    ref.read(inQueueProvider.notifier).state = false;
-    ref.read(whenJoinedQueueProvider.notifier).state = null;
-    ref.read(isVerifiedProvider.notifier).state = false;
+    // TODO: Implement unmatch functionality after reporting
+    // ref.read(matchProvider.notifier).state = null;
+    // ref.read(inQueueProvider.notifier).state = false;
+    // ref.read(whenJoinedQueueProvider.notifier).state = null;
+    // ref.read(isVerifiedProvider.notifier).state = false;
     debugPrint("Unmatch after report");
   }
 
@@ -678,7 +686,10 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
     final theme = Theme.of(context).textTheme;
     final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
-    final String? match = ref.watch(matchProvider);
+    final match = ref.watch(matchNameProvider).when(
+        data: (data) => data,
+        error: (e, _) => Text(e.toString()),
+        loading: () => CircularProgressIndicator());
 
     return AlertDialog(
       backgroundColor: scheme.surfaceContainerHigh,

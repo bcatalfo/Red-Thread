@@ -24,7 +24,10 @@ GoRouter createRouter(WidgetRef ref) {
             data: (data) => data,
             orElse: () => false,
           );
-          final matchFound = ref.watch(matchProvider) != null;
+          final matchFound = ref.watch(chatIdProvider).when(
+              data: (chatId) => chatId != null,
+              error: (e, _) => false,
+              loading: () => false);
           final isSurveyDue = ref.watch(isSurveyDueProvider);
 
           if (!(isAuthenticated)) {
