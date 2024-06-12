@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -581,9 +583,15 @@ class MatchBar extends ConsumerWidget {
                     return AlertDialog(
                       backgroundColor: scheme.surfaceContainerHigh,
                       title: Center(
-                        child: Text('Unmatch with $match?',
-                            style: theme.textTheme.headlineMedium
-                                ?.copyWith(color: scheme.onSurface)),
+                        child: match.when(
+                          data: (match) => Text('Unmatch with $match?',
+                              style: theme.textTheme.headlineMedium
+                                  ?.copyWith(color: scheme.onSurface)),
+                          error: (Object error, StackTrace stackTrace) {
+                            error.toString();
+                          },
+                          loading: () => const CircularProgressIndicator(),
+                        ),
                       ),
                       content: Text(
                           'Are you sure you want to unmatch? This action cannot be undone.',
