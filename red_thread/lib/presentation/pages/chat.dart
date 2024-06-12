@@ -587,9 +587,7 @@ class MatchBar extends ConsumerWidget {
                           data: (match) => Text('Unmatch with $match?',
                               style: theme.textTheme.headlineMedium
                                   ?.copyWith(color: scheme.onSurface)),
-                          error: (Object error, StackTrace stackTrace) {
-                            error.toString();
-                          },
+                          error: (e, _) => Text('Error: $e'),
                           loading: () => const CircularProgressIndicator(),
                         ),
                       ),
