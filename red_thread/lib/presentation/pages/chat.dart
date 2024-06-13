@@ -581,9 +581,13 @@ class MatchBar extends ConsumerWidget {
                     return AlertDialog(
                       backgroundColor: scheme.surfaceContainerHigh,
                       title: Center(
-                        child: Text('Unmatch with $match?',
-                            style: theme.textTheme.headlineMedium
-                                ?.copyWith(color: scheme.onSurface)),
+                        child: match.when(
+                          data: (match) => Text('Unmatch with $match?',
+                              style: theme.textTheme.headlineMedium
+                                  ?.copyWith(color: scheme.onSurface)),
+                          error: (e, _) => Text('Error: $e'),
+                          loading: () => const CircularProgressIndicator(),
+                        ),
                       ),
                       content: Text(
                           'Are you sure you want to unmatch? This action cannot be undone.',
