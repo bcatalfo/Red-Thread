@@ -125,25 +125,82 @@ final matchDistanceProvider = StreamProvider<double?>((ref) {
   return controller.stream;
 });
 
-final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => [
-      ChatMessage(
-        message: 'Where do you wanna go?',
-        author: Author.you,
-        date: DateTime(2024, 5, 9, 12, 2, 0),
-      ),
-      ChatMessage(
-        message: 'Wanna meet up at Central Park?😍',
-        author: Author.me,
-        date: DateTime(2024, 5, 9, 12, 3, 0),
-      ),
-      ChatMessage(
-        message: 'Let’s get some food first.',
-        author: Author.you,
-        date: DateTime(2024, 5, 9, 12, 5, 0),
-      ),
-      ChatMessage(
-        message: 'Date requested at Starbucks, Wednesday, June 5, 5:00 PM.',
-        author: Author.system,
-        date: DateTime(2024, 5, 9, 12, 6, 0),
-      ),
-    ]);
+enum Author { me, you, system }
+
+class ChatMessageModel {
+  final String message;
+  final String author; // Store user ID as author
+  final DateTime date;
+
+  ChatMessageModel({
+    required this.message,
+    required this.author, // Author is now a user ID string
+    required this.date,
+  });
+
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json) {
+    return ChatMessageModel(
+      message: json['message'],
+      author: json['author'], // Author is now a user ID string
+      date: DateTime.fromMillisecondsSinceEpoch(json['timestamp']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+      'author': author,
+      'timestamp': date.millisecondsSinceEpoch,
+    };
+  }
+}
+
+class ChatMessagesNotifier extends StateNotifier<List<ChatMessageModel>> {
+  ChatMessagesNotifier() : super([]);
+
+  void addMessage(ChatMessageModel message) {
+    state = [...state, message];
+  }
+
+  void setMessages(List<ChatMessageModel> messages) {
+    state = messages;
+  }
+}
+
+final chatMessagesStateProvider =
+    StateNotifierProvider<ChatMessagesNotifier, List<ChatMessageModel>>((ref) {
+  return ChatMessagesNotifier();
+});
+
+final chatMessagesProvider =
+    StreamProvider.autoDispose<List<ChatMessageModel>>((ref) {
+  final chatIdAsyncValue = ref.watch(chatIdProvider);
+
+  final controller = StreamController<List<ChatMessageModel>>();
+
+  chatIdAsyncValue.whenData((chatId) {
+    if (chatId == null) {
+      controller.add([]);
+      return;
+    }
+
+    DatabaseReference messagesRef =
+        FirebaseDatabase.instance.ref('chats/$chatId/messages');
+    messagesRef.onValue.listen((event) {
+      final messages = <ChatMessageModel>[];
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data != null) {
+        data.forEach((key, value) {
+          messages.add(ChatMessageModel.fromJson(value));
+        });
+      }
+      controller.add(messages);
+    });
+  });
+
+  ref.onDispose(() {
+    controller.close();
+  });
+
+  return controller.stream;
+});

@@ -1,13 +1,15 @@
+import 'dart:async';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/theme.dart';
-import 'package:red_thread/providers.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'dart:async';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:red_thread/providers.dart'; // Adjust this import based on your file structure
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -32,20 +34,26 @@ class ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void _sendMessage(String text) {
-    final newMessage = ChatMessage(
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      // Handle the case where the user is not authenticated
+      return;
+    }
+
+    final newMessage = ChatMessageModel(
       message: text,
-      author: Author.me, // TODO: get from backend
+      author: currentUser.uid,
       date: DateTime.now(),
     );
-    setState(() {
-      ref.read(chatMessagesProvider.notifier).state = [
-        ...ref.read(chatMessagesProvider),
-        newMessage,
-      ];
-    });
-    // wait for the new message to appear before scrolling to the bottom
-    // TODO: instead of using a set timeout, use a listener for when the layout is done
-    Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+    final chatId = ref.read(chatIdProvider).value;
+    if (chatId != null) {
+      final messagesRef =
+          FirebaseDatabase.instance.ref('chats/$chatId/messages').push();
+      messagesRef.set(newMessage.toJson());
+    }
+
+    ref.read(chatMessagesStateProvider.notifier).addMessage(newMessage);
+
     FirebaseAnalytics.instance.logEvent(
       name: "send_message",
       parameters: {
@@ -63,14 +71,8 @@ class ChatPageState extends ConsumerState<ChatPage> {
     super.initState();
 
     var keyboardVisibilityController = KeyboardVisibilityController();
-    // Query
-    debugPrint(
-        'Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
-
-    // Subscribe
     keyboardSubscription =
         keyboardVisibilityController.onChange.listen((bool visible) {
-      debugPrint('Keyboard visibility update. Is visible: $visible');
       if (visible) {
         Future.delayed(const Duration(milliseconds: 350), _scrollToBottom);
       }
@@ -104,13 +106,20 @@ class ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(chatMessagesProvider);
+    final messages = ref.watch(chatMessagesStateProvider);
 
-    ref.listen<List<ChatMessage>>(chatMessagesProvider, (previous, next) {
-      if (previous != next) {
+    ref.listen<AsyncValue<List<ChatMessageModel>>>(chatMessagesProvider,
+        (previous, next) {
+      if (next is AsyncData && previous != next) {
+        ref
+            .read(chatMessagesStateProvider.notifier)
+            .setMessages(next.value ?? []);
         Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
       }
     });
+
+    final sortedMessages = List<ChatMessageModel>.from(messages)
+      ..sort((a, b) => a.date.compareTo(b.date));
 
     return Scaffold(
       appBar: myAppBar(context, ref),
@@ -153,16 +162,17 @@ class ChatPageState extends ConsumerState<ChatPage> {
                   },
                   child: ListView.builder(
                     controller: _scrollController,
-                    itemCount: messages.length,
+                    itemCount: sortedMessages.length,
                     itemBuilder: (context, index) {
                       List<Widget> messageWidgets = [];
                       if (index == 0 ||
-                          messages[index].date.day !=
-                              messages[index - 1].date.day) {
-                        messageWidgets
-                            .add(_buildDateSeparator(messages[index].date));
+                          sortedMessages[index].date.day !=
+                              sortedMessages[index - 1].date.day) {
+                        messageWidgets.add(
+                            _buildDateSeparator(sortedMessages[index].date));
                       }
-                      messageWidgets.add(_buildMessageWidget(messages[index]));
+                      messageWidgets
+                          .add(_buildMessageWidget(sortedMessages[index]));
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -189,8 +199,29 @@ class ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  Widget _buildMessageWidget(ChatMessage message) {
-    switch (message.author) {
+  Widget _buildMessageWidget(ChatMessageModel messageModel) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      // Handle the case where the user is not authenticated
+      return SizedBox.shrink();
+    }
+
+    Author author;
+    if (messageModel.author == "system") {
+      author = Author.system;
+    } else if (messageModel.author == currentUser.uid) {
+      author = Author.me;
+    } else {
+      author = Author.you;
+    }
+
+    final message = ChatMessage(
+      message: messageModel.message,
+      author: author,
+      date: messageModel.date,
+    );
+
+    switch (author) {
       case Author.me:
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -209,6 +240,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                     overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
                   ),
                 ),
               ),
@@ -233,6 +265,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                     overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
                   ),
                 ),
               ),
@@ -288,8 +321,6 @@ class _AnimatedVisibilityState extends State<AnimatedVisibility> {
     );
   }
 }
-
-enum Author { me, you, system }
 
 class ChatBubbleClipperMe extends CustomClipper<Path> {
   @override
@@ -356,22 +387,22 @@ class ChatBubbleClipperYou extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
-class ChatMessage extends ConsumerWidget {
+class ChatMessage extends StatelessWidget {
   final String message;
   final Author author;
   final DateTime date;
 
-  const ChatMessage(
-      {Key? key,
-      required this.message,
-      required this.author,
-      required this.date})
-      : super(key: key);
+  const ChatMessage({
+    Key? key,
+    required this.message,
+    required this.author,
+    required this.date,
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final isLight = Theme.of(context).brightness == Brightness.light;
 
     switch (author) {
       case Author.me:
@@ -501,7 +532,6 @@ class ChatInputBarState extends ConsumerState<ChatInputBar> {
                         if (_isTyping) {
                           widget.onSend(_textController.text);
                           _textController.clear();
-                          // TODO: Send the message to the backend
                         }
                       },
                       child: const Icon(Icons.send,
@@ -595,8 +625,8 @@ class MatchBar extends ConsumerWidget {
                               ?.copyWith(color: scheme.onSurfaceVariant)),
                       actionsAlignment: MainAxisAlignment.center,
                       actions: [
-                        ButtonBar(
-                          alignment: MainAxisAlignment.spaceBetween,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextButton(
                               onPressed: () {
@@ -667,6 +697,8 @@ class MatchBar extends ConsumerWidget {
 }
 
 class ReportDialog extends ConsumerStatefulWidget {
+  const ReportDialog({Key? key}) : super(key: key);
+
   @override
   _ReportDialogState createState() => _ReportDialogState();
 }
@@ -910,7 +942,6 @@ class DateBar extends ConsumerWidget {
                   context, theme, formatter.format(dateTime), dateLocation!),
             ],
           ),
-          //const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -933,17 +964,31 @@ class DateBar extends ConsumerWidget {
                                   ref
                                       .read(dateScheduleProvider.notifier)
                                       .update(
-                                          (state) => DateSchedule.notScheduled);
+                                        (state) => DateSchedule.notScheduled,
+                                      );
                                   Navigator.of(context).pop();
+
+                                  final newMessage = ChatMessageModel(
+                                    message: "Date canceled",
+                                    author: "system",
+                                    date: DateTime.now(),
+                                  );
+
+                                  // Update local state
                                   ref
-                                      .read(chatMessagesProvider.notifier)
-                                      .state = [
-                                    ...ref.read(chatMessagesProvider),
-                                    ChatMessage(
-                                        message: "Date canceled",
-                                        author: Author.system,
-                                        date: DateTime.now()),
-                                  ];
+                                      .read(chatMessagesStateProvider.notifier)
+                                      .addMessage(newMessage);
+
+                                  // Add the message to the Firebase Realtime Database
+                                  final chatId = ref.read(chatIdProvider).value;
+                                  if (chatId != null) {
+                                    final messagesRef = FirebaseDatabase
+                                        .instance
+                                        .ref('chats/$chatId/messages')
+                                        .push();
+                                    messagesRef.set(newMessage.toJson());
+                                  }
+
                                   FirebaseAnalytics.instance.logEvent(
                                     name: 'date_canceled',
                                   );
@@ -987,7 +1032,6 @@ class DateBar extends ConsumerWidget {
               const Spacer(), // Add space between the Cancel and Check In buttons
               TextButton(
                 onPressed: () {
-                  // Placeholder for check-in functionality
                   if (hasCheckedIn) {
                     showDialog(
                         context: context,
@@ -1006,22 +1050,40 @@ class DateBar extends ConsumerWidget {
                                     onPressed: () {
                                       ref
                                           .read(dateScheduleProvider.notifier)
-                                          .update((state) =>
-                                              DateSchedule.notScheduled);
+                                          .update(
+                                            (state) =>
+                                                DateSchedule.notScheduled,
+                                          );
                                       Navigator.of(context).pop();
+
+                                      final newMessage = ChatMessageModel(
+                                        message: "Date ended",
+                                        author: "system",
+                                        date: DateTime.now(),
+                                      );
+
+                                      // Update local state
                                       ref
-                                          .read(chatMessagesProvider.notifier)
-                                          .state = [
-                                        ...ref.read(chatMessagesProvider),
-                                        ChatMessage(
-                                            message: "Date ended",
-                                            author: Author.system,
-                                            date: DateTime.now()),
-                                      ];
+                                          .read(chatMessagesStateProvider
+                                              .notifier)
+                                          .addMessage(newMessage);
+
+                                      // Add the message to the Firebase Realtime Database
+                                      final chatId =
+                                          ref.read(chatIdProvider).value;
+                                      if (chatId != null) {
+                                        final messagesRef = FirebaseDatabase
+                                            .instance
+                                            .ref('chats/$chatId/messages')
+                                            .push();
+                                        messagesRef.set(newMessage.toJson());
+                                      }
+
                                       ref
                                           .read(isSurveyDueProvider.notifier)
                                           .state = true;
-                                      // TODO: Make the other person have to do the survey to and network this!
+
+                                      // Log the event
                                       FirebaseAnalytics.instance.logEvent(
                                         name: 'date_ended',
                                       );
@@ -1074,17 +1136,34 @@ class DateBar extends ConsumerWidget {
                                       ref
                                           .read(dateScheduleProvider.notifier)
                                           .update(
-                                              (state) => DateSchedule.onDate);
+                                            (state) => DateSchedule.onDate,
+                                          );
                                       Navigator.of(context).pop();
+
+                                      final newMessage = ChatMessageModel(
+                                        message: "You have checked in",
+                                        author: "system",
+                                        date: DateTime.now(),
+                                      );
+
+                                      // Update local state
                                       ref
-                                          .read(chatMessagesProvider.notifier)
-                                          .state = [
-                                        ...ref.read(chatMessagesProvider),
-                                        ChatMessage(
-                                            message: "You have checked in",
-                                            author: Author.system,
-                                            date: DateTime.now()),
-                                      ];
+                                          .read(chatMessagesStateProvider
+                                              .notifier)
+                                          .addMessage(newMessage);
+
+                                      // Add the message to the Firebase Realtime Database
+                                      final chatId =
+                                          ref.read(chatIdProvider).value;
+                                      if (chatId != null) {
+                                        final messagesRef = FirebaseDatabase
+                                            .instance
+                                            .ref('chats/$chatId/messages')
+                                            .push();
+                                        messagesRef.set(newMessage.toJson());
+                                      }
+
+                                      // Log the event
                                       FirebaseAnalytics.instance.logEvent(
                                         name: 'date_checked_in',
                                       );
@@ -1227,16 +1306,31 @@ class DateBar extends ConsumerWidget {
                             TextButton(
                               onPressed: () {
                                 ref.read(dateScheduleProvider.notifier).update(
-                                    (state) => DateSchedule.notScheduled);
+                                      (state) => DateSchedule.notScheduled,
+                                    );
                                 Navigator.of(context).pop();
-                                ref.read(chatMessagesProvider.notifier).state =
-                                    [
-                                  ...ref.read(chatMessagesProvider),
-                                  ChatMessage(
-                                      message: "Pending date canceled",
-                                      author: Author.system,
-                                      date: DateTime.now()),
-                                ];
+
+                                final newMessage = ChatMessageModel(
+                                  message: "Pending date canceled",
+                                  author: "system",
+                                  date: DateTime.now(),
+                                );
+
+                                // Update local state
+                                ref
+                                    .read(chatMessagesStateProvider.notifier)
+                                    .addMessage(newMessage);
+
+                                // Add the message to the Firebase Realtime Database
+                                final chatId = ref.read(chatIdProvider).value;
+                                if (chatId != null) {
+                                  final messagesRef = FirebaseDatabase.instance
+                                      .ref('chats/$chatId/messages')
+                                      .push();
+                                  messagesRef.set(newMessage.toJson());
+                                }
+
+                                // Log the event
                                 FirebaseAnalytics.instance.logEvent(
                                   name: 'pending_date_canceled',
                                 );
@@ -1305,22 +1399,36 @@ class DateBar extends ConsumerWidget {
                   context, theme, formatter.format(dateTime), dateLocation!),
             ],
           ),
-          //const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
                 onPressed: () {
+                  ref.read(dateScheduleProvider.notifier).update(
+                        (state) => DateSchedule.notScheduled,
+                      );
+
+                  final newMessage = ChatMessageModel(
+                    message: "Date declined",
+                    author: "system",
+                    date: DateTime.now(),
+                  );
+
+                  // Update local state
                   ref
-                      .read(dateScheduleProvider.notifier)
-                      .update((state) => DateSchedule.notScheduled);
-                  ref.read(chatMessagesProvider.notifier).state = [
-                    ...ref.read(chatMessagesProvider),
-                    ChatMessage(
-                        message: "Date declined",
-                        author: Author.system,
-                        date: DateTime.now()),
-                  ];
+                      .read(chatMessagesStateProvider.notifier)
+                      .addMessage(newMessage);
+
+                  // Add the message to the Firebase Realtime Database
+                  final chatId = ref.read(chatIdProvider).value;
+                  if (chatId != null) {
+                    final messagesRef = FirebaseDatabase.instance
+                        .ref('chats/$chatId/messages')
+                        .push();
+                    messagesRef.set(newMessage.toJson());
+                  }
+
+                  // Log the event
                   FirebaseAnalytics.instance.logEvent(
                     name: 'date_declined',
                   );
@@ -1334,16 +1442,31 @@ class DateBar extends ConsumerWidget {
               const SizedBox(width: 20), // Space between the buttons
               TextButton(
                 onPressed: () {
+                  ref.read(dateScheduleProvider.notifier).update(
+                        (state) => DateSchedule.confirmed,
+                      );
+
+                  final newMessage = ChatMessageModel(
+                    message: "Date accepted",
+                    author: "system",
+                    date: DateTime.now(),
+                  );
+
+                  // Update local state
                   ref
-                      .read(dateScheduleProvider.notifier)
-                      .update((state) => DateSchedule.confirmed);
-                  ref.read(chatMessagesProvider.notifier).state = [
-                    ...ref.read(chatMessagesProvider),
-                    ChatMessage(
-                        message: "Date accepted",
-                        author: Author.system,
-                        date: DateTime.now()),
-                  ];
+                      .read(chatMessagesStateProvider.notifier)
+                      .addMessage(newMessage);
+
+                  // Add the message to the Firebase Realtime Database
+                  final chatId = ref.read(chatIdProvider).value;
+                  if (chatId != null) {
+                    final messagesRef = FirebaseDatabase.instance
+                        .ref('chats/$chatId/messages')
+                        .push();
+                    messagesRef.set(newMessage.toJson());
+                  }
+
+                  // Log the event
                   FirebaseAnalytics.instance.logEvent(
                     name: 'date_accepted',
                   );
@@ -1548,14 +1671,28 @@ class _DateDialogState extends ConsumerState<DateDialog> {
                   ref
                       .read(dateScheduleProvider.notifier)
                       .update((state) => DateSchedule.sent);
-                  ref.read(chatMessagesProvider.notifier).state = [
-                    ...ref.read(chatMessagesProvider),
-                    ChatMessage(
-                        message:
-                            "Date requested at ${locationController.text}, ${formatter.format(dateTime)}",
-                        author: Author.system,
-                        date: DateTime.now()),
-                  ];
+
+                  final newMessage = ChatMessageModel(
+                    message:
+                        "Date requested at ${locationController.text}, ${formatter.format(dateTime)}",
+                    author: "system",
+                    date: DateTime.now(),
+                  );
+
+                  // Update local state
+                  ref
+                      .read(chatMessagesStateProvider.notifier)
+                      .addMessage(newMessage);
+
+                  // Add the message to the Firebase Realtime Database
+                  final chatId = ref.read(chatIdProvider).value;
+                  if (chatId != null) {
+                    final messagesRef = FirebaseDatabase.instance
+                        .ref('chats/$chatId/messages')
+                        .push();
+                    messagesRef.set(newMessage.toJson());
+                  }
+
                   FirebaseAnalytics.instance.logEvent(
                     name: 'date_requested',
                     parameters: {
