@@ -1,90 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
-		<key>CADisableMinimumFrameDurationOnPhone</key>
-		<true/>
-		<key>CFBundleDevelopmentRegion</key>
-		<string>$(DEVELOPMENT_LANGUAGE)</string>
-		<key>CFBundleDisplayName</key>
-		<string>Red Thread</string>
-		<key>CFBundleExecutable</key>
-		<string>$(EXECUTABLE_NAME)</string>
-		<key>CFBundleIdentifier</key>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-		<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
-		<key>CFBundleLocalizations</key>
-		<array>
-			<string>en</string>
-			<string>ja</string>
-		</array>
-		<key>CFBundleName</key>
-		<string>red_thread</string>
-		<key>CFBundlePackageType</key>
-		<string>APPL</string>
-		<key>CFBundleShortVersionString</key>
-		<string>$(FLUTTER_BUILD_NAME)</string>
-		<key>CFBundleSignature</key>
-		<string>????</string>
-		<key>CFBundleURLTypes</key>
-		<array>
-			<dict>
-				<key>CFBundleTypeRole</key>
-				<string>Editor</string>
-				<key>CFBundleURLSchemes</key>
-				<array>
-					<string>app-1-994545713514-ios-ed230867b8caa9c2976513</string>
-				</array>
-			</dict>
-		</array>
-		<key>CFBundleVersion</key>
-		<string>$(FLUTTER_BUILD_NUMBER)</string>
-		<key>LSApplicationQueriesSchemes</key>
-		<array>
-			<string>tel</string>
-		</array>
-		<key>LSRequiresIPhoneOS</key>
-		<true/>
-		<key>NSAppleMusicUsageDescription</key>
-		<string>This enables you to send media files using RedThread</string>
-		<key>NSCameraUsageDescription</key>
-		<string>This allows RedThread to make video calls and send your pictures directly from your camera.</string>
-		<key>NSContactsUsageDescription</key>
-		<string>Red Thread requires access to your contacts to ensure you don't match with people you already know.</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>This enables you to send your location to your contacts.</string>
-		<key>NSLocationAlwaysUsageDescription</key>
-		<string>This enables you to send your location to your contacts.</string>
-		<key>NSLocationUsageDescription</key>
-		<string>This enables you to send your location to your contacts.</string>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>This enables you to send your location to your contacts.</string>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>This allows RedThread to use your microphone for voice and video calls</string>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>This enables you to send your pictures to your RedThread contacts</string>
-		<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
-		<true/>
-		<key>UIApplicationSupportsIndirectInputEvents</key>
-		<true/>
-		<key>UIBackgroundModes</key>
-		<array>
-			<string>audio</string>
-			<string>fetch</string>
-			<string>location</string>
-			<string>remote-notification</string>
-			<string>voip</string>
-		</array>
-		<key>UILaunchStoryboardName</key>
-		<string>LaunchScreen</string>
-		<key>UIMainStoryboardFile</key>
-		<string>Main</string>
-		<key>UISupportedInterfaceOrientations</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-		</array>
-		<key>UIStatusBarHidden</key>
-		<false/>
-	</dict>
+<dict>
+	<key>FirebaseMessagingAutoInitEnabled</key>
+	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Red Thread</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ja</string>
+	</array>
+	<key>CFBundleName</key>
+	<string>red_thread</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app-1-994545713514-ios-ed230867b8caa9c2976513</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This enables you to send media files using RedThread</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This allows RedThread to make video calls and send your pictures directly from your camera.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Red Thread requires access to your contacts to ensure you don&apos;t match with people you already know.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This enables you to send your location to your contacts.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This enables you to send your location to your contacts.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>This enables you to send your location to your contacts.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This enables you to send your location to your contacts.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This allows RedThread to use your microphone for voice and video calls</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This enables you to send your pictures to your RedThread contacts</string>
+	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+		<string>location</string>
+		<string>remote-notification</string>
+		<string>voip</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UIStatusBarHidden</key>
+	<false/>
+</dict>
 </plist>

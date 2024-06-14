@@ -1,3 +1,5 @@
+Make sure to run from the functions directory (idk why)
+
 To update the matching algorithm
 gcloud functions deploy match_users \
         --runtime python39 \
@@ -22,25 +24,3 @@ gcloud functions deploy notify_new_message \
     --project red-thread-422420 \
     --memory 256MB \
     --timeout 60s
-The expected message format is 
-{
-  "chats": {
-    "chat_id_1": {
-      "users": {
-        "user_id_1": true,
-        "user_id_2": true
-      },
-      "messages": {
-        "message_id_1": {
-          "senderId": "user_id_1",
-          "text": "Hello!",
-          "timestamp": "2024-06-11T00:39:00Z"
-        },
-        ...
-      },
-      ...
-    },
-    ...
-  },
-  ...
-}

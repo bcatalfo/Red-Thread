@@ -228,20 +228,20 @@ def match_users(event, context):
     print("Matchmaking process complete")
     return 'Matchmaking complete', 200
 
-def notify_new_message(data, context):
+def notify_new_message(event, context):
     print("New message detected...")
     
     # Print the full event and context to debug their structures
-    print(f"Data: {data}")
+    print(f"Data: {event}")
     print(f"Context: {context}")
     
     # Extract the delta (new data after the change)
-    message_data = data["delta"]
+    message_data = event["delta"]
     print(f"Delta: {json.dumps(message_data)}")
 
     chat_id = context.resource.split('/')[6]
-    sender_id = message_data["senderId"]
-    text = message_data["text"]
+    sender_id = message_data["author"]
+    text = message_data["message"]
     
     print(f"Chat ID: {chat_id}")
     print(f"Sender ID: {sender_id}")
@@ -260,8 +260,9 @@ def notify_new_message(data, context):
         if user_id != sender_id:
             user_ref = db.reference(f'users/{user_id}')
             user_data = user_ref.get()
-            print(f"User data for {user_id}: {user_data}")
-            if 'fcmToken' in user_data:
-                send_push_notification(user_data['fcmToken'], sender_name, text)
-
-# Deploy the function with the updated command
+            user_fcm_token = user_data.get('fcmToken')
+            if user_fcm_token:
+                print(f"Sending notification to user {user_id}")
+                send_push_notification(user_fcm_token, f"New message from {sender_name}", text)
+            else:
+                print(f"No FCM token found for user {user_id}")
