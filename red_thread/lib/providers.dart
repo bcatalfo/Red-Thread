@@ -33,6 +33,25 @@ final maxDistanceProvider = StateProvider<double>((ref) => 50);
 final ageRangeProvider =
     StateProvider<RangeValues>((ref) => const RangeValues(18, 30));
 
+// Ad providers
+final showAdProvider = StateProvider<bool>((ref) => true);
+
+final adInfoProvider = StreamProvider.autoDispose<Map<String, dynamic>>((ref) {
+  var uid = FirebaseAuth.instance.currentUser!.uid;
+  DatabaseReference adInfoRef =
+      FirebaseDatabase.instance.ref('users/$uid/adInfo');
+  return adInfoRef.onValue.map((event) {
+    final data = event.snapshot.value as Map<dynamic, dynamic>?;
+    return data != null
+        ? {
+            'showAd': data['showAd'] ?? false,
+            'price': data['price'] ?? 9.99,
+            'isLifetime': data['isLifetime'] ?? false,
+          }
+        : {'showAd': false, 'price': 9.99, 'isLifetime': false};
+  });
+});
+
 // Match details providers
 final chatIdProvider = StreamProvider<String?>((ref) {
   var uid = FirebaseAuth.instance.currentUser!.uid;
