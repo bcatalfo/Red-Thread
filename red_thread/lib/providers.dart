@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:red_thread/presentation/pages/chat.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'providers.g.dart';
 
 // TODO: replace other with non-binary
 enum Gender { male, female, other }
@@ -53,18 +55,20 @@ final adInfoProvider = StreamProvider.autoDispose<Map<String, dynamic>>((ref) {
 });
 
 // Match details providers
-final chatIdProvider = StreamProvider<String?>((ref) {
+@riverpod
+Stream<String?> chatId(ChatIdRef ref) {
   var uid = FirebaseAuth.instance.currentUser!.uid;
   DatabaseReference chatRef = FirebaseDatabase.instance.ref('users/$uid/chat');
   return chatRef.onValue.map((event) => event.snapshot.value as String?);
-});
+}
 
-final matchNameProvider = StreamProvider<String?>((ref) {
-  final chatIdAsyncValue = ref.watch(chatIdProvider);
+@riverpod
+Stream<String?> matchName(MatchNameRef ref) {
+  final chatId = ref.watch(chatIdProvider);
 
   final controller = StreamController<String?>();
 
-  chatIdAsyncValue.whenData((chatId) {
+  chatId.whenData((chatId) {
     if (chatId == null) {
       controller.add(null);
       return;
@@ -87,9 +91,10 @@ final matchNameProvider = StreamProvider<String?>((ref) {
   });
 
   return controller.stream;
-});
+}
 
-final matchAgeProvider = StreamProvider<int?>((ref) {
+@riverpod
+Stream<int?> matchAge(MatchAgeRef ref) {
   final chatIdAsyncValue = ref.watch(chatIdProvider);
 
   final controller = StreamController<int?>();
@@ -117,9 +122,10 @@ final matchAgeProvider = StreamProvider<int?>((ref) {
   });
 
   return controller.stream;
-});
+}
 
-final matchDistanceProvider = StreamProvider<double?>((ref) {
+@riverpod
+Stream<double?> matchDistance(MatchDistanceRef ref) {
   final chatIdAsyncValue = ref.watch(chatIdProvider);
 
   final controller = StreamController<double?>();
@@ -142,7 +148,7 @@ final matchDistanceProvider = StreamProvider<double?>((ref) {
   });
 
   return controller.stream;
-});
+}
 
 enum Author { me, you, system }
 
