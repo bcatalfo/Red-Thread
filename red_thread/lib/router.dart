@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/presentation/pages/chat.dart';
 import 'package:red_thread/presentation/pages/contact_us.dart';
-import 'package:red_thread/presentation/pages/verification.dart';
 import 'package:red_thread/presentation/pages/queue.dart';
 import 'package:red_thread/presentation/pages/about.dart';
 import 'package:red_thread/presentation/pages/welcome.dart';
@@ -52,10 +51,6 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(
         path: '/contact_us',
         builder: (context, state) => const ContactUsPage(),
-      ),
-      GoRoute(
-        path: '/verification',
-        builder: (context, state) => const VerificationPage(),
       ),
       GoRoute(
         path: "/login",

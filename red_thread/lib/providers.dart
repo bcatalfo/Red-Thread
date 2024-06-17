@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
-import 'package:red_thread/presentation/pages/chat.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'providers.g.dart';
@@ -48,7 +46,6 @@ class MyTheme extends _$MyTheme {
 
 final isAuthenticatedProvider = StreamProvider<bool>((ref) =>
     FirebaseAuth.instance.authStateChanges().map((user) => user != null));
-final isVerifiedProvider = StateProvider<bool>((ref) => false);
 
 @riverpod
 class SurveyDue extends _$SurveyDue {
@@ -66,7 +63,6 @@ class SurveyDue extends _$SurveyDue {
   }
 }
 
-final faceImageProvider = StateProvider<InputImage?>((ref) => null);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);
 final dateTimeProvider =

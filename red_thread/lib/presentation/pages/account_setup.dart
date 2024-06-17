@@ -48,7 +48,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   bool _agreedToTerms = false;
 
   final _formKeys = List<GlobalKey<FormState>>.generate(
-      13, (index) => GlobalKey<FormState>());
+      12, (index) => GlobalKey<FormState>());
 
   @override
   void initState() {
@@ -307,7 +307,6 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       _buildTermsPage(context),
       _buildDisplayNamePage(context),
       _buildBirthdayPage(context),
-      _buildFaceVerificationPage(context),
       _buildGenderPage(context),
       _buildLookingForPage(context),
       _buildDistancePage(context),
@@ -589,55 +588,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     );
   }
 
-  Widget _buildFaceVerificationPage(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKeys[3],
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Face Verification", style: textTheme.headlineMedium),
-                const SizedBox(height: 20),
-                Text(
-                  "To ensure the safety of our community, we require all users to verify their identity using facial recognition.",
-                  style: textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.push('/verification');
-                    },
-                    child: const Text('Start Face Verification'),
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              bottom: 48,
-              left: 0,
-              right: 0,
-              child: _buildNavigationButtons(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildGenderPage(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[4],
+        key: _formKeys[3],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -719,7 +676,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[5],
+        key: _formKeys[4],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -811,7 +768,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[6],
+        key: _formKeys[5],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -858,7 +815,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[7],
+        key: _formKeys[6],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -909,7 +866,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[8],
+        key: _formKeys[7],
         autovalidateMode: AutovalidateMode.always,
         child: Stack(
           children: [
@@ -949,7 +906,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[9],
+        key: _formKeys[8],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -989,7 +946,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[10],
+        key: _formKeys[9],
         autovalidateMode: AutovalidateMode.disabled,
         child: Stack(
           children: [
@@ -1033,7 +990,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[11],
+        key: _formKeys[10],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -1162,7 +1119,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
-        key: _formKeys[12],
+        key: _formKeys[11],
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Stack(
           children: [
@@ -1312,17 +1269,13 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       {Future<void> Function()? onNext}) {
     bool isValid = _formKeys[_currentStep].currentState?.validate() ?? false;
 
-    if (_currentStep == 6 ||
+    if (_currentStep == 5 ||
+        _currentStep == 6 ||
         _currentStep == 7 ||
         _currentStep == 8 ||
-        _currentStep == 9 ||
-        _currentStep == 10) {
+        _currentStep == 9) {
       // Always be valid for distance, age range, location, notifications, and contacts
       isValid = true;
-    }
-
-    if (_currentStep == 3) {
-      isValid = ref.read(isVerifiedProvider);
     }
 
     return Column(

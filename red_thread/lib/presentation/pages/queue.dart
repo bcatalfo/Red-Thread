@@ -187,11 +187,6 @@ class QueuePageState extends ConsumerState<QueuePage> {
       child: FittedBox(
           child: FloatingActionButton(
         onPressed: () {
-          // if not verified navigate to the verification page
-          if (!ref.read(isVerifiedProvider)) {
-            context.push('/verification');
-            return;
-          }
           ref.read(inQueueProvider.notifier).state = !inQueue;
           if (inQueue) {
             FirebaseDatabase.instance

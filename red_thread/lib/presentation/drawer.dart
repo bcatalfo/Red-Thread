@@ -1,6 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -88,7 +87,6 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
             title: Text('Log Out', style: theme.textTheme.displayMedium),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
-              ref.read(isVerifiedProvider.notifier).state = false;
               FirebaseAnalytics.instance.logEvent(name: 'user_logged_out');
             },
           ),
