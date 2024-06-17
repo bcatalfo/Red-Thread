@@ -54,6 +54,16 @@ final adInfoProvider = StreamProvider.autoDispose<Map<String, dynamic>>((ref) {
   });
 });
 
+@riverpod
+Future<String?> myName(MyNameRef ref) async {
+  var uid = FirebaseAuth.instance.currentUser!.uid;
+  DatabaseReference nameRef =
+      FirebaseDatabase.instance.ref('users/$uid/displayName');
+
+  final snapshot = await nameRef.once();
+  return snapshot.snapshot.value as String?;
+}
+
 // Match details providers
 @riverpod
 Stream<String?> chatId(ChatIdRef ref) {

@@ -6,6 +6,20 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$myNameHash() => r'd92625254457894555e9bda225ff65e6e92f92c8';
+
+/// See also [myName].
+@ProviderFor(myName)
+final myNameProvider = AutoDisposeFutureProvider<String?>.internal(
+  myName,
+  name: r'myNameProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$myNameHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef MyNameRef = AutoDisposeFutureProviderRef<String?>;
 String _$chatIdHash() => r'a60cac8e72e6b647b0b05463f1aab57c902efadf';
 
 /// See also [chatId].
