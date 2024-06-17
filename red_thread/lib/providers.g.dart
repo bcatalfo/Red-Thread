@@ -77,7 +77,7 @@ final matchDistanceProvider = AutoDisposeStreamProvider<double?>.internal(
 );
 
 typedef MatchDistanceRef = AutoDisposeStreamProviderRef<double?>;
-String _$myThemeHash() => r'e45aa8db7913982d5c88076e23ea4bb7365ae953';
+String _$myThemeHash() => r'be3c404118d6367a44b23c0e7eaf4af0af36b3d5';
 
 /// See also [MyTheme].
 @ProviderFor(MyTheme)

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:red_thread/presentation/pages/chat.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 part 'providers.g.dart';
 
 // TODO: replace other with non-binary
@@ -17,17 +18,27 @@ enum DateSchedule { notScheduled, sent, received, confirmed, onDate }
 @riverpod
 class MyTheme extends _$MyTheme {
   @override
-  Stream<ThemeMode> build() {
+  Stream<ThemeMode> build() async* {
+    final prefs = await SharedPreferences.getInstance();
+    final localTheme = prefs.getString('themeMode') ?? 'light';
+    yield localTheme == 'dark' ? ThemeMode.dark : ThemeMode.light;
+
     var uid = FirebaseAuth.instance.currentUser!.uid;
     DatabaseReference themeModeRef =
         FirebaseDatabase.instance.ref('users/$uid/themeMode');
-    return themeModeRef.onValue.map((event) {
+    await for (var event in themeModeRef.onValue) {
       final themeMode = event.snapshot.value as String?;
-      return themeMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
-    });
+      final mode = themeMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
+      await prefs.setString('themeMode', themeMode ?? 'light');
+      yield mode;
+    }
   }
 
   Future<void> setTheme(ThemeMode themeMode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        'themeMode', themeMode == ThemeMode.dark ? 'dark' : 'light');
+
     var uid = FirebaseAuth.instance.currentUser!.uid;
     DatabaseReference themeModeRef =
         FirebaseDatabase.instance.ref('users/$uid/themeMode');
