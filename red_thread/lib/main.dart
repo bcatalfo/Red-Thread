@@ -36,7 +36,10 @@ class BagoolApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
+    final themeMode = ref.watch(myThemeProvider).when(
+        data: (data) => data,
+        error: (_, __) => ThemeMode.light,
+        loading: () => ThemeMode.light);
 
     return MaterialApp.router(
       title: 'Red Thread',

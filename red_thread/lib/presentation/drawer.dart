@@ -10,7 +10,10 @@ import 'package:red_thread/providers.dart';
 //define a drawer called top drawer
 Drawer myDrawer(BuildContext context, WidgetRef ref) {
   final theme = Theme.of(context);
-  final themeMode = ref.watch(themeModeProvider);
+  final themeMode = ref.watch(myThemeProvider).when(
+      data: (data) => data,
+      error: (_, __) => ThemeMode.light,
+      loading: () => ThemeMode.light);
 
   return Drawer(
     backgroundColor: theme.colorScheme.surfaceVariant,
@@ -53,7 +56,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                   title:
                       Text('Dark Mode', style: theme.textTheme.displayMedium),
                   onTap: () {
-                    ref.read(themeModeProvider.notifier).state = ThemeMode.dark;
+                    ref.read(myThemeProvider.notifier).setTheme(ThemeMode.dark);
                     FirebaseAnalytics.instance
                         .logEvent(name: 'dark_mode_enabled');
                   })
@@ -63,8 +66,9 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                   title:
                       Text('Light Mode', style: theme.textTheme.displayMedium),
                   onTap: () {
-                    ref.read(themeModeProvider.notifier).state =
-                        ThemeMode.light;
+                    ref
+                        .read(myThemeProvider.notifier)
+                        .setTheme(ThemeMode.light);
                     FirebaseAnalytics.instance
                         .logEvent(name: "light_mode_enabled");
                   },
@@ -141,10 +145,6 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
 }
 
 AppBar myAppBar(BuildContext context, WidgetRef ref) {
-  final themeMode = ref.watch(themeModeProvider);
-  double screenWidth = MediaQuery.of(context).size.width;
-  double screenHeight = MediaQuery.of(context).size.height;
-
   return AppBar(
     title: Row(
       children: [

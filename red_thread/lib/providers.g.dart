@@ -77,5 +77,20 @@ final matchDistanceProvider = AutoDisposeStreamProvider<double?>.internal(
 );
 
 typedef MatchDistanceRef = AutoDisposeStreamProviderRef<double?>;
+String _$myThemeHash() => r'e45aa8db7913982d5c88076e23ea4bb7365ae953';
+
+/// See also [MyTheme].
+@ProviderFor(MyTheme)
+final myThemeProvider =
+    AutoDisposeStreamNotifierProvider<MyTheme, ThemeMode>.internal(
+  MyTheme.new,
+  name: r'myThemeProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$myThemeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$MyTheme = AutoDisposeStreamNotifier<ThemeMode>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

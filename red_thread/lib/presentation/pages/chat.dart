@@ -578,7 +578,8 @@ class MatchBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final isLight = ref.watch(myThemeProvider).maybeWhen(
+        data: (theme) => theme == ThemeMode.light, orElse: () => true);
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
     final match = ref.watch(matchNameProvider);
     final age = ref.watch(matchAgeProvider);
@@ -754,7 +755,8 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final isLight = ref.watch(myThemeProvider).maybeWhen(
+        data: (theme) => theme == ThemeMode.light, orElse: () => true);
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
     final match = ref.watch(matchNameProvider).when(
         data: (data) => data,
@@ -932,7 +934,8 @@ class DateBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final isLight = ref.watch(myThemeProvider).maybeWhen(
+        data: (theme) => theme == ThemeMode.light, orElse: () => true);
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
     final dateTime = ref.watch(dateTimeProvider);
     final dateLocation = ref.watch(dateLocationProvider);
@@ -1597,7 +1600,8 @@ class _DateDialogState extends ConsumerState<DateDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isLight = ref.watch(themeModeProvider) == ThemeMode.light;
+    final isLight = ref.watch(myThemeProvider).maybeWhen(
+        data: (theme) => theme == ThemeMode.light, orElse: () => true);
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
 
     return AlertDialog(

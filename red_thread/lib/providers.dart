@@ -14,7 +14,27 @@ enum Gender { male, female, other }
 enum DateSchedule { notScheduled, sent, received, confirmed, onDate }
 
 // TODO: Get this from backend
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
+@riverpod
+class MyTheme extends _$MyTheme {
+  @override
+  Stream<ThemeMode> build() {
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    DatabaseReference themeModeRef =
+        FirebaseDatabase.instance.ref('users/$uid/themeMode');
+    return themeModeRef.onValue.map((event) {
+      final themeMode = event.snapshot.value as String?;
+      return themeMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  Future<void> setTheme(ThemeMode themeMode) async {
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    DatabaseReference themeModeRef =
+        FirebaseDatabase.instance.ref('users/$uid/themeMode');
+    await themeModeRef.set(themeMode == ThemeMode.dark ? 'dark' : 'light');
+  }
+}
+
 final isAuthenticatedProvider = StreamProvider<bool>((ref) =>
     FirebaseAuth.instance.authStateChanges().map((user) => user != null));
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
