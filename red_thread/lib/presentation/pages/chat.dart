@@ -606,7 +606,8 @@ class MatchBar extends ConsumerWidget {
                 ),
                 age.when(
                   data: (age) => distance.when(
-                    data: (distance) => Text('$age, $distance miles away',
+                    data: (distance) => Text(
+                        '$age, ${distance?.toStringAsFixed(1)} miles away',
                         style: theme.textTheme.bodySmall),
                     loading: () => const CircularProgressIndicator(),
                     error: (e, _) => Text('Error: $e'),
