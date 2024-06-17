@@ -23,12 +23,27 @@ def send_push_notification(token, title, body):
                 title=title,
                 body=body
             ),
-            token=token
+            token=token,
+            android=messaging.AndroidConfig(
+                priority='high',
+                notification=messaging.AndroidNotification(
+                    sound='default',
+                    default_vibrate_timings=True,
+                ),
+            ),
+            apns=messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        sound='default',
+                    ),
+                ),
+            ),
         )
         response = messaging.send(message)
         print(f'Successfully sent message: {response}')
     except Exception as e:
         print(f'Failed to send message: {e}')
+
 
 def match_users_and_create_chat(user1, user2):
     distance = calculate_geographical_distance(user1['location'], user2['location'])
@@ -154,34 +169,12 @@ def is_in_contacts(user1, user2):
 
 def calculate_match_score(user1, user2):
     age_factor = max(0, 1 - abs(user1['age'] - user2['age']) / 10)
-    bmi_factor = bmi_compatibility(user1.get('bmi', 22), user2.get('bmi', 22))
-    return age_factor * bmi_factor
+    return age_factor 
 
 def calculate_geographical_distance(location1, location2):
     distance = great_circle((location1['latitude'], location1['longitude']), (location2['latitude'], location2['longitude'])).miles
     print(f"    Calculated geographical distance: {distance} miles")
     return distance
-
-def bmi_compatibility(bmi1, bmi2):
-    class1 = classify_bmi(bmi1)
-    class2 = classify_bmi(bmi2)
-    if class1 == class2:
-        return 1.0
-    elif (class1 in ['underweight', 'normal'] and class2 in ['underweight', 'normal']) or \
-         (class1 in ['overweight', 'obese'] and class2 in ['overweight', 'obese']):
-        return 0.5
-    else:
-        return 0.0
-
-def classify_bmi(bmi):
-    if bmi < 18.5:
-        return 'underweight'
-    elif 18.5 <= bmi < 25.0:
-        return 'normal'
-    elif 25.0 <= bmi < 30.0:
-        return 'overweight'
-    else:
-        return 'obese'
 
 def parse_preferences(preferences):
     # Remove the Gender. prefix and convert to a set of strings
