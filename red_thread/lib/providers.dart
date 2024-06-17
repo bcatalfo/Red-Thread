@@ -49,7 +49,23 @@ class MyTheme extends _$MyTheme {
 final isAuthenticatedProvider = StreamProvider<bool>((ref) =>
     FirebaseAuth.instance.authStateChanges().map((user) => user != null));
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
-final isSurveyDueProvider = StateProvider<bool>((ref) => false);
+
+@riverpod
+class SurveyDue extends _$SurveyDue {
+  @override
+  Stream<bool> build() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final surveyDueRef = FirebaseDatabase.instance.ref('users/$uid/surveyDue');
+    return surveyDueRef.onValue.map((event) => event.snapshot.value as bool);
+  }
+
+  Future<void> setSurveyDue(bool surveyDue) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final surveyDueRef = FirebaseDatabase.instance.ref('users/$uid/surveyDue');
+    await surveyDueRef.set(surveyDue);
+  }
+}
+
 final faceImageProvider = StateProvider<InputImage?>((ref) => null);
 final inQueueProvider = StateProvider<bool>((ref) => false);
 final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);

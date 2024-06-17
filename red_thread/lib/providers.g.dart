@@ -92,5 +92,20 @@ final myThemeProvider =
 );
 
 typedef _$MyTheme = AutoDisposeStreamNotifier<ThemeMode>;
+String _$surveyDueHash() => r'7a52aa12b1470bf0881c6eda303efc1fcebaafa9';
+
+/// See also [SurveyDue].
+@ProviderFor(SurveyDue)
+final surveyDueProvider =
+    AutoDisposeStreamNotifierProvider<SurveyDue, bool>.internal(
+  SurveyDue.new,
+  name: r'surveyDueProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$surveyDueHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$SurveyDue = AutoDisposeStreamNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

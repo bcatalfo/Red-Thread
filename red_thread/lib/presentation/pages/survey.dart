@@ -149,6 +149,7 @@ class SurveyPageState extends ConsumerState<SurveyPage>
                     value: (_currentStep - 1 + _progressAnimation.value) /
                         (_formKeys.length - 1),
                     valueColor: AlwaysStoppedAnimation<Color>(
+                      // TODO: Too hard to see in dark mode
                       Theme.of(context).primaryColor,
                     ),
                     backgroundColor: Colors.grey[300],
@@ -294,7 +295,7 @@ class SurveyPageState extends ConsumerState<SurveyPage>
             // Record answers to Firebase Analytics
             await _recordAnswers();
             // Handle survey completion, e.g., navigate to another page, save results, etc.
-            ref.read(isSurveyDueProvider.notifier).state = false;
+            ref.read(surveyDueProvider.notifier).setSurveyDue(false);
           }),
         ],
       ),

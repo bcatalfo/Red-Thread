@@ -1117,8 +1117,8 @@ class DateBar extends ConsumerWidget {
                                       }
 
                                       ref
-                                          .read(isSurveyDueProvider.notifier)
-                                          .state = true;
+                                          .read(surveyDueProvider.notifier)
+                                          .setSurveyDue(true);
 
                                       // Log the event
                                       FirebaseAnalytics.instance.logEvent(

@@ -106,6 +106,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
               random.nextInt(4); // Generates a random number between 1 and 4
           if (number == 1) {
             dbref.child('users').child(user.uid).set({
+              //TODO: Add the new providers!
               'displayName': _displayNameController.text,
               'birthday': _birthdayController.text,
               'phoneNumber':
