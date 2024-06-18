@@ -111,8 +111,31 @@ final dateScheduleProvider =
     StateProvider<DateSchedule>((ref) => DateSchedule.received);
 
 // New providers for settings
-final selectedGendersProvider =
-    StateProvider<Set<Gender>>((ref) => {Gender.female});
+@riverpod
+class SelectedGenders extends _$SelectedGenders {
+  @override
+  Stream<Set<Gender>> build() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final lookingForRef =
+        FirebaseDatabase.instance.ref('users/$uid/lookingFor');
+    return lookingForRef.onValue.map((event) {
+      final data = event.snapshot.value as List<dynamic>? ?? [];
+      return data
+          .map((gender) =>
+              Gender.values.firstWhere((e) => e.toString() == gender as String))
+          .toSet();
+    });
+  }
+
+  Future<void> setGenders(Set<Gender> genders) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final lookingForRef =
+        FirebaseDatabase.instance.ref('users/$uid/lookingFor');
+    final genderList = genders.map((gender) => gender.toString()).toList();
+    await lookingForRef.set(genderList);
+  }
+}
+
 final maxDistanceProvider = StateProvider<double>((ref) => 50);
 final ageRangeProvider =
     StateProvider<RangeValues>((ref) => const RangeValues(18, 30));

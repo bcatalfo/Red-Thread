@@ -15,17 +15,45 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   late Set<Gender> _localSelectedGenders;
   late double _localMaxDistance;
   late RangeValues _localAgeRange;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _localSelectedGenders = Set.from(ref.read(selectedGendersProvider));
-    _localMaxDistance = ref.read(maxDistanceProvider);
-    _localAgeRange = ref.read(ageRangeProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final genders = await ref.read(selectedGendersProvider.future);
+        final maxDistance = ref.read(maxDistanceProvider);
+        final ageRange = ref.read(ageRangeProvider);
+
+        setState(() {
+          _localSelectedGenders = genders;
+          _localMaxDistance = maxDistance;
+          _localAgeRange = ageRange;
+          _isLoading = false;
+        });
+      } catch (e) {
+        debugPrint('Error during initialization: $e');
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Settings"),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
@@ -218,8 +246,9 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       child: ElevatedButton(
         onPressed: () {
           if (_localSelectedGenders.isNotEmpty) {
-            ref.read(selectedGendersProvider.notifier).state =
-                _localSelectedGenders;
+            ref
+                .read(selectedGendersProvider.notifier)
+                .setGenders(_localSelectedGenders);
             ref.read(maxDistanceProvider.notifier).state = _localMaxDistance;
             ref.read(ageRangeProvider.notifier).state = _localAgeRange;
             FirebaseDatabase database = FirebaseDatabase.instance;
@@ -232,7 +261,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   'end': _localAgeRange.end.round(),
                 },
                 'maxDistance': _localMaxDistance.round(),
-                'lookingFor': _localSelectedGenders.toString(),
               });
             }
           } else {

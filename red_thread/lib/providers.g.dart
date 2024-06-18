@@ -121,5 +121,21 @@ final queueProvider = AutoDisposeStreamNotifierProvider<Queue, bool>.internal(
 );
 
 typedef _$Queue = AutoDisposeStreamNotifier<bool>;
+String _$selectedGendersHash() => r'6a81d161755629bb2af01e16f25cc74899ffefcf';
+
+/// See also [SelectedGenders].
+@ProviderFor(SelectedGenders)
+final selectedGendersProvider =
+    AutoDisposeStreamNotifierProvider<SelectedGenders, Set<Gender>>.internal(
+  SelectedGenders.new,
+  name: r'selectedGendersProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$selectedGendersHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$SelectedGenders = AutoDisposeStreamNotifier<Set<Gender>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -183,6 +183,7 @@ def parse_preferences(preferences):
 
 def parse_gender(gender):
     # Remove the Gender. prefix
+    # TODO: Make this work with the new way of storing
     return gender.replace("Gender.", "")
 
 def match_users(event, context):
