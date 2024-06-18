@@ -1,5 +1,4 @@
 import "dart:async";
-
 import "package:dropdown_search/dropdown_search.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
@@ -163,6 +162,22 @@ class LoginPageState extends ConsumerState<LoginPage>
     );
     FirebaseAuth.instance.signInWithCredential(credential).then((value) {
       completer.complete();
+      // Since a new user is signed in let's invalidate all the providers
+      ref.invalidate(myThemeProvider);
+      ref.invalidate(surveyDueProvider);
+      ref.invalidate(queueProvider);
+      // TODO: invalidate date providers
+      ref.invalidate(selectedGendersProvider);
+      // TODO: invalidate age range provider
+      // TODO: invalidate max distance provider
+      ref.invalidate(showAdProvider);
+      ref.invalidate(adInfoProvider);
+      ref.invalidate(myNameProvider);
+      ref.invalidate(chatIdProvider);
+      ref.invalidate(matchNameProvider);
+      ref.invalidate(matchAgeProvider);
+      ref.invalidate(matchDistanceProvider);
+      ref.invalidate(chatMessagesStateProvider);
     }).catchError((error) {
       showDialog(
           context: context,
