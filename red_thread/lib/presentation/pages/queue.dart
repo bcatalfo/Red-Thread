@@ -5,7 +5,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/providers.dart';
 
@@ -187,22 +186,11 @@ class QueuePageState extends ConsumerState<QueuePage> {
       child: FittedBox(
           child: FloatingActionButton(
         onPressed: () {
-          ref.read(inQueueProvider.notifier).state = !inQueue;
           if (inQueue) {
-            FirebaseDatabase.instance
-                .ref()
-                .child('queue')
-                .child(FirebaseAuth.instance.currentUser!.uid)
-                .remove();
-            ref.read(whenJoinedQueueProvider.notifier).state = null;
+            ref.read(queueProvider.notifier).leaveQueue();
             FirebaseAnalytics.instance.logEvent(name: 'exit_queue');
           } else {
-            FirebaseDatabase.instance
-                .ref()
-                .child('queue')
-                .child(FirebaseAuth.instance.currentUser!.uid)
-                .set(DateTime.now().millisecondsSinceEpoch);
-            ref.read(whenJoinedQueueProvider.notifier).state = DateTime.now();
+            ref.read(queueProvider.notifier).joinQueue();
             FirebaseAnalytics.instance.logEvent(name: 'enter_queue');
           }
         },
@@ -225,10 +213,13 @@ class QueuePageState extends ConsumerState<QueuePage> {
 
   @override
   Widget build(BuildContext context) {
-    final inQueue = ref.watch(inQueueProvider);
-    final secsInQueue = DateTime.now()
-        .difference(ref.read(whenJoinedQueueProvider) ?? DateTime.now())
-        .inSeconds;
+    final inQueue = ref.watch(queueProvider).maybeWhen(
+          data: (value) => value,
+          orElse: () => false,
+        );
+    final joinedQueueTime =
+        ref.watch(queueProvider.notifier).whenJoinedQueue() ?? DateTime.now();
+    final secsInQueue = DateTime.now().difference(joinedQueueTime).inSeconds;
     final theme = Theme.of(context);
     final adInfoAsyncValue = ref.watch(adInfoProvider);
     final showAd = ref.watch(showAdProvider);

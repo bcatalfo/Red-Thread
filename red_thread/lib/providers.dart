@@ -63,8 +63,48 @@ class SurveyDue extends _$SurveyDue {
   }
 }
 
-final inQueueProvider = StateProvider<bool>((ref) => false);
-final whenJoinedQueueProvider = StateProvider<DateTime?>((ref) => null);
+@riverpod
+class Queue extends _$Queue {
+  DateTime? _joinedQueueTime;
+
+  @override
+  Stream<bool> build() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final queueRef = FirebaseDatabase.instance.ref('queue/$uid');
+    return queueRef.onValue.map((event) {
+      if (event.snapshot.value != null) {
+        _joinedQueueTime =
+            DateTime.fromMillisecondsSinceEpoch(event.snapshot.value as int);
+        return true;
+      } else {
+        _joinedQueueTime = null;
+        return false;
+      }
+    });
+  }
+
+  Future<void> joinQueue() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final queueRef = FirebaseDatabase.instance.ref('queue/$uid');
+    final now = DateTime.now();
+    await queueRef.set(now.millisecondsSinceEpoch);
+    _joinedQueueTime = now;
+    state = const AsyncValue.data(true);
+  }
+
+  Future<void> leaveQueue() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final queueRef = FirebaseDatabase.instance.ref('queue/$uid');
+    await queueRef.remove();
+    _joinedQueueTime = null;
+    state = const AsyncValue.data(false);
+  }
+
+  DateTime? whenJoinedQueue() {
+    return _joinedQueueTime;
+  }
+}
+
 final dateTimeProvider =
     StateProvider<DateTime?>((ref) => DateTime(2024, 6, 5, 17, 0));
 final dateLocationProvider = StateProvider<String?>((ref) => "Starbucks");

@@ -107,5 +107,19 @@ final surveyDueProvider =
 );
 
 typedef _$SurveyDue = AutoDisposeStreamNotifier<bool>;
+String _$queueHash() => r'3b611672eac763e0ca9b3bda7f837267e98b494d';
+
+/// See also [Queue].
+@ProviderFor(Queue)
+final queueProvider = AutoDisposeStreamNotifierProvider<Queue, bool>.internal(
+  Queue.new,
+  name: r'queueProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$queueHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$Queue = AutoDisposeStreamNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
