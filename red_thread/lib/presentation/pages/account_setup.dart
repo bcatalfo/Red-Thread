@@ -636,8 +636,9 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                           },
                         ),
                         RadioListTile<Gender>(
-                          title: Text('Other', style: textTheme.headlineSmall),
-                          value: Gender.other,
+                          title: Text('Non-binary',
+                              style: textTheme.headlineSmall),
+                          value: Gender.nonBinary,
                           groupValue: _selectedGender,
                           onChanged: (Gender? value) {
                             setState(() {
@@ -725,14 +726,15 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                           },
                         ),
                         CheckboxListTile(
-                          title: Text('Other', style: textTheme.headlineSmall),
-                          value: _selectedGenders.contains(Gender.other),
+                          title: Text('Non-binary',
+                              style: textTheme.headlineSmall),
+                          value: _selectedGenders.contains(Gender.nonBinary),
                           onChanged: (bool? value) {
                             setState(() {
                               if (value == true) {
-                                _selectedGenders.add(Gender.other);
+                                _selectedGenders.add(Gender.nonBinary);
                               } else {
-                                _selectedGenders.remove(Gender.other);
+                                _selectedGenders.remove(Gender.nonBinary);
                               }
                               formFieldState.didChange(_selectedGenders);
                             });

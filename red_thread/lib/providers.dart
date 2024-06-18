@@ -7,8 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'providers.g.dart';
 
-// TODO: replace other with non-binary
-enum Gender { male, female, other }
+enum Gender { male, female, nonBinary }
 
 enum DateSchedule { notScheduled, sent, received, confirmed, onDate }
 

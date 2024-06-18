@@ -104,14 +104,15 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: FilterChip(
-                      label: Text('Other', style: textTheme.headlineSmall),
-                      selected: _localSelectedGenders.contains(Gender.other),
+                      label: Text('Non-binary', style: textTheme.headlineSmall),
+                      selected:
+                          _localSelectedGenders.contains(Gender.nonBinary),
                       onSelected: (bool selected) {
                         setState(() {
                           if (selected) {
-                            _localSelectedGenders.add(Gender.other);
+                            _localSelectedGenders.add(Gender.nonBinary);
                           } else {
-                            _localSelectedGenders.remove(Gender.other);
+                            _localSelectedGenders.remove(Gender.nonBinary);
                           }
                         });
                       },
