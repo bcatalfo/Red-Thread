@@ -377,10 +377,15 @@ class ChatMessages extends _$ChatMessages {
   }
 
   Future<void> addMessage(ChatMessageModel message) async {
-    final currentState = state.valueOrNull ?? [];
-    final updatedMessages = [...currentState, message];
-    state = AsyncValue.data(updatedMessages);
-    await _cacheMessages(updatedMessages);
+    final chatId = await ref.watch(chatIdProvider.future);
+    if (chatId == null) {
+      return;
+    }
+
+    DatabaseReference messagesRef =
+        FirebaseDatabase.instance.ref('chats/$chatId/messages');
+    await messagesRef.push().set(message.toJson());
+    // No need to update local state here since it will be updated by the stream listener
   }
 
   Future<void> setMessages(List<ChatMessageModel> messages) async {

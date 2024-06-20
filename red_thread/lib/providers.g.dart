@@ -141,7 +141,7 @@ final matchDistanceProvider =
 );
 
 typedef _$MatchDistance = AutoDisposeStreamNotifier<double?>;
-String _$chatMessagesHash() => r'72c4144dfd2274821aaaa555df649e5a65c64004';
+String _$chatMessagesHash() => r'ac6e441f36720cb9dae0a52cf1e83116dcc2c487';
 
 /// See also [ChatMessages].
 @ProviderFor(ChatMessages)
