@@ -192,6 +192,16 @@ class ChatId extends _$ChatId {
       yield chatId;
     }
   }
+
+  Future<void> unmatch() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('chatId');
+
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    DatabaseReference chatRef =
+        FirebaseDatabase.instance.ref('users/$uid/chat');
+    await chatRef.remove();
+  }
 }
 
 @riverpod

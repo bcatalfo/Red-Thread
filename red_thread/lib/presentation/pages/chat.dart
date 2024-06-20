@@ -548,30 +548,14 @@ class MatchBar extends ConsumerWidget {
   const MatchBar({Key? key}) : super(key: key);
 
   void unmatch(BuildContext context, WidgetRef ref) async {
-    // ref.read(matchProvider.notifier).state = null; // this is taken care of
-    // ref.read(inQueueProvider.notifier).state = false; // should be taken care of by the cloud function that matches
-    // ref.read(whenJoinedQueueProvider.notifier).state = null; // should be taken care of by the cloud function that matches
-    // ref.read(isVerifiedProvider.notifier).state = false; // should be taken care of by the cloud function that matches
-    final uid = FirebaseAuth.instance.currentUser!.uid;
     final name = await ref.read(myNameProvider.future);
     final leftMessage = ChatMessageModel(
       message: '$name has unmatched with you',
       author: 'system',
       date: DateTime.now(),
     );
-
-    // TODO: Add this code to the provider
-    /*
-    // Add the message to the Firebase Realtime Database
-    final chatId = ref.read(chatIdProvider).value;
-    if (chatId != null) {
-      final messagesRef =
-          FirebaseDatabase.instance.ref('chats/$chatId/messages').push();
-      messagesRef.set(leftMessage.toJson());
-    }
-
-    FirebaseDatabase.instance.ref('users/$uid/chat').remove();
-    */
+    ref.read(chatMessagesProvider.notifier).addMessage(leftMessage);
+    ref.read(chatIdProvider.notifier).unmatch();
     FirebaseAnalytics.instance.logEvent(name: 'unmatch');
   }
 
@@ -728,30 +712,14 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
   String? _otherReason;
 
   void unmatch(WidgetRef ref) async {
-    // ref.read(matchProvider.notifier).state = null; // this is taken care of
-    // ref.read(inQueueProvider.notifier).state = false; // should be taken care of by the cloud function that matches
-    // ref.read(whenJoinedQueueProvider.notifier).state = null; // should be taken care of by the cloud function that matches
-    // ref.read(isVerifiedProvider.notifier).state = false; // should be taken care of by the cloud function that matches
-    final uid = FirebaseAuth.instance.currentUser!.uid;
     final name = await ref.read(myNameProvider.future);
     final leftMessage = ChatMessageModel(
       message: '$name has unmatched with you',
       author: 'system',
       date: DateTime.now(),
     );
-
-    // TODO: Add this code to the provider
-    // Add the message to the Firebase Realtime Database
-    /*
-    final chatId = ref.read(chatIdProvider).value;
-    if (chatId != null) {
-      final messagesRef =
-          FirebaseDatabase.instance.ref('chats/$chatId/messages').push();
-      messagesRef.set(leftMessage.toJson());
-    }
-
-    FirebaseDatabase.instance.ref('users/$uid/chat').remove();
-    */
+    ref.read(chatMessagesProvider.notifier).addMessage(leftMessage);
+    ref.read(chatIdProvider.notifier).unmatch();
     FirebaseAnalytics.instance.logEvent(name: 'unmatch_after_report');
   }
 
