@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 part 'providers.g.dart';
 
 enum Gender { male, female, nonBinary }
@@ -229,34 +230,38 @@ class MatchName extends _$MatchName {
 }
 
 @riverpod
-Stream<int?> matchAge(MatchAgeRef ref) {
+class MatchAge extends _$MatchAge {
+  @override
+  Stream<int?> build() async* {
+    final prefs = await SharedPreferences.getInstance();
+    final localMatchAge = prefs.getInt('matchAge');
+    yield localMatchAge;
+
   final chatIdAsyncValue = ref.watch(chatIdProvider);
 
-  final controller = StreamController<int?>();
-
-  chatIdAsyncValue.whenData((chatId) {
+    await for (var chatId in chatIdAsyncValue.maybeWhen(
+      data: (data) => Stream.value(data),
+      orElse: () => Stream.value(null),
+    )) {
     if (chatId == null) {
-      controller.add(null);
-      return;
+        yield null;
+        continue;
     }
 
     var uid = FirebaseAuth.instance.currentUser!.uid;
     DatabaseReference matchInfoRef =
         FirebaseDatabase.instance.ref('chats/$chatId/match_info');
-    matchInfoRef.onValue.listen((event) {
+      await for (var event in matchInfoRef.onValue) {
       final matchInfo = event.snapshot.value as Map<dynamic, dynamic>;
       final user1Id = matchInfo['user1_id'];
       final user2Age = matchInfo['user2_age'] as int;
       final user1Age = matchInfo['user1_age'] as int;
-      controller.add((user1Id == uid) ? user2Age : user1Age);
-    });
-  });
-
-  ref.onDispose(() {
-    controller.close();
-  });
-
-  return controller.stream;
+        final age = (user1Id == uid) ? user2Age : user1Age;
+        await prefs.setInt('matchAge', age);
+        yield age;
+      }
+    }
+  }
 }
 
 @riverpod
