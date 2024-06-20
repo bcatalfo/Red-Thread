@@ -185,6 +185,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
           const SizedBox(height: 20),
           Slider(
             value: _localMaxDistance,
+            inactiveColor:
+                Theme.of(context).colorScheme.primary.withOpacity(0.24),
             min: 1,
             max: 100,
             divisions: 99,

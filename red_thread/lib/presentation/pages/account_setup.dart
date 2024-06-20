@@ -787,6 +787,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                 const SizedBox(height: 20),
                 Slider(
                   value: _maxDistance,
+                  inactiveColor:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.24),
                   min: 1,
                   max: 100,
                   divisions: 99,
