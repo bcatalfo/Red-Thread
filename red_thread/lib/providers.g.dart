@@ -20,63 +20,6 @@ final myNameProvider = AutoDisposeFutureProvider<String?>.internal(
 );
 
 typedef MyNameRef = AutoDisposeFutureProviderRef<String?>;
-String _$chatIdHash() => r'a60cac8e72e6b647b0b05463f1aab57c902efadf';
-
-/// See also [chatId].
-@ProviderFor(chatId)
-final chatIdProvider = AutoDisposeStreamProvider<String?>.internal(
-  chatId,
-  name: r'chatIdProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$chatIdHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef ChatIdRef = AutoDisposeStreamProviderRef<String?>;
-String _$matchNameHash() => r'3d45e55513146f02e0fd28eea8d17e320fb13c09';
-
-/// See also [matchName].
-@ProviderFor(matchName)
-final matchNameProvider = AutoDisposeStreamProvider<String?>.internal(
-  matchName,
-  name: r'matchNameProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$matchNameHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef MatchNameRef = AutoDisposeStreamProviderRef<String?>;
-String _$matchAgeHash() => r'21537f550bc6599003d22626b1414c460ddb671d';
-
-/// See also [matchAge].
-@ProviderFor(matchAge)
-final matchAgeProvider = AutoDisposeStreamProvider<int?>.internal(
-  matchAge,
-  name: r'matchAgeProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$matchAgeHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef MatchAgeRef = AutoDisposeStreamProviderRef<int?>;
-String _$matchDistanceHash() => r'8903a4fb66b801988892f1d472f2f76029679446';
-
-/// See also [matchDistance].
-@ProviderFor(matchDistance)
-final matchDistanceProvider = AutoDisposeStreamProvider<double?>.internal(
-  matchDistance,
-  name: r'matchDistanceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$matchDistanceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef MatchDistanceRef = AutoDisposeStreamProviderRef<double?>;
 String _$myThemeHash() => r'be3c404118d6367a44b23c0e7eaf4af0af36b3d5';
 
 /// See also [MyTheme].
@@ -152,5 +95,66 @@ final chatIdProvider =
 );
 
 typedef _$ChatId = AutoDisposeStreamNotifier<String?>;
+String _$matchNameHash() => r'84368ee130c3159e4fd2d6a4341ffd6cadf97798';
+
+/// See also [MatchName].
+@ProviderFor(MatchName)
+final matchNameProvider =
+    AutoDisposeStreamNotifierProvider<MatchName, String?>.internal(
+  MatchName.new,
+  name: r'matchNameProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$matchNameHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$MatchName = AutoDisposeStreamNotifier<String?>;
+String _$matchAgeHash() => r'75db50e17cff45dceb62a1b714398c62f76063aa';
+
+/// See also [MatchAge].
+@ProviderFor(MatchAge)
+final matchAgeProvider =
+    AutoDisposeStreamNotifierProvider<MatchAge, int?>.internal(
+  MatchAge.new,
+  name: r'matchAgeProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$matchAgeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$MatchAge = AutoDisposeStreamNotifier<int?>;
+String _$matchDistanceHash() => r'e976a6abfff8231c26f6837426c618da17e94a2c';
+
+/// See also [MatchDistance].
+@ProviderFor(MatchDistance)
+final matchDistanceProvider =
+    AutoDisposeStreamNotifierProvider<MatchDistance, double?>.internal(
+  MatchDistance.new,
+  name: r'matchDistanceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$matchDistanceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$MatchDistance = AutoDisposeStreamNotifier<double?>;
+String _$chatMessagesHash() => r'72c4144dfd2274821aaaa555df649e5a65c64004';
+
+/// See also [ChatMessages].
+@ProviderFor(ChatMessages)
+final chatMessagesProvider = AutoDisposeStreamNotifierProvider<ChatMessages,
+    List<ChatMessageModel>>.internal(
+  ChatMessages.new,
+  name: r'chatMessagesProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$chatMessagesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$ChatMessages = AutoDisposeStreamNotifier<List<ChatMessageModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

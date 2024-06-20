@@ -237,25 +237,25 @@ class MatchAge extends _$MatchAge {
     final localMatchAge = prefs.getInt('matchAge');
     yield localMatchAge;
 
-  final chatIdAsyncValue = ref.watch(chatIdProvider);
+    final chatIdAsyncValue = ref.watch(chatIdProvider);
 
     await for (var chatId in chatIdAsyncValue.maybeWhen(
       data: (data) => Stream.value(data),
       orElse: () => Stream.value(null),
     )) {
-    if (chatId == null) {
+      if (chatId == null) {
         yield null;
         continue;
-    }
+      }
 
-    var uid = FirebaseAuth.instance.currentUser!.uid;
-    DatabaseReference matchInfoRef =
-        FirebaseDatabase.instance.ref('chats/$chatId/match_info');
+      var uid = FirebaseAuth.instance.currentUser!.uid;
+      DatabaseReference matchInfoRef =
+          FirebaseDatabase.instance.ref('chats/$chatId/match_info');
       await for (var event in matchInfoRef.onValue) {
-      final matchInfo = event.snapshot.value as Map<dynamic, dynamic>;
-      final user1Id = matchInfo['user1_id'];
-      final user2Age = matchInfo['user2_age'] as int;
-      final user1Age = matchInfo['user1_age'] as int;
+        final matchInfo = event.snapshot.value as Map<dynamic, dynamic>;
+        final user1Id = matchInfo['user1_id'];
+        final user2Age = matchInfo['user2_age'] as int;
+        final user1Age = matchInfo['user1_age'] as int;
         final age = (user1Id == uid) ? user2Age : user1Age;
         await prefs.setInt('matchAge', age);
         yield age;
@@ -272,19 +272,19 @@ class MatchDistance extends _$MatchDistance {
     final localMatchDistance = prefs.getDouble('matchDistance');
     yield localMatchDistance;
 
-  final chatIdAsyncValue = ref.watch(chatIdProvider);
+    final chatIdAsyncValue = ref.watch(chatIdProvider);
 
     await for (var chatId in chatIdAsyncValue.maybeWhen(
       data: (data) => Stream.value(data),
       orElse: () => Stream.value(null),
     )) {
-    if (chatId == null) {
+      if (chatId == null) {
         yield null;
         continue;
-    }
+      }
 
-    DatabaseReference matchDistanceRef =
-        FirebaseDatabase.instance.ref('chats/$chatId/match_info/distance');
+      DatabaseReference matchDistanceRef =
+          FirebaseDatabase.instance.ref('chats/$chatId/match_info/distance');
       await for (var event in matchDistanceRef.onValue) {
         final distance = event.snapshot.value as double?;
         if (distance != null) {
@@ -328,38 +328,31 @@ class ChatMessageModel {
   }
 }
 
-class ChatMessagesNotifier extends StateNotifier<List<ChatMessageModel>> {
-  ChatMessagesNotifier() : super([]);
+@riverpod
+class ChatMessages extends _$ChatMessages {
+  @override
+  Stream<List<ChatMessageModel>> build() async* {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedMessages = prefs.getStringList('chatMessages');
+    if (cachedMessages != null) {
+      final messages = cachedMessages
+          .map((json) => ChatMessageModel.fromJson(jsonDecode(json)))
+          .toList();
+      yield messages;
+    } else {
+      yield [];
+    }
 
-  void addMessage(ChatMessageModel message) {
-    state = [...state, message];
-  }
+    final chatId = await ref.watch(chatIdProvider.future);
 
-  void setMessages(List<ChatMessageModel> messages) {
-    state = messages;
-  }
-}
-
-final chatMessagesStateProvider =
-    StateNotifierProvider<ChatMessagesNotifier, List<ChatMessageModel>>((ref) {
-  return ChatMessagesNotifier();
-});
-
-final chatMessagesProvider =
-    StreamProvider.autoDispose<List<ChatMessageModel>>((ref) {
-  final chatIdAsyncValue = ref.watch(chatIdProvider);
-
-  final controller = StreamController<List<ChatMessageModel>>();
-
-  chatIdAsyncValue.whenData((chatId) {
     if (chatId == null) {
-      controller.add([]);
+      yield [];
       return;
     }
 
     DatabaseReference messagesRef =
         FirebaseDatabase.instance.ref('chats/$chatId/messages');
-    messagesRef.onValue.listen((event) {
+    await for (var event in messagesRef.onValue) {
       final messages = <ChatMessageModel>[];
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
       if (data != null) {
@@ -367,13 +360,27 @@ final chatMessagesProvider =
           messages.add(ChatMessageModel.fromJson(value));
         });
       }
-      controller.add(messages);
-    });
-  });
+      await prefs.setStringList(
+          'chatMessages', messages.map((e) => jsonEncode(e.toJson())).toList());
+      yield messages;
+    }
+  }
 
-  ref.onDispose(() {
-    controller.close();
-  });
+  Future<void> addMessage(ChatMessageModel message) async {
+    final currentState = state.valueOrNull ?? [];
+    final updatedMessages = [...currentState, message];
+    state = AsyncValue.data(updatedMessages);
+    await _cacheMessages(updatedMessages);
+  }
 
-  return controller.stream;
-});
+  Future<void> setMessages(List<ChatMessageModel> messages) async {
+    state = AsyncValue.data(messages);
+    await _cacheMessages(messages);
+  }
+
+  Future<void> _cacheMessages(List<ChatMessageModel> messages) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+        'chatMessages', messages.map((e) => jsonEncode(e.toJson())).toList());
+  }
+}

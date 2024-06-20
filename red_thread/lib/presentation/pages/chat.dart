@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -46,14 +44,8 @@ class ChatPageState extends ConsumerState<ChatPage> {
       author: currentUser.uid,
       date: DateTime.now(),
     );
-    final chatId = ref.read(chatIdProvider).value;
-    if (chatId != null) {
-      final messagesRef =
-          FirebaseDatabase.instance.ref('chats/$chatId/messages').push();
-      messagesRef.set(newMessage.toJson());
-    }
 
-    ref.read(chatMessagesStateProvider.notifier).addMessage(newMessage);
+    ref.read(chatMessagesProvider.notifier).addMessage(newMessage);
 
     FirebaseAnalytics.instance.logEvent(
       name: "send_message",
@@ -107,95 +99,100 @@ class ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(chatMessagesStateProvider);
+    final messages = ref.watch(chatMessagesProvider);
 
     ref.listen<AsyncValue<List<ChatMessageModel>>>(chatMessagesProvider,
         (previous, next) {
       if (next is AsyncData && previous != next) {
-        ref
-            .read(chatMessagesStateProvider.notifier)
-            .setMessages(next.value ?? []);
+        ref.read(chatMessagesProvider.notifier).setMessages(next.value ?? []);
         Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
       }
     });
-
-    final sortedMessages = List<ChatMessageModel>.from(messages)
-      ..sort((a, b) => a.date.compareTo(b.date));
 
     return Scaffold(
       appBar: myAppBar(context, ref),
       drawer: myDrawer(context, ref),
       resizeToAvoidBottomInset: true,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: KeyboardDismissOnTap(
-          child: Column(
-            children: [
-              AnimatedVisibility(
-                visible: _matchBarVisible,
-                duration: 300.ms,
-                child: const MatchBar()
-                    .animate(target: _matchBarVisible ? 1 : 0)
-                    .fade(duration: 300.ms),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onHorizontalDragUpdate: (details) {
-                    if (_timestampSize + details.primaryDelta! <= 0 &&
-                        (_timestampSize >= -100 || details.primaryDelta! > 0)) {
-                      setState(() {
-                        _timestampSize += details.primaryDelta!;
-                      });
-                    }
-                  },
-                  onHorizontalDragEnd: (details) {
-                    Future.delayed(Duration.zero, () async {
-                      for (double i = _timestampSize; i <= 0; i += 1) {
-                        await Future.delayed(const Duration(milliseconds: 1));
-                        setState(() {
-                          _timestampSize = i;
-                        });
-                      }
-                      setState(() {
-                        _timestampSize = 0;
-                      });
-                    });
-                  },
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: sortedMessages.length,
-                    itemBuilder: (context, index) {
-                      List<Widget> messageWidgets = [];
-                      if (index == 0 ||
-                          sortedMessages[index].date.day !=
-                              sortedMessages[index - 1].date.day) {
-                        messageWidgets.add(
-                            _buildDateSeparator(sortedMessages[index].date));
-                      }
-                      messageWidgets
-                          .add(_buildMessageWidget(sortedMessages[index]));
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: messageWidgets,
-                      );
-                    },
+      body: messages.when(
+        data: (messages) {
+          final sortedMessages = List<ChatMessageModel>.from(messages)
+            ..sort((a, b) => a.date.compareTo(b.date));
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: KeyboardDismissOnTap(
+              child: Column(
+                children: [
+                  AnimatedVisibility(
+                    visible: _matchBarVisible,
+                    duration: 300.ms,
+                    child: const MatchBar()
+                        .animate(target: _matchBarVisible ? 1 : 0)
+                        .fade(duration: 300.ms),
                   ),
-                ),
+                  Expanded(
+                    child: GestureDetector(
+                      onHorizontalDragUpdate: (details) {
+                        if (_timestampSize + details.primaryDelta! <= 0 &&
+                            (_timestampSize >= -100 ||
+                                details.primaryDelta! > 0)) {
+                          setState(() {
+                            _timestampSize += details.primaryDelta!;
+                          });
+                        }
+                      },
+                      onHorizontalDragEnd: (details) {
+                        Future.delayed(Duration.zero, () async {
+                          for (double i = _timestampSize; i <= 0; i += 1) {
+                            await Future.delayed(
+                                const Duration(milliseconds: 1));
+                            setState(() {
+                              _timestampSize = i;
+                            });
+                          }
+                          setState(() {
+                            _timestampSize = 0;
+                          });
+                        });
+                      },
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: sortedMessages.length,
+                        itemBuilder: (context, index) {
+                          List<Widget> messageWidgets = [];
+                          if (index == 0 ||
+                              sortedMessages[index].date.day !=
+                                  sortedMessages[index - 1].date.day) {
+                            messageWidgets.add(_buildDateSeparator(
+                                sortedMessages[index].date));
+                          }
+                          messageWidgets
+                              .add(_buildMessageWidget(sortedMessages[index]));
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: messageWidgets,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  ChatInputBar(
+                    onSend: _sendMessage,
+                  ),
+                  AnimatedVisibility(
+                    visible: _dateBarVisible,
+                    duration: 100.ms,
+                    child: DateBar()
+                        .animate(target: _dateBarVisible ? 1 : 0)
+                        .fade(duration: 100.ms),
+                  )
+                ],
               ),
-              ChatInputBar(
-                onSend: _sendMessage,
-              ),
-              AnimatedVisibility(
-                visible: _dateBarVisible,
-                duration: 100.ms,
-                child: DateBar()
-                    .animate(target: _dateBarVisible ? 1 : 0)
-                    .fade(duration: 100.ms),
-              )
-            ],
-          ),
-        ),
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );
   }
@@ -563,6 +560,8 @@ class MatchBar extends ConsumerWidget {
       date: DateTime.now(),
     );
 
+    // TODO: Add this code to the provider
+    /*
     // Add the message to the Firebase Realtime Database
     final chatId = ref.read(chatIdProvider).value;
     if (chatId != null) {
@@ -572,6 +571,7 @@ class MatchBar extends ConsumerWidget {
     }
 
     FirebaseDatabase.instance.ref('users/$uid/chat').remove();
+    */
     FirebaseAnalytics.instance.logEvent(name: 'unmatch');
   }
 
@@ -740,7 +740,9 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
       date: DateTime.now(),
     );
 
+    // TODO: Add this code to the provider
     // Add the message to the Firebase Realtime Database
+    /*
     final chatId = ref.read(chatIdProvider).value;
     if (chatId != null) {
       final messagesRef =
@@ -749,6 +751,7 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
     }
 
     FirebaseDatabase.instance.ref('users/$uid/chat').remove();
+    */
     FirebaseAnalytics.instance.logEvent(name: 'unmatch_after_report');
   }
 
@@ -1011,20 +1014,9 @@ class DateBar extends ConsumerWidget {
                                     date: DateTime.now(),
                                   );
 
-                                  // Update local state
                                   ref
-                                      .read(chatMessagesStateProvider.notifier)
+                                      .read(chatMessagesProvider.notifier)
                                       .addMessage(newMessage);
-
-                                  // Add the message to the Firebase Realtime Database
-                                  final chatId = ref.read(chatIdProvider).value;
-                                  if (chatId != null) {
-                                    final messagesRef = FirebaseDatabase
-                                        .instance
-                                        .ref('chats/$chatId/messages')
-                                        .push();
-                                    messagesRef.set(newMessage.toJson());
-                                  }
 
                                   FirebaseAnalytics.instance.logEvent(
                                     name: 'date_canceled',
@@ -1099,28 +1091,13 @@ class DateBar extends ConsumerWidget {
                                         date: DateTime.now(),
                                       );
 
-                                      // Update local state
                                       ref
-                                          .read(chatMessagesStateProvider
-                                              .notifier)
+                                          .read(chatMessagesProvider.notifier)
                                           .addMessage(newMessage);
-
-                                      // Add the message to the Firebase Realtime Database
-                                      final chatId =
-                                          ref.read(chatIdProvider).value;
-                                      if (chatId != null) {
-                                        final messagesRef = FirebaseDatabase
-                                            .instance
-                                            .ref('chats/$chatId/messages')
-                                            .push();
-                                        messagesRef.set(newMessage.toJson());
-                                      }
-
                                       ref
                                           .read(surveyDueProvider.notifier)
                                           .setSurveyDue(true);
 
-                                      // Log the event
                                       FirebaseAnalytics.instance.logEvent(
                                         name: 'date_ended',
                                       );
@@ -1183,22 +1160,9 @@ class DateBar extends ConsumerWidget {
                                         date: DateTime.now(),
                                       );
 
-                                      // Update local state
                                       ref
-                                          .read(chatMessagesStateProvider
-                                              .notifier)
+                                          .read(chatMessagesProvider.notifier)
                                           .addMessage(newMessage);
-
-                                      // Add the message to the Firebase Realtime Database
-                                      final chatId =
-                                          ref.read(chatIdProvider).value;
-                                      if (chatId != null) {
-                                        final messagesRef = FirebaseDatabase
-                                            .instance
-                                            .ref('chats/$chatId/messages')
-                                            .push();
-                                        messagesRef.set(newMessage.toJson());
-                                      }
 
                                       // Log the event
                                       FirebaseAnalytics.instance.logEvent(
@@ -1355,17 +1319,8 @@ class DateBar extends ConsumerWidget {
 
                                 // Update local state
                                 ref
-                                    .read(chatMessagesStateProvider.notifier)
+                                    .read(chatMessagesProvider.notifier)
                                     .addMessage(newMessage);
-
-                                // Add the message to the Firebase Realtime Database
-                                final chatId = ref.read(chatIdProvider).value;
-                                if (chatId != null) {
-                                  final messagesRef = FirebaseDatabase.instance
-                                      .ref('chats/$chatId/messages')
-                                      .push();
-                                  messagesRef.set(newMessage.toJson());
-                                }
 
                                 // Log the event
                                 FirebaseAnalytics.instance.logEvent(
@@ -1453,17 +1408,8 @@ class DateBar extends ConsumerWidget {
 
                   // Update local state
                   ref
-                      .read(chatMessagesStateProvider.notifier)
+                      .read(chatMessagesProvider.notifier)
                       .addMessage(newMessage);
-
-                  // Add the message to the Firebase Realtime Database
-                  final chatId = ref.read(chatIdProvider).value;
-                  if (chatId != null) {
-                    final messagesRef = FirebaseDatabase.instance
-                        .ref('chats/$chatId/messages')
-                        .push();
-                    messagesRef.set(newMessage.toJson());
-                  }
 
                   // Log the event
                   FirebaseAnalytics.instance.logEvent(
@@ -1489,21 +1435,10 @@ class DateBar extends ConsumerWidget {
                     date: DateTime.now(),
                   );
 
-                  // Update local state
                   ref
-                      .read(chatMessagesStateProvider.notifier)
+                      .read(chatMessagesProvider.notifier)
                       .addMessage(newMessage);
 
-                  // Add the message to the Firebase Realtime Database
-                  final chatId = ref.read(chatIdProvider).value;
-                  if (chatId != null) {
-                    final messagesRef = FirebaseDatabase.instance
-                        .ref('chats/$chatId/messages')
-                        .push();
-                    messagesRef.set(newMessage.toJson());
-                  }
-
-                  // Log the event
                   FirebaseAnalytics.instance.logEvent(
                     name: 'date_accepted',
                   );
@@ -1717,19 +1652,9 @@ class _DateDialogState extends ConsumerState<DateDialog> {
                     date: DateTime.now(),
                   );
 
-                  // Update local state
                   ref
-                      .read(chatMessagesStateProvider.notifier)
+                      .read(chatMessagesProvider.notifier)
                       .addMessage(newMessage);
-
-                  // Add the message to the Firebase Realtime Database
-                  final chatId = ref.read(chatIdProvider).value;
-                  if (chatId != null) {
-                    final messagesRef = FirebaseDatabase.instance
-                        .ref('chats/$chatId/messages')
-                        .push();
-                    messagesRef.set(newMessage.toJson());
-                  }
 
                   FirebaseAnalytics.instance.logEvent(
                     name: 'date_requested',

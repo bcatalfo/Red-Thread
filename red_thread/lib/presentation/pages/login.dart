@@ -177,7 +177,6 @@ class LoginPageState extends ConsumerState<LoginPage>
       ref.invalidate(matchNameProvider);
       ref.invalidate(matchAgeProvider);
       ref.invalidate(matchDistanceProvider);
-      ref.invalidate(chatMessagesStateProvider);
     }).catchError((error) {
       showDialog(
           context: context,
