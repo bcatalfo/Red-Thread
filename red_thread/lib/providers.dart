@@ -171,10 +171,26 @@ Future<String?> myName(MyNameRef ref) async {
 
 // Match details providers
 @riverpod
-Stream<String?> chatId(ChatIdRef ref) {
-  var uid = FirebaseAuth.instance.currentUser!.uid;
-  DatabaseReference chatRef = FirebaseDatabase.instance.ref('users/$uid/chat');
-  return chatRef.onValue.map((event) => event.snapshot.value as String?);
+class ChatId extends _$ChatId {
+  @override
+  Stream<String?> build() async* {
+    final prefs = await SharedPreferences.getInstance();
+    final localChatId = prefs.getString('chatId');
+    yield localChatId;
+
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    DatabaseReference chatRef =
+        FirebaseDatabase.instance.ref('users/$uid/chat');
+    await for (var event in chatRef.onValue) {
+      final chatId = event.snapshot.value as String?;
+      if (chatId != null) {
+        await prefs.setString('chatId', chatId);
+      } else {
+        await prefs.remove('chatId');
+      }
+      yield chatId;
+    }
+  }
 }
 
 @riverpod

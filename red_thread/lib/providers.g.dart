@@ -137,5 +137,20 @@ final selectedGendersProvider =
 );
 
 typedef _$SelectedGenders = AutoDisposeStreamNotifier<Set<Gender>>;
+String _$chatIdHash() => r'3db1be22b0d65ed35fee1f543b28f21ac9155555';
+
+/// See also [ChatId].
+@ProviderFor(ChatId)
+final chatIdProvider =
+    AutoDisposeStreamNotifierProvider<ChatId, String?>.internal(
+  ChatId.new,
+  name: r'chatIdProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$chatIdHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$ChatId = AutoDisposeStreamNotifier<String?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
