@@ -194,34 +194,38 @@ class ChatId extends _$ChatId {
 }
 
 @riverpod
-Stream<String?> matchName(MatchNameRef ref) {
-  final chatId = ref.watch(chatIdProvider);
+class MatchName extends _$MatchName {
+  @override
+  Stream<String?> build() async* {
+    final prefs = await SharedPreferences.getInstance();
+    final localMatchName = prefs.getString('matchName');
+    yield localMatchName;
 
-  final controller = StreamController<String?>();
+    final chatIdAsyncValue = ref.watch(chatIdProvider);
 
-  chatId.whenData((chatId) {
-    if (chatId == null) {
-      controller.add(null);
-      return;
+    await for (var chatId in chatIdAsyncValue.maybeWhen(
+      data: (data) => Stream.value(data),
+      orElse: () => Stream.value(null),
+    )) {
+      if (chatId == null) {
+        yield null;
+        continue;
+      }
+
+      var uid = FirebaseAuth.instance.currentUser!.uid;
+      DatabaseReference matchInfoRef =
+          FirebaseDatabase.instance.ref('chats/$chatId/match_info');
+      await for (var event in matchInfoRef.onValue) {
+        final matchInfo = event.snapshot.value as Map<dynamic, dynamic>;
+        final user1Id = matchInfo['user1_id'];
+        final user2Name = matchInfo['user2_name'] as String;
+        final user1Name = matchInfo['user1_name'] as String;
+        final name = (user1Id == uid) ? user2Name : user1Name;
+        await prefs.setString('matchName', name);
+        yield name;
+      }
     }
-
-    var uid = FirebaseAuth.instance.currentUser!.uid;
-    DatabaseReference matchInfoRef =
-        FirebaseDatabase.instance.ref('chats/$chatId/match_info');
-    matchInfoRef.onValue.listen((event) {
-      final matchInfo = event.snapshot.value as Map<dynamic, dynamic>;
-      final user1Id = matchInfo['user1_id'];
-      final user2Name = matchInfo['user2_name'] as String;
-      final user1Name = matchInfo['user1_name'] as String;
-      controller.add((user1Id == uid) ? user2Name : user1Name);
-    });
-  });
-
-  ref.onDispose(() {
-    controller.close();
-  });
-
-  return controller.stream;
+  }
 }
 
 @riverpod
