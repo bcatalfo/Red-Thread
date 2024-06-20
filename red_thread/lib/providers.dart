@@ -265,29 +265,37 @@ class MatchAge extends _$MatchAge {
 }
 
 @riverpod
-Stream<double?> matchDistance(MatchDistanceRef ref) {
+class MatchDistance extends _$MatchDistance {
+  @override
+  Stream<double?> build() async* {
+    final prefs = await SharedPreferences.getInstance();
+    final localMatchDistance = prefs.getDouble('matchDistance');
+    yield localMatchDistance;
+
   final chatIdAsyncValue = ref.watch(chatIdProvider);
 
-  final controller = StreamController<double?>();
-
-  chatIdAsyncValue.whenData((chatId) {
+    await for (var chatId in chatIdAsyncValue.maybeWhen(
+      data: (data) => Stream.value(data),
+      orElse: () => Stream.value(null),
+    )) {
     if (chatId == null) {
-      controller.add(null);
-      return;
+        yield null;
+        continue;
     }
 
     DatabaseReference matchDistanceRef =
         FirebaseDatabase.instance.ref('chats/$chatId/match_info/distance');
-    matchDistanceRef.onValue.listen((event) {
-      controller.add(event.snapshot.value as double?);
-    });
-  });
-
-  ref.onDispose(() {
-    controller.close();
-  });
-
-  return controller.stream;
+      await for (var event in matchDistanceRef.onValue) {
+        final distance = event.snapshot.value as double?;
+        if (distance != null) {
+          await prefs.setDouble('matchDistance', distance);
+        } else {
+          await prefs.remove('matchDistance');
+        }
+        yield distance;
+      }
+    }
+  }
 }
 
 enum Author { me, you, system }
