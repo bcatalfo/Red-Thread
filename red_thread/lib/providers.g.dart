@@ -64,6 +64,21 @@ final queueProvider = AutoDisposeStreamNotifierProvider<Queue, bool>.internal(
 );
 
 typedef _$Queue = AutoDisposeStreamNotifier<bool>;
+String _$dateScheduleHash() => r'c07ec11971e2e11ebfae4dcd832fec88d4489cfb';
+
+/// See also [DateSchedule].
+@ProviderFor(DateSchedule)
+final dateScheduleProvider =
+    AutoDisposeStreamNotifierProvider<DateSchedule, DateScheduleState>.internal(
+  DateSchedule.new,
+  name: r'dateScheduleProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$dateScheduleHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$DateSchedule = AutoDisposeStreamNotifier<DateScheduleState>;
 String _$selectedGendersHash() => r'6a81d161755629bb2af01e16f25cc74899ffefcf';
 
 /// See also [SelectedGenders].

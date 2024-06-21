@@ -900,6 +900,7 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
 
 class DateBar extends ConsumerWidget {
   DateBar({Key? key}) : super(key: key);
+
   final formatter = DateFormat('M/d h:mm a');
 
   @override
@@ -908,24 +909,33 @@ class DateBar extends ConsumerWidget {
     final isLight = ref.watch(myThemeProvider).maybeWhen(
         data: (theme) => theme == ThemeMode.light, orElse: () => true);
     final scheme = isLight ? globalLightScheme : globalDarkScheme;
-    final dateTime = ref.watch(dateTimeProvider);
-    final dateLocation = ref.watch(dateLocationProvider);
-    final dateSchedule = ref.watch(dateScheduleProvider);
+    final dateScheduleState = ref.watch(dateScheduleProvider);
 
-    // TODO: Make it something special when you are on the date
-    if (dateSchedule == DateSchedule.confirmed ||
-        dateSchedule == DateSchedule.onDate) {
-      return dateContainer(context, theme, scheme, dateTime!, dateLocation,
-          dateSchedule == DateSchedule.onDate, ref);
-    } else if (dateSchedule == DateSchedule.sent) {
-      return dateSentContainer(
-          context, theme, scheme, dateTime!, dateLocation, ref);
-    } else if (dateSchedule == DateSchedule.received) {
-      return dateReceivedContainer(
-          context, theme, scheme, dateTime!, dateLocation!, ref);
-    } else {
-      return notScheduledContainer(context, scheme, theme, ref);
-    }
+    return dateScheduleState.when(
+      data: (dateSchedule) {
+        debugPrint('DateStatus: ${dateSchedule.status}');
+        debugPrint('DateTime: ${dateSchedule.dateTime}');
+        debugPrint('DateLocation: ${dateSchedule.dateLocation}');
+        final dateTime = dateSchedule.dateTime;
+        final dateLocation = dateSchedule.dateLocation;
+
+        if (dateSchedule.status == DateScheduleStatus.confirmed ||
+            dateSchedule.status == DateScheduleStatus.onDate) {
+          return dateContainer(context, theme, scheme, dateTime!, dateLocation,
+              dateSchedule.status == DateScheduleStatus.onDate, ref);
+        } else if (dateSchedule.status == DateScheduleStatus.sent) {
+          return dateSentContainer(
+              context, theme, scheme, dateTime!, dateLocation, ref);
+        } else if (dateSchedule.status == DateScheduleStatus.received) {
+          return dateReceivedContainer(
+              context, theme, scheme, dateTime!, dateLocation!, ref);
+        } else {
+          return notScheduledContainer(context, scheme, theme, ref);
+        }
+      },
+      loading: () => const CircularProgressIndicator(),
+      error: (e, _) => Text('Error: $e'),
+    );
   }
 
   Widget dateContainer(
@@ -971,9 +981,12 @@ class DateBar extends ConsumerWidget {
                                 onPressed: () {
                                   ref
                                       .read(dateScheduleProvider.notifier)
-                                      .update(
-                                        (state) => DateSchedule.notScheduled,
-                                      );
+                                      .setDateSchedule(
+                                          DateScheduleStatus.notScheduled);
+                                  ref
+                                      .read(dateScheduleProvider.notifier)
+                                      .setDateScheduleForMatch(
+                                          DateScheduleStatus.notScheduled);
                                   Navigator.of(context).pop();
 
                                   final newMessage = ChatMessageModel(
@@ -1047,21 +1060,11 @@ class DateBar extends ConsumerWidget {
                                     onPressed: () {
                                       ref
                                           .read(dateScheduleProvider.notifier)
-                                          .update(
-                                            (state) =>
-                                                DateSchedule.notScheduled,
-                                          );
+                                          .setDateSchedule(
+                                              DateScheduleStatus.notScheduled);
+
                                       Navigator.of(context).pop();
 
-                                      final newMessage = ChatMessageModel(
-                                        message: "Date ended",
-                                        author: "system",
-                                        date: DateTime.now(),
-                                      );
-
-                                      ref
-                                          .read(chatMessagesProvider.notifier)
-                                          .addMessage(newMessage);
                                       ref
                                           .read(surveyDueProvider.notifier)
                                           .setSurveyDue(true);
@@ -1114,16 +1117,16 @@ class DateBar extends ConsumerWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       ref
                                           .read(dateScheduleProvider.notifier)
-                                          .update(
-                                            (state) => DateSchedule.onDate,
-                                          );
+                                          .setDateSchedule(
+                                              DateScheduleStatus.onDate);
                                       Navigator.of(context).pop();
-
+                                      var name =
+                                          await ref.read(myNameProvider.future);
                                       final newMessage = ChatMessageModel(
-                                        message: "You have checked in",
+                                        message: "$name has checked in",
                                         author: "system",
                                         date: DateTime.now(),
                                       );
@@ -1274,9 +1277,14 @@ class DateBar extends ConsumerWidget {
                           children: [
                             TextButton(
                               onPressed: () {
-                                ref.read(dateScheduleProvider.notifier).update(
-                                      (state) => DateSchedule.notScheduled,
-                                    );
+                                ref
+                                    .read(dateScheduleProvider.notifier)
+                                    .setDateSchedule(
+                                        DateScheduleStatus.notScheduled);
+                                ref
+                                    .read(dateScheduleProvider.notifier)
+                                    .setDateScheduleForMatch(
+                                        DateScheduleStatus.notScheduled);
                                 Navigator.of(context).pop();
 
                                 final newMessage = ChatMessageModel(
@@ -1356,7 +1364,7 @@ class DateBar extends ConsumerWidget {
             children: [
               dateDetailsWidget(context, theme, 'Date Time', 'Date Location'),
               dateDetailsWidget(
-                  context, theme, formatter.format(dateTime), dateLocation!),
+                  context, theme, formatter.format(dateTime), dateLocation),
             ],
           ),
           Row(
@@ -1364,9 +1372,12 @@ class DateBar extends ConsumerWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  ref.read(dateScheduleProvider.notifier).update(
-                        (state) => DateSchedule.notScheduled,
-                      );
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .setDateSchedule(DateScheduleStatus.notScheduled);
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .setDateScheduleForMatch(DateScheduleStatus.notScheduled);
 
                   final newMessage = ChatMessageModel(
                     message: "Date declined",
@@ -1393,9 +1404,12 @@ class DateBar extends ConsumerWidget {
               const SizedBox(width: 20), // Space between the buttons
               TextButton(
                 onPressed: () {
-                  ref.read(dateScheduleProvider.notifier).update(
-                        (state) => DateSchedule.confirmed,
-                      );
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .setDateSchedule(DateScheduleStatus.confirmed);
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .setDateScheduleForMatch(DateScheduleStatus.confirmed);
 
                   final newMessage = ChatMessageModel(
                     message: "Date accepted",
@@ -1605,13 +1619,17 @@ class _DateDialogState extends ConsumerState<DateDialog> {
                     selectedTime!.hour,
                     selectedTime!.minute,
                   );
-                  ref.read(dateTimeProvider.notifier).state = dateTime;
+                  ref.read(dateScheduleProvider.notifier).setDateTime(dateTime);
                   var formatter = DateFormat('EEEE, MMMM d, h:mm a');
-                  ref.read(dateLocationProvider.notifier).state =
-                      locationController.text;
                   ref
                       .read(dateScheduleProvider.notifier)
-                      .update((state) => DateSchedule.sent);
+                      .setLocation(locationController.text);
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .setDateSchedule(DateScheduleStatus.sent);
+                  ref
+                      .read(dateScheduleProvider.notifier)
+                      .setDateScheduleForMatch(DateScheduleStatus.received);
 
                   final newMessage = ChatMessageModel(
                     message:

@@ -10,7 +10,7 @@ part 'providers.g.dart';
 
 enum Gender { male, female, nonBinary }
 
-enum DateSchedule { notScheduled, sent, received, confirmed, onDate }
+enum DateScheduleStatus { notScheduled, sent, received, confirmed, onDate }
 
 // TODO: Get this from backend
 @riverpod
@@ -105,11 +105,178 @@ class Queue extends _$Queue {
   }
 }
 
-final dateTimeProvider =
-    StateProvider<DateTime?>((ref) => DateTime(2024, 6, 5, 17, 0));
-final dateLocationProvider = StateProvider<String?>((ref) => "Starbucks");
-final dateScheduleProvider =
-    StateProvider<DateSchedule>((ref) => DateSchedule.received);
+class DateScheduleState {
+  final DateScheduleStatus status;
+  final DateTime? dateTime;
+  final String? dateLocation;
+
+  DateScheduleState({
+    required this.status,
+    this.dateTime,
+    this.dateLocation,
+  });
+
+  DateScheduleState copyWith({
+    DateScheduleStatus? status,
+    DateTime? dateTime,
+    String? dateLocation,
+  }) {
+    return DateScheduleState(
+      status: status ?? this.status,
+      dateTime: dateTime ?? this.dateTime,
+      dateLocation: dateLocation ?? this.dateLocation,
+    );
+  }
+}
+
+@riverpod
+class DateSchedule extends _$DateSchedule {
+  @override
+  Stream<DateScheduleState> build() async* {
+    final prefs = await SharedPreferences.getInstance();
+    final localStatusString =
+        prefs.getString('dateScheduleStatus') ?? 'notScheduled';
+    final localStatus = DateScheduleStatus.values.firstWhere(
+      (e) => e.toString().split('.').last == localStatusString,
+      orElse: () => DateScheduleStatus.notScheduled,
+    );
+
+    final localDateTimeString = prefs.getString('dateTime');
+    final localDateTime = localDateTimeString != null
+        ? DateTime.parse(localDateTimeString)
+        : null;
+
+    final localDateLocation = prefs.getString('dateLocation');
+
+    yield DateScheduleState(
+      status: localStatus,
+      dateTime: localDateTime,
+      dateLocation: localDateLocation,
+    );
+
+    final chatId = await ref.watch(chatIdProvider.future);
+
+    if (chatId == null) {
+      yield DateScheduleState(status: DateScheduleStatus.notScheduled);
+      return;
+    }
+
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    DatabaseReference dateScheduleRef =
+        FirebaseDatabase.instance.ref('chats/$chatId');
+
+    await for (var event in dateScheduleRef.onValue) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data != null) {
+        final statusString = data['dateSchedule_$userId'] as String?;
+        debugPrint('statusString: $statusString');
+        final status = statusString != null
+            ? DateScheduleStatus.values.firstWhere(
+                (e) => e.toString().split('.').last == statusString,
+                orElse: () => DateScheduleStatus.notScheduled,
+              )
+            : DateScheduleStatus.notScheduled;
+
+        final dateTimeString = data['dateTime'] as String?;
+        final dateTime =
+            dateTimeString != null ? DateTime.parse(dateTimeString) : null;
+
+        final dateLocation = data['dateLocation'] as String?;
+
+        await prefs.setString(
+            'dateScheduleStatus', statusString ?? 'notScheduled');
+        await prefs.setString('dateTime', dateTimeString ?? '');
+        await prefs.setString('dateLocation', dateLocation ?? '');
+
+        yield DateScheduleState(
+          status: status,
+          dateTime: dateTime,
+          dateLocation: dateLocation,
+        );
+      } else {
+        yield DateScheduleState(status: DateScheduleStatus.notScheduled);
+      }
+    }
+  }
+
+  Future<void> setDateSchedule(DateScheduleStatus status) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        'dateScheduleStatus', status.toString().split('.').last);
+
+    final chatId = await ref.watch(chatIdProvider.future);
+    if (chatId == null) return;
+
+    DatabaseReference dateScheduleRef =
+        FirebaseDatabase.instance.ref('chats/$chatId');
+    await dateScheduleRef
+        .update({'dateSchedule_$userId': status.toString().split('.').last});
+
+    state = AsyncValue.data(
+      state.value!.copyWith(status: status),
+    );
+  }
+
+  Future<void> setDateScheduleForMatch(DateScheduleStatus status) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final chatId = await ref.watch(chatIdProvider.future);
+    if (chatId == null) return;
+
+    final matchUserId = await _getMatchUserId(chatId, userId);
+
+    DatabaseReference dateScheduleRef =
+        FirebaseDatabase.instance.ref('chats/$chatId');
+    await dateScheduleRef.update(
+        {'dateSchedule_$matchUserId': status.toString().split('.').last});
+
+    state = AsyncValue.data(
+      state.value!.copyWith(status: status),
+    );
+  }
+
+  Future<String> _getMatchUserId(String chatId, String currentUserId) async {
+    final chatRef = FirebaseDatabase.instance.ref('chats/$chatId/match_info');
+    final snapshot = await chatRef.once();
+    final matchInfo = snapshot.snapshot.value as Map<dynamic, dynamic>;
+    final user1Id = matchInfo['user1_id'] as String;
+    final user2Id = matchInfo['user2_id'] as String;
+
+    return currentUserId == user1Id ? user2Id : user1Id;
+  }
+
+  Future<void> setDateTime(DateTime dateTime) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('dateTime', dateTime.toIso8601String());
+
+    final chatId = await ref.watch(chatIdProvider.future);
+    if (chatId == null) return;
+
+    DatabaseReference dateTimeRef =
+        FirebaseDatabase.instance.ref('chats/$chatId/dateTime');
+    await dateTimeRef.set(dateTime.toIso8601String());
+
+    state = AsyncValue.data(
+      state.value!.copyWith(dateTime: dateTime),
+    );
+  }
+
+  Future<void> setLocation(String location) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('dateLocation', location);
+
+    final chatId = await ref.watch(chatIdProvider.future);
+    if (chatId == null) return;
+
+    DatabaseReference locationRef =
+        FirebaseDatabase.instance.ref('chats/$chatId/dateLocation');
+    await locationRef.set(location);
+
+    state = AsyncValue.data(
+      state.value!.copyWith(dateLocation: location),
+    );
+  }
+}
 
 // New providers for settings
 @riverpod
