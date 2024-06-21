@@ -177,13 +177,11 @@ def calculate_geographical_distance(location1, location2):
     return distance
 
 def parse_preferences(preferences):
-    # Remove the Gender. prefix and convert to a set of strings
-    preferences = preferences.replace("Gender.", "").strip("{}")
-    return set(preferences.split(", "))
+    # Since preferences is now a list of strings, just return it as a set
+    return set([preference.replace("Gender.", "") for preference in preferences])
 
 def parse_gender(gender):
     # Remove the Gender. prefix
-    # TODO: Make this work with the new way of storing
     return gender.replace("Gender.", "")
 
 def match_users(event, context):
