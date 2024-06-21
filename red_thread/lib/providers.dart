@@ -137,7 +137,33 @@ class SelectedGenders extends _$SelectedGenders {
   }
 }
 
-final maxDistanceProvider = StateProvider<double>((ref) => 50);
+@riverpod
+class MaxDistance extends _$MaxDistance {
+  @override
+  Stream<double> build() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final maxDistanceRef =
+        FirebaseDatabase.instance.ref('users/$uid/maxDistance');
+    return maxDistanceRef.onValue.map((event) {
+      final value = event.snapshot.value;
+      if (value is int) {
+        return value.toDouble();
+      } else if (value is double) {
+        return value;
+      } else {
+        throw StateError('Unexpected value type: ${value.runtimeType}');
+      }
+    });
+  }
+
+  Future<void> setMaxDistance(double maxDistance) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final maxDistanceRef =
+        FirebaseDatabase.instance.ref('users/$uid/maxDistance');
+    await maxDistanceRef.set(maxDistance);
+  }
+}
+
 final ageRangeProvider =
     StateProvider<RangeValues>((ref) => const RangeValues(18, 30));
 

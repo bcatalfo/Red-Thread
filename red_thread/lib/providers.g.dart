@@ -80,6 +80,21 @@ final selectedGendersProvider =
 );
 
 typedef _$SelectedGenders = AutoDisposeStreamNotifier<Set<Gender>>;
+String _$maxDistanceHash() => r'e2d3297be35f68c4dda0df53bf21ff0c23dc8e61';
+
+/// See also [MaxDistance].
+@ProviderFor(MaxDistance)
+final maxDistanceProvider =
+    AutoDisposeStreamNotifierProvider<MaxDistance, double>.internal(
+  MaxDistance.new,
+  name: r'maxDistanceProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$maxDistanceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$MaxDistance = AutoDisposeStreamNotifier<double>;
 String _$chatIdHash() => r'acbe4848a93b3d95be7ada2da54234d354fb790e';
 
 /// See also [ChatId].

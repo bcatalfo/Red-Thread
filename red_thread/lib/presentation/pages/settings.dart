@@ -23,7 +23,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         final genders = await ref.read(selectedGendersProvider.future);
-        final maxDistance = ref.read(maxDistanceProvider);
+        final maxDistance = await ref.read(maxDistanceProvider.future);
         final ageRange = ref.read(ageRangeProvider);
 
         setState(() {
@@ -251,7 +251,9 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             ref
                 .read(selectedGendersProvider.notifier)
                 .setGenders(_localSelectedGenders);
-            ref.read(maxDistanceProvider.notifier).state = _localMaxDistance;
+            ref
+                .read(maxDistanceProvider.notifier)
+                .setMaxDistance(_localMaxDistance);
             ref.read(ageRangeProvider.notifier).state = _localAgeRange;
             FirebaseDatabase database = FirebaseDatabase.instance;
             DatabaseReference dbref = database.ref();
