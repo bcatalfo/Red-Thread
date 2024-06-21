@@ -264,7 +264,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   'start': _localAgeRange.start.round(),
                   'end': _localAgeRange.end.round(),
                 },
-                'maxDistance': _localMaxDistance.round(),
               });
             }
           } else {
