@@ -142,6 +142,7 @@ class DateSchedule extends _$DateSchedule {
     );
 
     final localDateTimeString = prefs.getString('dateTime');
+    debugPrint('localDateTimeString: $localDateTimeString');
     final localDateTime = localDateTimeString != null
         ? DateTime.parse(localDateTimeString)
         : null;
@@ -185,7 +186,8 @@ class DateSchedule extends _$DateSchedule {
 
         await prefs.setString(
             'dateScheduleStatus', statusString ?? 'notScheduled');
-        await prefs.setString('dateTime', dateTimeString ?? '');
+        await prefs.setString(
+            'dateTime', dateTimeString ?? DateTime.now().toIso8601String());
         await prefs.setString('dateLocation', dateLocation ?? '');
 
         yield DateScheduleState(
