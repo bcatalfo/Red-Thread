@@ -168,8 +168,8 @@ class LoginPageState extends ConsumerState<LoginPage>
       ref.invalidate(queueProvider);
       // TODO: invalidate date providers
       ref.invalidate(selectedGendersProvider);
-      // TODO: invalidate age range provider
-      // TODO: invalidate max distance provider
+      ref.invalidate(ageRangeProvider);
+      ref.invalidate(maxDistanceProvider);
       ref.invalidate(showAdProvider);
       ref.invalidate(adInfoProvider);
       ref.invalidate(myNameProvider);
