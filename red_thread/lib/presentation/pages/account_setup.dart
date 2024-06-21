@@ -101,137 +101,143 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
         final fcmToken = await FirebaseMessaging.instance.getToken();
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          final random = Random();
-          final number = 1 +
-              random.nextInt(4); // Generates a random number between 1 and 4
-          if (number == 1) {
-            dbref.child('users').child(user.uid).set({
-              //TODO: Add the new providers!
-              'displayName': _displayNameController.text,
-              'birthday': _birthdayController.text,
-              'phoneNumber':
-                  _selectedCountryCode['code']! + _phoneNumberController.text,
-              'ageRange': {
-                'start': _ageRange.start.round(),
-                'end': _ageRange.end.round(),
-              },
-              'maxDistance': _maxDistance.round(),
-              'gender': _selectedGender.toString(),
-              'lookingFor': _selectedGenders.toString(),
-              'location': {
-                'latitude': latitude,
-                'longitude': longitude,
-              },
-              'fcmToken': fcmToken,
-              'contacts': contacts.map((contact) {
-                return {
-                  'name': contact.displayName,
-                  'phoneNumbers':
-                      contact.phones.map((phone) => phone.number).toList(),
-                };
-              }).toList(),
-              'adInfo': {
-                'showAd': true,
-                'price': 4.99,
-                'isLifetime': false,
-              },
-            });
-          }
-          if (number == 2) {
-            dbref.child('users').child(user.uid).set({
-              'displayName': _displayNameController.text,
-              'birthday': _birthdayController.text,
-              'phoneNumber':
-                  _selectedCountryCode['code']! + _phoneNumberController.text,
-              'ageRange': {
-                'start': _ageRange.start.round(),
-                'end': _ageRange.end.round(),
-              },
-              'maxDistance': _maxDistance.round(),
-              'gender': _selectedGender.toString(),
-              'lookingFor': _selectedGenders.toString(),
-              'location': {
-                'latitude': latitude,
-                'longitude': longitude,
-              },
-              'fcmToken': fcmToken,
-              'contacts': contacts.map((contact) {
-                return {
-                  'name': contact.displayName,
-                  'phoneNumbers':
-                      contact.phones.map((phone) => phone.number).toList(),
-                };
-              }).toList(),
-              'adInfo': {
-                'showAd': true,
-                'price': 9.99,
-                'isLifetime': false,
-              },
-            });
-          }
-          if (number == 3) {
-            dbref.child('users').child(user.uid).set({
-              'displayName': _displayNameController.text,
-              'birthday': _birthdayController.text,
-              'phoneNumber':
-                  _selectedCountryCode['code']! + _phoneNumberController.text,
-              'ageRange': {
-                'start': _ageRange.start.round(),
-                'end': _ageRange.end.round(),
-              },
-              'maxDistance': _maxDistance.round(),
-              'gender': _selectedGender.toString(),
-              'lookingFor': _selectedGenders.toString(),
-              'location': {
-                'latitude': latitude,
-                'longitude': longitude,
-              },
-              'fcmToken': fcmToken,
-              'contacts': contacts.map((contact) {
-                return {
-                  'name': contact.displayName,
-                  'phoneNumbers':
-                      contact.phones.map((phone) => phone.number).toList(),
-                };
-              }).toList(),
-              'adInfo': {
-                'showAd': true,
-                'price': 19.99,
-                'isLifetime': false,
-              },
-            });
-          }
-          if (number == 4) {
-            dbref.child('users').child(user.uid).set({
-              'displayName': _displayNameController.text,
-              'birthday': _birthdayController.text,
-              'phoneNumber':
-                  _selectedCountryCode['code']! + _phoneNumberController.text,
-              'ageRange': {
-                'start': _ageRange.start.round(),
-                'end': _ageRange.end.round(),
-              },
-              'maxDistance': _maxDistance.round(),
-              'gender': _selectedGender.toString(),
-              'lookingFor': _selectedGenders.toString(),
-              'location': {
-                'latitude': latitude,
-                'longitude': longitude,
-              },
-              'fcmToken': fcmToken,
-              'contacts': contacts.map((contact) {
-                return {
-                  'name': contact.displayName,
-                  'phoneNumbers':
-                      contact.phones.map((phone) => phone.number).toList(),
-                };
-              }).toList(),
-              'adInfo': {
-                'showAd': true,
-                'price': 99.99,
-                'isLifetime': true,
-              },
-            });
+          var userRef = FirebaseDatabase.instance
+              .ref('users/${FirebaseAuth.instance.currentUser!.uid}');
+          var event = await userRef.once();
+
+          if (event.snapshot.value == null) {
+            final random = Random();
+            final number = 1 +
+                random.nextInt(4); // Generates a random number between 1 and 4
+            if (number == 1) {
+              dbref.child('users').child(user.uid).set({
+                //TODO: Add the new providers!
+                'displayName': _displayNameController.text,
+                'birthday': _birthdayController.text,
+                'phoneNumber':
+                    _selectedCountryCode['code']! + _phoneNumberController.text,
+                'ageRange': {
+                  'start': _ageRange.start.round(),
+                  'end': _ageRange.end.round(),
+                },
+                'maxDistance': _maxDistance.round(),
+                'gender': _selectedGender.toString(),
+                'lookingFor': _selectedGenders.toString(),
+                'location': {
+                  'latitude': latitude,
+                  'longitude': longitude,
+                },
+                'fcmToken': fcmToken,
+                'contacts': contacts.map((contact) {
+                  return {
+                    'name': contact.displayName,
+                    'phoneNumbers':
+                        contact.phones.map((phone) => phone.number).toList(),
+                  };
+                }).toList(),
+                'adInfo': {
+                  'showAd': true,
+                  'price': 4.99,
+                  'isLifetime': false,
+                },
+              });
+            }
+            if (number == 2) {
+              dbref.child('users').child(user.uid).set({
+                'displayName': _displayNameController.text,
+                'birthday': _birthdayController.text,
+                'phoneNumber':
+                    _selectedCountryCode['code']! + _phoneNumberController.text,
+                'ageRange': {
+                  'start': _ageRange.start.round(),
+                  'end': _ageRange.end.round(),
+                },
+                'maxDistance': _maxDistance.round(),
+                'gender': _selectedGender.toString(),
+                'lookingFor': _selectedGenders.toString(),
+                'location': {
+                  'latitude': latitude,
+                  'longitude': longitude,
+                },
+                'fcmToken': fcmToken,
+                'contacts': contacts.map((contact) {
+                  return {
+                    'name': contact.displayName,
+                    'phoneNumbers':
+                        contact.phones.map((phone) => phone.number).toList(),
+                  };
+                }).toList(),
+                'adInfo': {
+                  'showAd': true,
+                  'price': 9.99,
+                  'isLifetime': false,
+                },
+              });
+            }
+            if (number == 3) {
+              dbref.child('users').child(user.uid).set({
+                'displayName': _displayNameController.text,
+                'birthday': _birthdayController.text,
+                'phoneNumber':
+                    _selectedCountryCode['code']! + _phoneNumberController.text,
+                'ageRange': {
+                  'start': _ageRange.start.round(),
+                  'end': _ageRange.end.round(),
+                },
+                'maxDistance': _maxDistance.round(),
+                'gender': _selectedGender.toString(),
+                'lookingFor': _selectedGenders.toString(),
+                'location': {
+                  'latitude': latitude,
+                  'longitude': longitude,
+                },
+                'fcmToken': fcmToken,
+                'contacts': contacts.map((contact) {
+                  return {
+                    'name': contact.displayName,
+                    'phoneNumbers':
+                        contact.phones.map((phone) => phone.number).toList(),
+                  };
+                }).toList(),
+                'adInfo': {
+                  'showAd': true,
+                  'price': 19.99,
+                  'isLifetime': false,
+                },
+              });
+            }
+            if (number == 4) {
+              dbref.child('users').child(user.uid).set({
+                'displayName': _displayNameController.text,
+                'birthday': _birthdayController.text,
+                'phoneNumber':
+                    _selectedCountryCode['code']! + _phoneNumberController.text,
+                'ageRange': {
+                  'start': _ageRange.start.round(),
+                  'end': _ageRange.end.round(),
+                },
+                'maxDistance': _maxDistance.round(),
+                'gender': _selectedGender.toString(),
+                'lookingFor': _selectedGenders.toString(),
+                'location': {
+                  'latitude': latitude,
+                  'longitude': longitude,
+                },
+                'fcmToken': fcmToken,
+                'contacts': contacts.map((contact) {
+                  return {
+                    'name': contact.displayName,
+                    'phoneNumbers':
+                        contact.phones.map((phone) => phone.number).toList(),
+                  };
+                }).toList(),
+                'adInfo': {
+                  'showAd': true,
+                  'price': 99.99,
+                  'isLifetime': true,
+                },
+              });
+            }
           }
         }
       }
@@ -1348,7 +1354,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
+        // requesting permissions again this is also where
         // Android's shouldShowRequestPermissionRationale
         // returned true. According to Android guidelines
         // your App should show an explanatory UI now.

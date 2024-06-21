@@ -1,6 +1,7 @@
 import "dart:async";
 import "package:dropdown_search/dropdown_search.dart";
 import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_database/firebase_database.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -160,23 +161,31 @@ class LoginPageState extends ConsumerState<LoginPage>
       verificationId: newVerificationId,
       smsCode: _smsCodeController.text.replaceAll(' ', ''),
     );
-    FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-      completer.complete();
-      // Since a new user is signed in let's invalidate all the providers
-      ref.invalidate(myThemeProvider);
-      ref.invalidate(surveyDueProvider);
-      ref.invalidate(queueProvider);
-      // TODO: invalidate date providers
-      ref.invalidate(selectedGendersProvider);
-      ref.invalidate(ageRangeProvider);
-      ref.invalidate(maxDistanceProvider);
-      ref.invalidate(showAdProvider);
-      ref.invalidate(adInfoProvider);
-      ref.invalidate(myNameProvider);
-      ref.invalidate(chatIdProvider);
-      ref.invalidate(matchNameProvider);
-      ref.invalidate(matchAgeProvider);
-      ref.invalidate(matchDistanceProvider);
+    FirebaseAuth.instance.signInWithCredential(credential).then((value) async {
+      var userRef = FirebaseDatabase.instance
+          .ref('users/${FirebaseAuth.instance.currentUser!.uid}');
+      var event = await userRef.once();
+
+      if (event.snapshot.value == null) {
+        await FirebaseAuth.instance.signOut();
+      } else {
+        completer.complete();
+        // Since a new user is signed in let's invalidate all the providers
+        ref.invalidate(myThemeProvider);
+        ref.invalidate(surveyDueProvider);
+        ref.invalidate(queueProvider);
+        // TODO: invalidate date providers
+        ref.invalidate(selectedGendersProvider);
+        ref.invalidate(ageRangeProvider);
+        ref.invalidate(maxDistanceProvider);
+        ref.invalidate(showAdProvider);
+        ref.invalidate(adInfoProvider);
+        ref.invalidate(myNameProvider);
+        ref.invalidate(chatIdProvider);
+        ref.invalidate(matchNameProvider);
+        ref.invalidate(matchAgeProvider);
+        ref.invalidate(matchDistanceProvider);
+      }
     }).catchError((error) {
       showDialog(
           context: context,
