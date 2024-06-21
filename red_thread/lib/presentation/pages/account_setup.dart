@@ -1348,7 +1348,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
+        // requesting permissions again this is also where
         // Android's shouldShowRequestPermissionRationale
         // returned true. According to Android guidelines
         // your App should show an explanatory UI now.
