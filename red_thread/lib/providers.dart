@@ -164,8 +164,33 @@ class MaxDistance extends _$MaxDistance {
   }
 }
 
-final ageRangeProvider =
-    StateProvider<RangeValues>((ref) => const RangeValues(18, 30));
+@riverpod
+class AgeRange extends _$AgeRange {
+  @override
+  Stream<RangeValues> build() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final ageRangeRef = FirebaseDatabase.instance.ref('users/$uid/ageRange');
+    return ageRangeRef.onValue.map((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data != null) {
+        final start = data['start'] as int? ?? 18;
+        final end = data['end'] as int? ?? 30;
+        return RangeValues(start.toDouble(), end.toDouble());
+      } else {
+        throw StateError('Invalid data format: ${event.snapshot.value}');
+      }
+    });
+  }
+
+  Future<void> setAgeRange(RangeValues ageRange) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final ageRangeRef = FirebaseDatabase.instance.ref('users/$uid/ageRange');
+    await ageRangeRef.set({
+      'start': ageRange.start.toInt(),
+      'end': ageRange.end.toInt(),
+    });
+  }
+}
 
 // Ad providers
 final showAdProvider = StateProvider<bool>((ref) => true);

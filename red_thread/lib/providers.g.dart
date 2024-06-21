@@ -95,6 +95,21 @@ final maxDistanceProvider =
 );
 
 typedef _$MaxDistance = AutoDisposeStreamNotifier<double>;
+String _$ageRangeHash() => r'3d7387d9165c471623523f69037a4ac315149a20';
+
+/// See also [AgeRange].
+@ProviderFor(AgeRange)
+final ageRangeProvider =
+    AutoDisposeStreamNotifierProvider<AgeRange, RangeValues>.internal(
+  AgeRange.new,
+  name: r'ageRangeProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$ageRangeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$AgeRange = AutoDisposeStreamNotifier<RangeValues>;
 String _$chatIdHash() => r'acbe4848a93b3d95be7ada2da54234d354fb790e';
 
 /// See also [ChatId].

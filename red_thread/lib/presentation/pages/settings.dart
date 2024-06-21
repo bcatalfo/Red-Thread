@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:red_thread/providers.dart';
@@ -24,7 +22,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       try {
         final genders = await ref.read(selectedGendersProvider.future);
         final maxDistance = await ref.read(maxDistanceProvider.future);
-        final ageRange = ref.read(ageRangeProvider);
+        final ageRange = await ref.read(ageRangeProvider.future);
 
         setState(() {
           _localSelectedGenders = genders;
@@ -254,18 +252,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
             ref
                 .read(maxDistanceProvider.notifier)
                 .setMaxDistance(_localMaxDistance);
-            ref.read(ageRangeProvider.notifier).state = _localAgeRange;
-            FirebaseDatabase database = FirebaseDatabase.instance;
-            DatabaseReference dbref = database.ref();
-            final user = FirebaseAuth.instance.currentUser;
-            if (user != null) {
-              dbref.child('users').child(user.uid).update({
-                'ageRange': {
-                  'start': _localAgeRange.start.round(),
-                  'end': _localAgeRange.end.round(),
-                },
-              });
-            }
+            ref.read(ageRangeProvider.notifier).setAgeRange(_localAgeRange);
           } else {
             // Show validation error
             showDialog(
