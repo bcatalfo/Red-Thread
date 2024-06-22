@@ -136,7 +136,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   };
                 }).toList(),
                 'adInfo': {
-                  'showAd': true,
+                  'showAd': false,
                   'price': 4.99,
                   'isLifetime': false,
                 },
@@ -168,7 +168,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   };
                 }).toList(),
                 'adInfo': {
-                  'showAd': true,
+                  'showAd': false,
                   'price': 9.99,
                   'isLifetime': false,
                 },
@@ -200,7 +200,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   };
                 }).toList(),
                 'adInfo': {
-                  'showAd': true,
+                  'showAd': false,
                   'price': 19.99,
                   'isLifetime': false,
                 },
@@ -232,7 +232,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   };
                 }).toList(),
                 'adInfo': {
-                  'showAd': true,
+                  'showAd': false,
                   'price': 99.99,
                   'isLifetime': true,
                 },
