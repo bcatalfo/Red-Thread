@@ -24,19 +24,23 @@ void main() async {
 }
 
 Future<void> initializeFCM() async {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final user = FirebaseAuth.instance.currentUser;
 
-  // Request permissions for iOS
-  await messaging.requestPermission();
+  if (user != null) {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  // Get the FCM token and save it to the database
-  String? token = await messaging.getToken();
-  if (token != null) {
-    await saveTokenToDatabase(token);
+    // Request permissions for iOS
+    await messaging.requestPermission();
+
+    // Get the FCM token and save it to the database
+    String? token = await messaging.getToken();
+    if (token != null) {
+      await saveTokenToDatabase(token);
+    }
+
+    // Listen for token refresh
+    FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
   }
-
-  // Listen for token refresh
-  FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
 }
 
 Future<void> saveTokenToDatabase(String token) async {
