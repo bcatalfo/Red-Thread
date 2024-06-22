@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/providers.dart';
 
@@ -17,6 +18,8 @@ class QueuePage extends ConsumerStatefulWidget {
 
 class QueuePageState extends ConsumerState<QueuePage> {
   Timer? timer; // updates UI every second
+  double latitude = -1.0;
+  double longitude = -1.0;
 
   @override
   void initState() {
@@ -30,6 +33,48 @@ class QueuePageState extends ConsumerState<QueuePage> {
   void dispose() {
     timer?.cancel();
     super.dispose();
+  }
+
+  Future<bool> _getLocation() async {
+    final completer = Completer<bool>();
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled.
+      completer.complete(false);
+      return completer.future;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied.
+        completer.complete(false);
+        return completer.future;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      completer.complete(false);
+      return completer.future;
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition();
+      latitude = position.latitude;
+      longitude = position.longitude;
+      completer.complete(true);
+    } catch (e) {
+      // Handle error, e.g., user denied permissions
+      completer.complete(false);
+    }
+
+    return completer.future;
   }
 
   String formatDuration(Duration duration) {
@@ -185,13 +230,29 @@ class QueuePageState extends ConsumerState<QueuePage> {
       height: 100,
       child: FittedBox(
           child: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           if (inQueue) {
             ref.read(queueProvider.notifier).leaveQueue();
             FirebaseAnalytics.instance.logEvent(name: 'exit_queue');
           } else {
-            ref.read(queueProvider.notifier).joinQueue();
-            FirebaseAnalytics.instance.logEvent(name: 'enter_queue');
+            await _getLocation().then((value) {
+              if (value) {
+                final dbref = FirebaseDatabase.instance.ref();
+                final user = FirebaseAuth.instance.currentUser;
+                dbref.child('users').child(user!.uid).child('location').update({
+                  'latitude': latitude,
+                  'longitude': longitude,
+                });
+                ref.read(queueProvider.notifier).joinQueue();
+                FirebaseAnalytics.instance.logEvent(name: 'enter_queue');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Location services are disabled.'),
+                  ),
+                );
+              }
+            });
           }
         },
         backgroundColor: theme.colorScheme.primaryContainer,
