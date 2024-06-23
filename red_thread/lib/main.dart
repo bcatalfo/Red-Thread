@@ -58,6 +58,7 @@ class BagoolApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // TODO: This should probably be myThemeProvider.future dont default to light mode when loading
     final themeMode = ref.watch(myThemeProvider).when(
           data: (data) => data,
           error: (_, __) => ThemeMode.light,
@@ -72,7 +73,6 @@ class BagoolApp extends ConsumerWidget {
       themeMode: themeMode,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      debugShowCheckedModeBanner: false,
     );
   }
 }

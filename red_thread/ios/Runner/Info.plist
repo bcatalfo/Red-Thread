@@ -48,24 +48,10 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>This enables you to send media files using RedThread</string>
-	<key>NSCameraUsageDescription</key>
-	<string>This allows RedThread to make video calls and send your pictures directly from your camera.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Red Thread requires access to your contacts to ensure you don&apos;t match with people you already know.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This enables you to send your location to your contacts.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This enables you to send your location to your contacts.</string>
-	<key>NSLocationUsageDescription</key>
-	<string>This enables you to send your location to your contacts.</string>
+	<string>Red Thread requires access to your contacts to ensure you don&apos;t match with people you already know. These will be uploaded to our matchmaking database.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This enables you to send your location to your contacts.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This allows RedThread to use your microphone for voice and video calls</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This enables you to send your pictures to your RedThread contacts</string>
+	<string>Red Thread requires access to your location to find matches near you.</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

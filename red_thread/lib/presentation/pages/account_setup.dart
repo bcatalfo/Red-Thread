@@ -25,7 +25,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
   late Animation<double> _progressAnimation;
   int _currentStep = 0;
   Gender? _selectedGender;
-  Set<Gender> _selectedGenders = {};
+  final Set<Gender> _selectedGenders = {};
   double latitude = 0.0;
   double longitude = 0.0;
   double _maxDistance = 50;
@@ -1190,14 +1190,14 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Verification Completed'),
-              content: Text('Phone number automatically verified'),
+              title: const Text('Verification Completed'),
+              content: const Text('Phone number automatically verified'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -1211,14 +1211,14 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Verification Failed'),
+              title: const Text('Verification Failed'),
               content: Text(e.message ?? 'An unknown error occurred'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -1232,14 +1232,14 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Verification Code Sent'),
-              content: Text('A verification code has been sent to your phone'),
+              title: const Text('Verification Code Sent'),
+              content: const Text('A verification code has been sent to your phone'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -1316,14 +1316,14 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Verification Failed'),
+              title: const Text('Verification Failed'),
               content: Text(error.toString()),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );

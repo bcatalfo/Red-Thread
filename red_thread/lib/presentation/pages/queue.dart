@@ -275,7 +275,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
   @override
   Widget build(BuildContext context) {
     final inQueue = ref.watch(queueProvider).maybeWhen(
-          data: (value) => value,
+          data: (value) => value!,
           orElse: () => false,
         );
     final joinedQueueTime =
@@ -291,7 +291,7 @@ class QueuePageState extends ConsumerState<QueuePage> {
       body = Column(
         children: [
           bodyColumn('Time in queue:',
-              '${formatDuration(Duration(seconds: secsInQueue))}', theme),
+              formatDuration(Duration(seconds: secsInQueue)), theme),
           const SizedBox(height: 20),
           adInfoAsyncValue.when(
             data: (adInfo) {
@@ -305,8 +305,8 @@ class QueuePageState extends ConsumerState<QueuePage> {
                 return Container();
               }
             },
-            loading: () => Column(
-              children: const [
+            loading: () => const Column(
+              children: [
                 Center(child: CircularProgressIndicator()),
               ],
             ),

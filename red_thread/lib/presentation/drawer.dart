@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:red_thread/providers.dart';
+import 'package:red_thread/authentication_service.dart';
 
 // TODO: Reorganize this garbage, update the logo code, add it to the widgets folder
 //define a drawer called top drawer
@@ -13,9 +14,10 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
       data: (data) => data,
       error: (_, __) => ThemeMode.light,
       loading: () => ThemeMode.light);
+  final authService = AuthenticationService(ref);
 
   return Drawer(
-    backgroundColor: theme.colorScheme.surfaceVariant,
+    backgroundColor: theme.colorScheme.surfaceContainerHighest,
     child: LayoutBuilder(
       builder: (context, constraints) => Column(
         children: [
@@ -85,10 +87,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
             leading: Icon(Icons.logout,
                 size: theme.textTheme.displayMedium?.fontSize),
             title: Text('Log Out', style: theme.textTheme.displayMedium),
-            onTap: () async {
-              await FirebaseAuth.instance.signOut();
-              FirebaseAnalytics.instance.logEvent(name: 'user_logged_out');
-            },
+            onTap: authService.logout,
           ),
           ListTile(
               leading: Icon(Icons.delete,
@@ -100,7 +99,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
-                    backgroundColor: theme.colorScheme.surfaceVariant,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
                     title: Text('Delete Account?',
                         style: theme.textTheme.headlineMedium),
                     content: Text(

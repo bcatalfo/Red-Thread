@@ -112,11 +112,11 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
                 context.push('/login');
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
+                backgroundColor: WidgetStateProperty.all(
                     theme.colorScheme.primaryContainer),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(
+                minimumSize: WidgetStateProperty.all(const Size(
                     double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
@@ -135,11 +135,11 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
                 context.push('/register');
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
+                backgroundColor: WidgetStateProperty.all(
                     theme.colorScheme.primaryContainer),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(
+                minimumSize: WidgetStateProperty.all(const Size(
                     double.infinity,
                     0)), // This makes the button stretch horizontally
               ),
@@ -156,9 +156,9 @@ class WelcomePageState extends ConsumerState<WelcomePage> {
             TextButton(
               onPressed: () {},
               style: ButtonStyle(
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 8.0)),
-                minimumSize: MaterialStateProperty.all(const Size(
+                minimumSize: WidgetStateProperty.all(const Size(
                     double.infinity,
                     0)), // This makes the button stretch horizontally
               ),

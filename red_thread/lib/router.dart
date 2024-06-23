@@ -18,17 +18,16 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(
         path: '/',
         builder: (context, state) {
-          final isAuthenticatedAsyncValue = ref.watch(isAuthenticatedProvider);
-          final isAuthenticated = isAuthenticatedAsyncValue.maybeWhen(
-            data: (data) => data,
-            orElse: () => false,
-          );
+          final isAuthenticated = ref.watch(authUserProvider).maybeWhen(
+                data: (data) => data != null,
+                orElse: () => false,
+              );
           final matchFound = ref.watch(chatIdProvider).when(
               data: (chatId) => chatId != null,
               error: (e, _) => false,
               loading: () => false);
           final isSurveyDue = ref.watch(surveyDueProvider).when(
-              data: (surveyDue) => surveyDue,
+              data: (surveyDue) => surveyDue ?? false,
               error: (e, _) => false,
               loading: () => false);
 

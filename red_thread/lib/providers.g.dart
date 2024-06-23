@@ -6,7 +6,21 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$myNameHash() => r'd92625254457894555e9bda225ff65e6e92f92c8';
+String _$authUserHash() => r'458fef0d11cc579d29265370880b1db9b9a2aa9a';
+
+/// See also [authUser].
+@ProviderFor(authUser)
+final authUserProvider = AutoDisposeStreamProvider<String?>.internal(
+  authUser,
+  name: r'authUserProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$authUserHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef AuthUserRef = AutoDisposeStreamProviderRef<String?>;
+String _$myNameHash() => r'f940f0113c80ec07302c121d26dc2761bcd744d1';
 
 /// See also [myName].
 @ProviderFor(myName)
@@ -20,12 +34,12 @@ final myNameProvider = AutoDisposeFutureProvider<String?>.internal(
 );
 
 typedef MyNameRef = AutoDisposeFutureProviderRef<String?>;
-String _$myThemeHash() => r'be3c404118d6367a44b23c0e7eaf4af0af36b3d5';
+String _$myThemeHash() => r'00b44f33f3d8cb37939d67e82c347ed802e47b2e';
 
 /// See also [MyTheme].
 @ProviderFor(MyTheme)
 final myThemeProvider =
-    AutoDisposeStreamNotifierProvider<MyTheme, ThemeMode>.internal(
+    AutoDisposeStreamNotifierProvider<MyTheme, ThemeMode?>.internal(
   MyTheme.new,
   name: r'myThemeProvider',
   debugGetCreateSourceHash:
@@ -34,13 +48,13 @@ final myThemeProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$MyTheme = AutoDisposeStreamNotifier<ThemeMode>;
-String _$surveyDueHash() => r'7a52aa12b1470bf0881c6eda303efc1fcebaafa9';
+typedef _$MyTheme = AutoDisposeStreamNotifier<ThemeMode?>;
+String _$surveyDueHash() => r'b7eb2194ef041c2431d7bdf308ff661cef74bee1';
 
 /// See also [SurveyDue].
 @ProviderFor(SurveyDue)
 final surveyDueProvider =
-    AutoDisposeStreamNotifierProvider<SurveyDue, bool>.internal(
+    AutoDisposeStreamNotifierProvider<SurveyDue, bool?>.internal(
   SurveyDue.new,
   name: r'surveyDueProvider',
   debugGetCreateSourceHash:
@@ -49,12 +63,12 @@ final surveyDueProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$SurveyDue = AutoDisposeStreamNotifier<bool>;
-String _$queueHash() => r'3b611672eac763e0ca9b3bda7f837267e98b494d';
+typedef _$SurveyDue = AutoDisposeStreamNotifier<bool?>;
+String _$queueHash() => r'd75db061135e88c0e79f18a85009a04fe13c2535';
 
 /// See also [Queue].
 @ProviderFor(Queue)
-final queueProvider = AutoDisposeStreamNotifierProvider<Queue, bool>.internal(
+final queueProvider = AutoDisposeStreamNotifierProvider<Queue, bool?>.internal(
   Queue.new,
   name: r'queueProvider',
   debugGetCreateSourceHash:
@@ -63,13 +77,13 @@ final queueProvider = AutoDisposeStreamNotifierProvider<Queue, bool>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef _$Queue = AutoDisposeStreamNotifier<bool>;
-String _$dateScheduleHash() => r'c07ec11971e2e11ebfae4dcd832fec88d4489cfb';
+typedef _$Queue = AutoDisposeStreamNotifier<bool?>;
+String _$dateScheduleHash() => r'c7e18817f63aa99ca6721f0fe798ffc35ddfbf65';
 
 /// See also [DateSchedule].
 @ProviderFor(DateSchedule)
-final dateScheduleProvider =
-    AutoDisposeStreamNotifierProvider<DateSchedule, DateScheduleState>.internal(
+final dateScheduleProvider = AutoDisposeStreamNotifierProvider<DateSchedule,
+    DateScheduleState?>.internal(
   DateSchedule.new,
   name: r'dateScheduleProvider',
   debugGetCreateSourceHash:
@@ -78,13 +92,13 @@ final dateScheduleProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$DateSchedule = AutoDisposeStreamNotifier<DateScheduleState>;
-String _$selectedGendersHash() => r'6a81d161755629bb2af01e16f25cc74899ffefcf';
+typedef _$DateSchedule = AutoDisposeStreamNotifier<DateScheduleState?>;
+String _$selectedGendersHash() => r'8ca4d5b958ae3be9c8aacd21d08304dcc91619e5';
 
 /// See also [SelectedGenders].
 @ProviderFor(SelectedGenders)
 final selectedGendersProvider =
-    AutoDisposeStreamNotifierProvider<SelectedGenders, Set<Gender>>.internal(
+    AutoDisposeStreamNotifierProvider<SelectedGenders, Set<Gender>?>.internal(
   SelectedGenders.new,
   name: r'selectedGendersProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -94,13 +108,13 @@ final selectedGendersProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$SelectedGenders = AutoDisposeStreamNotifier<Set<Gender>>;
-String _$maxDistanceHash() => r'e2d3297be35f68c4dda0df53bf21ff0c23dc8e61';
+typedef _$SelectedGenders = AutoDisposeStreamNotifier<Set<Gender>?>;
+String _$maxDistanceHash() => r'201e948d7706899e3f29600dee1e70617eb98223';
 
 /// See also [MaxDistance].
 @ProviderFor(MaxDistance)
 final maxDistanceProvider =
-    AutoDisposeStreamNotifierProvider<MaxDistance, double>.internal(
+    AutoDisposeStreamNotifierProvider<MaxDistance, double?>.internal(
   MaxDistance.new,
   name: r'maxDistanceProvider',
   debugGetCreateSourceHash:
@@ -109,13 +123,13 @@ final maxDistanceProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$MaxDistance = AutoDisposeStreamNotifier<double>;
-String _$ageRangeHash() => r'3d7387d9165c471623523f69037a4ac315149a20';
+typedef _$MaxDistance = AutoDisposeStreamNotifier<double?>;
+String _$ageRangeHash() => r'a770e68ddf26c5ab0ccac9ca707fc1a588511dca';
 
 /// See also [AgeRange].
 @ProviderFor(AgeRange)
 final ageRangeProvider =
-    AutoDisposeStreamNotifierProvider<AgeRange, RangeValues>.internal(
+    AutoDisposeStreamNotifierProvider<AgeRange, RangeValues?>.internal(
   AgeRange.new,
   name: r'ageRangeProvider',
   debugGetCreateSourceHash:
@@ -124,8 +138,8 @@ final ageRangeProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$AgeRange = AutoDisposeStreamNotifier<RangeValues>;
-String _$chatIdHash() => r'acbe4848a93b3d95be7ada2da54234d354fb790e';
+typedef _$AgeRange = AutoDisposeStreamNotifier<RangeValues?>;
+String _$chatIdHash() => r'7e93ca468768ce3d71379c7bd9369d3d85c5dd9a';
 
 /// See also [ChatId].
 @ProviderFor(ChatId)
@@ -140,7 +154,7 @@ final chatIdProvider =
 );
 
 typedef _$ChatId = AutoDisposeStreamNotifier<String?>;
-String _$matchNameHash() => r'84368ee130c3159e4fd2d6a4341ffd6cadf97798';
+String _$matchNameHash() => r'12dcd915fcc18a26614cf73c1ef0b5be481c9f2b';
 
 /// See also [MatchName].
 @ProviderFor(MatchName)
@@ -155,7 +169,7 @@ final matchNameProvider =
 );
 
 typedef _$MatchName = AutoDisposeStreamNotifier<String?>;
-String _$matchAgeHash() => r'75db50e17cff45dceb62a1b714398c62f76063aa';
+String _$matchAgeHash() => r'651d681bee928d07729b775aa38c78ab2e28fb2f';
 
 /// See also [MatchAge].
 @ProviderFor(MatchAge)
@@ -170,7 +184,7 @@ final matchAgeProvider =
 );
 
 typedef _$MatchAge = AutoDisposeStreamNotifier<int?>;
-String _$matchDistanceHash() => r'e976a6abfff8231c26f6837426c618da17e94a2c';
+String _$matchDistanceHash() => r'c6c88182b0d4de85d172ee48f135dbe6eca8d12b';
 
 /// See also [MatchDistance].
 @ProviderFor(MatchDistance)
@@ -186,12 +200,12 @@ final matchDistanceProvider =
 );
 
 typedef _$MatchDistance = AutoDisposeStreamNotifier<double?>;
-String _$chatMessagesHash() => r'ac6e441f36720cb9dae0a52cf1e83116dcc2c487';
+String _$chatMessagesHash() => r'ba74bd13c890a638041b07a2562e13dd7de3c297';
 
 /// See also [ChatMessages].
 @ProviderFor(ChatMessages)
 final chatMessagesProvider = AutoDisposeStreamNotifierProvider<ChatMessages,
-    List<ChatMessageModel>>.internal(
+    List<ChatMessageModel>?>.internal(
   ChatMessages.new,
   name: r'chatMessagesProvider',
   debugGetCreateSourceHash:
@@ -200,6 +214,6 @@ final chatMessagesProvider = AutoDisposeStreamNotifierProvider<ChatMessages,
   allTransitiveDependencies: null,
 );
 
-typedef _$ChatMessages = AutoDisposeStreamNotifier<List<ChatMessageModel>>;
+typedef _$ChatMessages = AutoDisposeStreamNotifier<List<ChatMessageModel>?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

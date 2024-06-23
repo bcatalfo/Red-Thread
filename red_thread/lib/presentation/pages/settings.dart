@@ -25,9 +25,9 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
         final ageRange = await ref.read(ageRangeProvider.future);
 
         setState(() {
-          _localSelectedGenders = genders;
-          _localMaxDistance = maxDistance;
-          _localAgeRange = ageRange;
+          _localSelectedGenders = genders!;
+          _localMaxDistance = maxDistance!;
+          _localAgeRange = ageRange!;
           _isLoading = false;
         });
       } catch (e) {

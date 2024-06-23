@@ -1,11 +1,10 @@
 import "dart:async";
 import "package:dropdown_search/dropdown_search.dart";
 import "package:firebase_auth/firebase_auth.dart";
-import "package:firebase_database/firebase_database.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:red_thread/providers.dart";
+import 'package:red_thread/authentication_service.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -63,7 +62,8 @@ class LoginPageState extends ConsumerState<LoginPage>
     if (onNext != null) {
       await onNext();
     }
-    if (_formKeys[_currentStep].currentState!.validate()) {
+    if (_formKeys[_currentStep].currentState != null &&
+        _formKeys[_currentStep].currentState!.validate()) {
       FocusScope.of(context).unfocus(); // Dismiss the keyboard
       if (_currentStep < _formKeys.length - 1) {
         setState(() {
@@ -77,7 +77,11 @@ class LoginPageState extends ConsumerState<LoginPage>
               curve: Curves.easeInOut,
             )
             .then((value) => setState(() {}));
-      } else {}
+      } else {
+        // Handle the final step
+      }
+    } else {
+      // Handle form validation failure
     }
   }
 
@@ -154,57 +158,39 @@ class LoginPageState extends ConsumerState<LoginPage>
 
   Future<void> _verifySMSCode() async {
     debugPrint(_smsCodeController.text.replaceAll(' ', ''));
-
     debugPrint(newVerificationId);
     final completer = Completer<void>();
     final credential = PhoneAuthProvider.credential(
       verificationId: newVerificationId,
       smsCode: _smsCodeController.text.replaceAll(' ', ''),
     );
-    FirebaseAuth.instance.signInWithCredential(credential).then((value) async {
-      var userRef = FirebaseDatabase.instance
-          .ref('users/${FirebaseAuth.instance.currentUser!.uid}');
-      var event = await userRef.once();
 
-      if (event.snapshot.value == null) {
-        await FirebaseAuth.instance.signOut();
-      } else {
-        completer.complete();
-        // Since a new user is signed in let's invalidate all the providers
-        ref.invalidate(myThemeProvider);
-        ref.invalidate(surveyDueProvider);
-        ref.invalidate(queueProvider);
-        // TODO: invalidate date providers
-        ref.invalidate(selectedGendersProvider);
-        ref.invalidate(ageRangeProvider);
-        ref.invalidate(maxDistanceProvider);
-        ref.invalidate(showAdProvider);
-        ref.invalidate(adInfoProvider);
-        ref.invalidate(myNameProvider);
-        ref.invalidate(chatIdProvider);
-        ref.invalidate(matchNameProvider);
-        ref.invalidate(matchAgeProvider);
-        ref.invalidate(matchDistanceProvider);
-      }
-    }).catchError((error) {
+    final authService = AuthenticationService(ref);
+    try {
+      await authService.login(
+          newVerificationId, _smsCodeController.text.replaceAll(' ', ''));
+      if (!mounted) return;
+      completer.complete();
+    } catch (error) {
+      if (!mounted) return;
       showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Verification Failed'),
+              title: const Text('Verification Failed'),
               content: Text(error.toString()),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
           });
       completer.completeError(error);
-    });
+    }
     return completer.future;
   }
 
@@ -213,20 +199,20 @@ class LoginPageState extends ConsumerState<LoginPage>
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: _selectedCountryCode['code']! + _phoneNumberController.text,
       verificationCompleted: (PhoneAuthCredential credential) {
+        if (!mounted) return;
         completer.complete();
-
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Verification Completed'),
-              content: Text('Phone number automatically verified'),
+              title: const Text('Verification Completed'),
+              content: const Text('Phone number automatically verified'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -234,20 +220,20 @@ class LoginPageState extends ConsumerState<LoginPage>
         );
       },
       verificationFailed: (FirebaseAuthException e) {
+        if (!mounted) return;
         completer.completeError(e);
-
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Verification Failed'),
+              title: const Text('Verification Failed'),
               content: Text(e.message ?? 'An unknown error occurred'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -255,20 +241,21 @@ class LoginPageState extends ConsumerState<LoginPage>
         );
       },
       codeSent: (String verificationId, int? resendToken) {
+        if (!mounted) return;
         completer.complete();
         newVerificationId = verificationId;
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Verification Code Sent'),
-              content: Text('A verification code has been sent to your phone'),
+              title: const Text('Verification Code Sent'),
+              content: const Text('A verification code has been sent to your phone'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -276,6 +263,7 @@ class LoginPageState extends ConsumerState<LoginPage>
         );
       },
       codeAutoRetrievalTimeout: (String verificationId) {
+        if (!mounted) return;
         completer.completeError('Verification timed out');
       },
     );

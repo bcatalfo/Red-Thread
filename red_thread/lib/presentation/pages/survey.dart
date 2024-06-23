@@ -322,7 +322,7 @@ class SurveyPageState extends ConsumerState<SurveyPage>
               textAlign: TextAlign.center,
             ),
             const Spacer(flex: 2),
-            ...answerButtons.expand((button) => [button, Spacer()]),
+            ...answerButtons.expand((button) => [button, const Spacer()]),
             const Spacer(flex: 2),
           ],
         ),

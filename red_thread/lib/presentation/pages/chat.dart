@@ -101,7 +101,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
 
-    ref.listen<AsyncValue<List<ChatMessageModel>>>(chatMessagesProvider,
+    ref.listen<AsyncValue<List<ChatMessageModel>?>>(chatMessagesProvider,
         (previous, next) {
       if (next is AsyncData && previous != next) {
         ref.read(chatMessagesProvider.notifier).setMessages(next.value ?? []);
@@ -115,7 +115,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
       resizeToAvoidBottomInset: true,
       body: messages.when(
         data: (messages) {
-          final sortedMessages = List<ChatMessageModel>.from(messages)
+          final sortedMessages = List<ChatMessageModel>.from(messages!)
             ..sort((a, b) => a.date.compareTo(b.date));
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -201,7 +201,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
       // Handle the case where the user is not authenticated
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     Author author;
@@ -407,7 +407,7 @@ class ChatMessage extends StatelessWidget {
         return ClipPath(
           clipper: ChatBubbleClipperMe(),
           child: Container(
-            color: theme.colorScheme.surfaceVariant,
+            color: theme.colorScheme.surfaceContainerHighest,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 4.0, 24.0, 12.0),
               child: Text(
@@ -667,7 +667,7 @@ class MatchBar extends ConsumerWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return ReportDialog();
+                    return const ReportDialog();
                   },
                 );
               }
@@ -732,7 +732,7 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
     final match = ref.watch(matchNameProvider).when(
         data: (data) => data,
         error: (e, _) => Text(e.toString()),
-        loading: () => CircularProgressIndicator());
+        loading: () => const CircularProgressIndicator());
 
     return AlertDialog(
       backgroundColor: scheme.surfaceContainerHigh,
@@ -817,7 +817,7 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
               ),
               if (_selectedReasons.contains('Other'))
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Please specify'),
+                  decoration: const InputDecoration(labelText: 'Please specify'),
                   onChanged: (value) {
                     setState(() {
                       _otherReason = value;
@@ -854,7 +854,7 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
                   unmatch(ref);
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Report submitted')),
+                    const SnackBar(content: Text('Report submitted')),
                   );
                   FirebaseAnalytics.instance.logEvent(
                     name: 'report_user',
@@ -913,9 +913,7 @@ class DateBar extends ConsumerWidget {
 
     return dateScheduleState.when(
       data: (dateSchedule) {
-        debugPrint('DateStatus: ${dateSchedule.status}');
-        debugPrint('DateTime: ${dateSchedule.dateTime}');
-        debugPrint('DateLocation: ${dateSchedule.dateLocation}');
+        dateSchedule = dateSchedule!;
         final dateTime = dateSchedule.dateTime;
         final dateLocation = dateSchedule.dateLocation;
 
@@ -969,10 +967,10 @@ class DateBar extends ConsumerWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Center(child: Text('Cancel Date')),
+                        title: const Center(child: Text('Cancel Date')),
                         backgroundColor: scheme.surfaceContainerHigh,
                         content:
-                            Text('Are you sure you want to cancel the date?'),
+                            const Text('Are you sure you want to cancel the date?'),
                         actions: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1033,11 +1031,11 @@ class DateBar extends ConsumerWidget {
                     },
                   );
                 },
-                child: Text('Cancel'),
                 style: TextButton.styleFrom(
                   backgroundColor: scheme.secondary,
                   foregroundColor: scheme.onSecondary,
                 ),
+                child: const Text('Cancel'),
               ),
               const Spacer(), // Add space between the Cancel and Check In buttons
               TextButton(
@@ -1047,10 +1045,10 @@ class DateBar extends ConsumerWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Center(child: Text('End Date')),
+                            title: const Center(child: Text('End Date')),
                             backgroundColor: scheme.surfaceContainerHigh,
                             content:
-                                Text('Are you sure you want to end the date?'),
+                                const Text('Are you sure you want to end the date?'),
                             actions: [
                               Row(
                                 mainAxisAlignment:
@@ -1107,9 +1105,9 @@ class DateBar extends ConsumerWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Center(child: Text('Check In')),
+                            title: const Center(child: Text('Check In')),
                             backgroundColor: scheme.surfaceContainerHigh,
-                            content: Text(
+                            content: const Text(
                                 'Are you sure you want to check in to the date? This means that you are at the location and will notify your match that you are there.'),
                             actions: [
                               Row(
@@ -1171,11 +1169,11 @@ class DateBar extends ConsumerWidget {
                         });
                   }
                 },
-                child: hasCheckedIn ? Text('End Date') : Text("I'm Here"),
                 style: TextButton.styleFrom(
                   backgroundColor: scheme.primary,
                   foregroundColor: scheme.onPrimary,
                 ),
+                child: hasCheckedIn ? const Text('End Date') : const Text("I'm Here"),
               ),
             ],
           ),
@@ -1460,7 +1458,7 @@ class DateBar extends ConsumerWidget {
             onPressed: () async {
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => DateDialog(),
+                builder: (BuildContext context) => const DateDialog(),
               );
             },
             icon: const Icon(Icons.calendar_today),
@@ -1597,7 +1595,7 @@ class _DateDialogState extends ConsumerState<DateDialog> {
                     ),
                     if (selectedTime != null)
                       TextSpan(
-                        text: '${selectedTime!.format(context)}',
+                        text: selectedTime!.format(context),
                         style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: scheme.onSurface),
