@@ -52,6 +52,8 @@
 	<string>Red Thread requires access to your contacts to ensure you don&apos;t match with people you already know. These will be uploaded to our matchmaking database.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Red Thread requires access to your location to find matches near you.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Red Thread requires access to your location to find matches near you each time you queue up.</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
