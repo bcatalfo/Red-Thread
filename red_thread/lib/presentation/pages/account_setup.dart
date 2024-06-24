@@ -122,7 +122,9 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                 },
                 'maxDistance': _maxDistance.round(),
                 'gender': _selectedGender.toString(),
-                'lookingFor': _selectedGenders.toString(),
+                'lookingFor': _selectedGenders
+                    .map((gender) => gender.toString())
+                    .toList(),
                 'location': {
                   'latitude': latitude,
                   'longitude': longitude,
@@ -154,7 +156,9 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                 },
                 'maxDistance': _maxDistance.round(),
                 'gender': _selectedGender.toString(),
-                'lookingFor': _selectedGenders.toString(),
+                'lookingFor': _selectedGenders
+                    .map((gender) => gender.toString())
+                    .toList(),
                 'location': {
                   'latitude': latitude,
                   'longitude': longitude,
@@ -186,7 +190,9 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                 },
                 'maxDistance': _maxDistance.round(),
                 'gender': _selectedGender.toString(),
-                'lookingFor': _selectedGenders.toString(),
+                'lookingFor': _selectedGenders
+                    .map((gender) => gender.toString())
+                    .toList(),
                 'location': {
                   'latitude': latitude,
                   'longitude': longitude,
@@ -218,7 +224,9 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                 },
                 'maxDistance': _maxDistance.round(),
                 'gender': _selectedGender.toString(),
-                'lookingFor': _selectedGenders.toString(),
+                'lookingFor': _selectedGenders
+                    .map((gender) => gender.toString())
+                    .toList(),
                 'location': {
                   'latitude': latitude,
                   'longitude': longitude,
@@ -1233,7 +1241,8 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Verification Code Sent'),
-              content: const Text('A verification code has been sent to your phone'),
+              content:
+                  const Text('A verification code has been sent to your phone'),
               actions: [
                 TextButton(
                   onPressed: () {
