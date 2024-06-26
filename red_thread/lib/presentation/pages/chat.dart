@@ -817,7 +817,8 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
               ),
               if (_selectedReasons.contains('Other'))
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Please specify'),
+                  decoration:
+                      const InputDecoration(labelText: 'Please specify'),
                   onChanged: (value) {
                     setState(() {
                       _otherReason = value;
@@ -971,8 +972,8 @@ class DateBar extends ConsumerWidget {
                       return AlertDialog(
                         title: const Center(child: Text('Cancel Date')),
                         backgroundColor: scheme.surfaceContainerHigh,
-                        content:
-                            const Text('Are you sure you want to cancel the date?'),
+                        content: const Text(
+                            'Are you sure you want to cancel the date?'),
                         actions: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1049,8 +1050,8 @@ class DateBar extends ConsumerWidget {
                           return AlertDialog(
                             title: const Center(child: Text('End Date')),
                             backgroundColor: scheme.surfaceContainerHigh,
-                            content:
-                                const Text('Are you sure you want to end the date?'),
+                            content: const Text(
+                                'Are you sure you want to end the date?'),
                             actions: [
                               Row(
                                 mainAxisAlignment:
@@ -1175,7 +1176,9 @@ class DateBar extends ConsumerWidget {
                   backgroundColor: scheme.primary,
                   foregroundColor: scheme.onPrimary,
                 ),
-                child: hasCheckedIn ? const Text('End Date') : const Text("I'm Here"),
+                child: hasCheckedIn
+                    ? const Text('End Date')
+                    : const Text("I'm Here"),
               ),
             ],
           ),
