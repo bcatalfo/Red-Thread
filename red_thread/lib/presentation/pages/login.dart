@@ -1,8 +1,10 @@
+import "dart:async";
+import "package:dropdown_search/dropdown_search.dart";
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import 'package:red_thread/providers.dart';
-import 'package:red_thread/presentation/theme.dart';
-import 'package:sign_in_button/sign_in_button.dart';
+import 'package:red_thread/authentication_service.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -11,154 +13,484 @@ class LoginPage extends ConsumerStatefulWidget {
   LoginPageState createState() => LoginPageState();
 }
 
-class LoginPageState extends ConsumerState<LoginPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class LoginPageState extends ConsumerState<LoginPage>
+    with SingleTickerProviderStateMixin {
+  final PageController _pageController = PageController();
+  late AnimationController _animationController;
+  late Animation<double> _progressAnimation;
+  int _currentStep = 0;
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _smsCodeController = TextEditingController();
+  final List<Map<String, String>> _countryCodes = [
+    {'name': 'US', 'code': '+1'},
+    {'name': 'Canada', 'code': '+1'},
+    {'name': 'Japan', 'code': '+81'},
+    // Add more country codes and names as needed
+  ];
+  Map<String, String> _selectedCountryCode = {'name': 'US', 'code': '+1'};
+  String newVerificationId = '';
+
+  final _formKeys =
+      List<GlobalKey<FormState>>.generate(2, (index) => GlobalKey<FormState>());
 
   @override
-  Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeModeProvider);
-    final theme = Theme.of(context);
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Container(
-            width: 289,
-            height: 61,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: themeMode == ThemeMode.light
-                  ? globalLightScheme.surfaceVariant
-                  : globalDarkScheme.surfaceVariant,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text('Red Thread',
-                style: TextStyle(
-                    fontSize: 48,
-                    color: themeMode == ThemeMode.light
-                        ? globalLightScheme.primary
-                        : globalDarkScheme.primary)),
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 40),
-                const Text(
-                  "Login to Your Account",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      ref.read(isAuthenticatedProvider.notifier).state = true;
-                      // Add your authentication logic here
-                    }
-                  },
-                  child: const Text("Login"),
-                ),
-                const SizedBox(height: 20),
-                DividerWithText(
-                    text: 'OR', dividerColor: theme.colorScheme.outline),
-                const SizedBox(height: 20),
-                // TODO: Implement sign in logic
-                SignInButton(
-                    themeMode == ThemeMode.light
-                        ? Buttons.google
-                        : Buttons.googleDark,
-                    onPressed: () {}),
-                const SizedBox(height: 20),
-                SignInButton(
-                    themeMode == ThemeMode.light
-                        ? Buttons.apple
-                        : Buttons.appleDark,
-                    onPressed: () {}),
-              ],
-            ),
-          ),
-        ),
+    _progressAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOutBack,
       ),
     );
   }
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
+    _animationController.dispose();
+    _pageController.dispose();
+    _phoneNumberController.dispose();
+    _smsCodeController.dispose();
     super.dispose();
   }
-}
 
-class DividerWithText extends StatelessWidget {
-  final String text;
-  final Color dividerColor;
+  Future<void> _nextStep({Future<void> Function()? onNext}) async {
+    if (onNext != null) {
+      await onNext();
+    }
+    if (_formKeys[_currentStep].currentState != null &&
+        _formKeys[_currentStep].currentState!.validate()) {
+      FocusScope.of(context).unfocus(); // Dismiss the keyboard
+      if (_currentStep < _formKeys.length - 1) {
+        setState(() {
+          _currentStep++;
+        });
+        _animationController.forward(from: 0.0);
+        _pageController
+            .animateToPage(
+              _currentStep,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            )
+            .then((value) => setState(() {}));
+      } else {
+        // Handle the final step
+      }
+    } else {
+      // Handle form validation failure
+    }
+  }
 
-  const DividerWithText({
-    Key? key,
-    required this.text,
-    this.dividerColor = Colors.black,
-  }) : super(key: key);
+  void _previousStep() {
+    FocusScope.of(context).unfocus(); // Dismiss the keyboard
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep--;
+      });
+      _animationController.forward(from: 0.0);
+      _pageController
+          .animateToPage(
+            _currentStep,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          )
+          .then((value) => setState(() {}));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Login"),
+        leading: _currentStep > 0
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: _previousStep,
+              )
+            : null,
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return SizedBox(
+                  height:
+                      10.0, // Increase the height to make it more noticeable
+                  child: LinearProgressIndicator(
+                    value: (_currentStep - 1 + _progressAnimation.value) /
+                        _formKeys.length,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).primaryColor,
+                    ),
+                    backgroundColor: Colors.grey[300],
+                    minHeight: 8, // Ensuring the increased height
+                  ),
+                );
+              },
+            ),
+          ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: _buildPages(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildPages(BuildContext context) {
+    return [
+      _buildEnterPhoneNumberPage(context),
+      _buildEnterSMSCodePage(context),
+    ];
+  }
+
+  Future<void> _verifySMSCode() async {
+    debugPrint(_smsCodeController.text.replaceAll(' ', ''));
+    debugPrint(newVerificationId);
+    final completer = Completer<void>();
+    final credential = PhoneAuthProvider.credential(
+      verificationId: newVerificationId,
+      smsCode: _smsCodeController.text.replaceAll(' ', ''),
+    );
+
+    final authService = AuthenticationService(ref);
+    try {
+      await authService.login(
+          newVerificationId, _smsCodeController.text.replaceAll(' ', ''));
+      if (!mounted) return;
+      completer.complete();
+    } catch (error) {
+      if (!mounted) return;
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Verification Failed'),
+              content: Text(error.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          });
+      completer.completeError(error);
+    }
+    return completer.future;
+  }
+
+  Future<void> _phoneVerification() async {
+    final completer = Completer<void>();
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: _selectedCountryCode['code']! + _phoneNumberController.text,
+      verificationCompleted: (PhoneAuthCredential credential) {
+        if (!mounted) return;
+        completer.complete();
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Verification Completed'),
+              content: const Text('Phone number automatically verified'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        if (!mounted) return;
+        completer.completeError(e);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Verification Failed'),
+              content: Text(e.message ?? 'An unknown error occurred'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        if (!mounted) return;
+        completer.complete();
+        newVerificationId = verificationId;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Verification Code Sent'),
+              content: const Text('A verification code has been sent to your phone'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        if (!mounted) return;
+        completer.completeError('Verification timed out');
+      },
+    );
+    return completer.future;
+  }
+
+  Widget _buildEnterPhoneNumberPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeys[0], // Ensure correct key index
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Please enter your phone number",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: DropdownSearch<Map<String, String>>(
+                        items: _countryCodes,
+                        itemAsString: (Map<String, String> country) =>
+                            "${country['name']} ${country['code']}",
+                        selectedItem: _selectedCountryCode,
+                        dropdownBuilder:
+                            (_, Map<String, String>? selectedItem) {
+                          return Text(selectedItem != null
+                              ? "${selectedItem['name']} ${selectedItem['code']}"
+                              : "Select Country Code");
+                        },
+                        popupProps: PopupProps.modalBottomSheet(
+                          showSearchBox: true,
+                          searchFieldProps: const TextFieldProps(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Search Country',
+                            ),
+                          ),
+                          fit: FlexFit.tight,
+                          itemBuilder: (context, item, isSelected) {
+                            return ListTile(
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(item['name']!),
+                                  Text(item['code']!),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        onChanged: (Map<String, String>? value) {
+                          setState(() {
+                            _selectedCountryCode = value!;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 5,
+                      child: TextFormField(
+                        controller: _phoneNumberController,
+                        decoration:
+                            const InputDecoration(labelText: "Phone Number"),
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(
+                              12), // Maximum 12 characters including hyphens
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+                          TextInputFormatter.withFunction((oldValue, newValue) {
+                            final text = newValue.text;
+                            final digitsOnly =
+                                text.replaceAll(RegExp(r'\D'), '');
+                            if (digitsOnly.length > 10) {
+                              return oldValue;
+                            }
+                            final buffer = StringBuffer();
+                            for (int i = 0; i < digitsOnly.length; i++) {
+                              if (i == 3 || i == 6) buffer.write('-');
+                              buffer.write(digitsOnly[i]);
+                            }
+                            return TextEditingValue(
+                              text: buffer.toString(),
+                              selection: TextSelection.collapsed(
+                                  offset: buffer.length),
+                            );
+                          }),
+                        ],
+                        validator: (value) {
+                          final digitsOnly =
+                              value?.replaceAll(RegExp(r'\D'), '');
+                          if (digitsOnly == null || digitsOnly.length != 10) {
+                            return 'Please enter a valid phone number';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(
+                              () {}); // Trigger rebuild to update button state
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "To verify your identity, we will send a code via SMS. Message and data rates may apply. Please be aware.",
+                  style: textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 48,
+              left: 0,
+              right: 0,
+              child:
+                  _buildNavigationButtons(context, onNext: _phoneVerification),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnterSMSCodePage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeys[1], // Ensure correct key index
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Please enter the SMS code",
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _smsCodeController,
+                  decoration: const InputDecoration(
+                    labelText: "SMS Code",
+                    hintText: "_ _ _ _ _ _",
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(
+                        11), // Maximum 11 characters (6 digits + 5 spaces)
+                    FilteringTextInputFormatter.digitsOnly,
+                    SmsCodeInputFormatter(),
+                  ],
+                  validator: (value) {
+                    final digitsOnly = value?.replaceAll(' ', '');
+                    if (digitsOnly == null || digitsOnly.length != 6) {
+                      return 'Please enter a valid 6-digit code';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {}); // Trigger rebuild to update button state
+                  },
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 48,
+              left: 0,
+              right: 0,
+              child: _buildNavigationButtons(context, onNext: _verifySMSCode),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavigationButtons(BuildContext context,
+      {Future<void> Function()? onNext}) {
+    bool isValid = _formKeys[_currentStep].currentState?.validate() ?? false;
+
+    return Column(
       children: <Widget>[
-        Expanded(
-          child: Divider(
-            color: dividerColor,
-            thickness: 1,
+        ElevatedButton(
+          onPressed: isValid ? () => _nextStep(onNext: onNext) : null,
+          style: ElevatedButton.styleFrom(
+            minimumSize:
+                const Size.fromHeight(50), // Set minimum height for button
+            textStyle: const TextStyle(fontSize: 20), // Set font size
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(text),
-        ),
-        Expanded(
-          child: Divider(
-            color: dividerColor,
-            thickness: 1,
-          ),
+          child: Text(_currentStep < _formKeys.length - 1 ? 'Next' : 'Finish'),
         ),
       ],
+    );
+  }
+}
+
+class SmsCodeInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final text =
+        newValue.text.replaceAll(' ', ''); // Remove any existing spaces
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      if (i > 0 && i % 1 == 0 && i < 6) {
+        buffer.write(' '); // Insert space after every digit
+      }
+      buffer.write(text[i]);
+    }
+    return TextEditingValue(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
     );
   }
 }

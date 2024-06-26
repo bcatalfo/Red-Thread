@@ -43,7 +43,7 @@ class MyCustomCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        color: theme.colorScheme.surfaceVariant,
+        color: theme.colorScheme.surfaceContainerHighest,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

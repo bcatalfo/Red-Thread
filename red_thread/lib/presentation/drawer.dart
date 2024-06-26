@@ -1,22 +1,31 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:red_thread/presentation/theme.dart';
 import 'package:red_thread/providers.dart';
+import 'package:red_thread/authentication_service.dart';
 
 // TODO: Reorganize this garbage, update the logo code, add it to the widgets folder
 //define a drawer called top drawer
 Drawer myDrawer(BuildContext context, WidgetRef ref) {
   final theme = Theme.of(context);
-  final themeMode = ref.watch(themeModeProvider);
+  final themeMode = ref.watch(myThemeProvider).when(
+      data: (data) => data,
+      error: (_, __) => ThemeMode.light,
+      loading: () => ThemeMode.light);
+  final authService = AuthenticationService(ref);
 
   return Drawer(
-    backgroundColor: theme.colorScheme.surfaceVariant,
+    backgroundColor: theme.colorScheme.surfaceContainerHighest,
     child: LayoutBuilder(
       builder: (context, constraints) => Column(
         children: [
           DrawerHeader(
-              child: Image.asset('assets/images/iTunesArtwork-1024.png')),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(32),
+                child: Image.asset('assets/images/red thread.png')),
+          ),
           ListTile(
             leading:
                 Icon(Icons.home, size: theme.textTheme.displayMedium?.fontSize),
@@ -48,7 +57,9 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                   title:
                       Text('Dark Mode', style: theme.textTheme.displayMedium),
                   onTap: () {
-                    ref.read(themeModeProvider.notifier).state = ThemeMode.dark;
+                    ref.read(myThemeProvider.notifier).setTheme(ThemeMode.dark);
+                    FirebaseAnalytics.instance
+                        .logEvent(name: 'dark_mode_enabled');
                   })
               : ListTile(
                   leading: Icon(Icons.light_mode,
@@ -56,19 +67,27 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                   title:
                       Text('Light Mode', style: theme.textTheme.displayMedium),
                   onTap: () {
-                    ref.read(themeModeProvider.notifier).state =
-                        ThemeMode.light;
+                    ref
+                        .read(myThemeProvider.notifier)
+                        .setTheme(ThemeMode.light);
+                    FirebaseAnalytics.instance
+                        .logEvent(name: "light_mode_enabled");
                   },
                 ),
+          ListTile(
+            leading: Icon(Icons.settings,
+                size: theme.textTheme.displayMedium?.fontSize),
+            title: Text('Settings', style: theme.textTheme.displayMedium),
+            onTap: () {
+              context.push('/settings');
+            },
+          ),
           const Spacer(),
           ListTile(
             leading: Icon(Icons.logout,
                 size: theme.textTheme.displayMedium?.fontSize),
             title: Text('Log Out', style: theme.textTheme.displayMedium),
-            onTap: () {
-              // TODO: Actually log out
-              ref.read(isAuthenticatedProvider.notifier).state = false;
-            },
+            onTap: authService.logout,
           ),
           ListTile(
               leading: Icon(Icons.delete,
@@ -80,7 +99,7 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
-                    backgroundColor: theme.colorScheme.surfaceVariant,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
                     title: Text('Delete Account?',
                         style: theme.textTheme.headlineMedium),
                     content: Text(
@@ -92,10 +111,10 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
                         alignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              ref.read(isAuthenticatedProvider.notifier).state =
-                                  false;
+                            onPressed: () async {
+                              await FirebaseAuth.instance.currentUser?.delete();
+                              FirebaseAnalytics.instance
+                                  .logEvent(name: 'user_deleted');
                             },
                             child: Text('Delete',
                                 style: theme.textTheme.bodyLarge?.copyWith(
@@ -123,31 +142,28 @@ Drawer myDrawer(BuildContext context, WidgetRef ref) {
 }
 
 AppBar myAppBar(BuildContext context, WidgetRef ref) {
-  final themeMode = ref.watch(themeModeProvider);
-  double screenWidth = MediaQuery.of(context).size.width;
-  double screenHeight = MediaQuery.of(context).size.height;
-
   return AppBar(
     title: Row(
       children: [
         const Spacer(),
-        Container(
-          width: screenWidth * 0.5,
-          height: screenHeight * 0.05,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: themeMode == ThemeMode.light
-                ? globalLightScheme.surfaceVariant
-                : globalDarkScheme.surfaceVariant,
-            borderRadius: BorderRadius.circular(16),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4.0),
+          child: Image.asset(
+            'assets/images/red thread.png',
+            height: 24.0,
           ),
-          child: Text('Red Thread',
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: themeMode == ThemeMode.light
-                      ? globalLightScheme.primary
-                      : globalDarkScheme.primary)),
+        ),
+        const SizedBox(width: 12.0),
+        Container(
+          alignment: Alignment.center,
+          child: const Padding(
+            padding: EdgeInsets.only(right: 16.0),
+            child: Text('Red Thread',
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xffff5757))),
+          ),
         ),
       ],
     ),

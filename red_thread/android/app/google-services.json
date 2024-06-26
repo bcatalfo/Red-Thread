@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "994545713514",
+    "project_id": "red-thread-422420",
+    "storage_bucket": "red-thread-422420.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994545713514:android:306b617348567b0f976513",
+        "android_client_info": {
+          "package_name": "com.catalfotech.redthread"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "994545713514-kih14c1mp8dgeqahm84hvv66qhqs9dva.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVdHciVZ6RZ-BjE0AZ0jPgCUlYLyLSwHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "994545713514-kih14c1mp8dgeqahm84hvv66qhqs9dva.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "994545713514-h2aflgvhr29j1pudeik8pu7a9mi6tusd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.catalfotech.redthread"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
