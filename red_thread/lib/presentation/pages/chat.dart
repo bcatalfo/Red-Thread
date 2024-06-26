@@ -56,7 +56,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
   }
 
   late StreamSubscription<bool> keyboardSubscription;
-  var _matchBarVisible = true;
   var _dateBarVisible = true;
 
   @override
@@ -70,7 +69,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
         Future.delayed(const Duration(milliseconds: 350), _scrollToBottom);
       }
       setState(() {
-        _matchBarVisible = !visible;
         _dateBarVisible = !visible;
       });
     });
@@ -122,13 +120,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
             child: KeyboardDismissOnTap(
               child: Column(
                 children: [
-                  AnimatedVisibility(
-                    visible: _matchBarVisible,
-                    duration: 300.ms,
-                    child: const MatchBar()
-                        .animate(target: _matchBarVisible ? 1 : 0)
-                        .fade(duration: 300.ms),
-                  ),
+                  const MatchBar(),
                   Expanded(
                     child: GestureDetector(
                       onHorizontalDragUpdate: (details) {
