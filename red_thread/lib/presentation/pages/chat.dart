@@ -1542,7 +1542,7 @@ class _DateDialogState extends ConsumerState<DateDialog> {
                   context: context,
                   initialDate: DateTime.now(),
                   firstDate: DateTime.now(),
-                  lastDate: DateTime(2101),
+                  lastDate: DateTime.now().add(const Duration(days: 32)),
                 );
                 if (date != null) {
                   setState(() {
