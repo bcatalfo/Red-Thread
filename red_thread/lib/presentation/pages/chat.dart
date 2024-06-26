@@ -856,6 +856,8 @@ class _ReportDialogState extends ConsumerState<ReportDialog> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Report submitted')),
                   );
+                  // TODO: Add User ID to the report (of reported user)
+                  // TODO: Maybe upload to database
                   FirebaseAnalytics.instance.logEvent(
                     name: 'report_user',
                     parameters: {
