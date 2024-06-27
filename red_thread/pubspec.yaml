@@ -1,7 +1,7 @@
 name: red_thread
-description: "A new Flutter project."
+description: "Find love on a blind date."
 publish_to: 'none'
-version: 0.1.0
+version: 0.2.0+1
 
 environment:
   sdk: '>=3.2.2 <4.0.0'
