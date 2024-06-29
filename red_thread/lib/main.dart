@@ -17,10 +17,10 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await initializeFCM();
-
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const ProviderScope(child: BagoolApp()));
+
+  await initializeFCM();
 }
 
 Future<void> initializeFCM() async {
