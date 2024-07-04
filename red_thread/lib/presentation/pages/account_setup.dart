@@ -130,6 +130,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   'longitude': longitude,
                 },
                 'fcmToken': fcmToken,
+                'timestamp': DateTime.now().millisecondsSinceEpoch,
                 'contacts': contacts.map((contact) {
                   return {
                     'name': contact.displayName,
@@ -163,6 +164,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   'latitude': latitude,
                   'longitude': longitude,
                 },
+                'timestamp': DateTime.now().millisecondsSinceEpoch,
                 'fcmToken': fcmToken,
                 'contacts': contacts.map((contact) {
                   return {
@@ -198,6 +200,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   'longitude': longitude,
                 },
                 'fcmToken': fcmToken,
+                'timestamp': DateTime.now().millisecondsSinceEpoch,
                 'contacts': contacts.map((contact) {
                   return {
                     'name': contact.displayName,
@@ -231,6 +234,7 @@ class AccountSetupPageState extends ConsumerState<AccountSetupPage>
                   'latitude': latitude,
                   'longitude': longitude,
                 },
+                'timestamp': DateTime.now().millisecondsSinceEpoch,
                 'fcmToken': fcmToken,
                 'contacts': contacts.map((contact) {
                   return {
