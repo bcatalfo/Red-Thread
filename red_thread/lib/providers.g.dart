@@ -215,5 +215,38 @@ final chatMessagesProvider = AutoDisposeStreamNotifierProvider<ChatMessages,
 );
 
 typedef _$ChatMessages = AutoDisposeStreamNotifier<List<ChatMessageModel>?>;
+String _$voiceCallScreenStateHash() =>
+    r'e7d964875eef229d4c242670d068d21994e15d65';
+
+/// See also [VoiceCallScreenState].
+@ProviderFor(VoiceCallScreenState)
+final voiceCallScreenStateProvider =
+    AutoDisposeNotifierProvider<VoiceCallScreenState, bool>.internal(
+  VoiceCallScreenState.new,
+  name: r'voiceCallScreenStateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$voiceCallScreenStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$VoiceCallScreenState = AutoDisposeNotifier<bool>;
+String _$voiceCallStateHash() => r'a9088f7cb35b28698b3d29523b4f694c7e6566b6';
+
+/// See also [VoiceCallState].
+@ProviderFor(VoiceCallState)
+final voiceCallStateProvider =
+    AutoDisposeNotifierProvider<VoiceCallState, bool>.internal(
+  VoiceCallState.new,
+  name: r'voiceCallStateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$voiceCallStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$VoiceCallState = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

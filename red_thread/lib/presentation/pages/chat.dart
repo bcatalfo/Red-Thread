@@ -18,8 +18,14 @@ class ChatPage extends ConsumerStatefulWidget {
 }
 
 class ChatPageState extends ConsumerState<ChatPage> {
+  // TODO: Fix bug where when you restart the app it rebuilds the page after a sec
+  // not sure what causes this the solution may very well not be in here
   final _scrollController = ScrollController();
   var _timestampSize = 0.0;
+  bool _isInCall = false;
+  bool _isRinging = false;
+
+  String _icebreakerQuestion = '';
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -35,7 +41,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
   void _sendMessage(String text) {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      // Handle the case where the user is not authenticated
       return;
     }
 
@@ -61,6 +66,7 @@ class ChatPageState extends ConsumerState<ChatPage> {
   @override
   void initState() {
     super.initState();
+    _icebreakerQuestion = _getRandomIcebreaker();
 
     var keyboardVisibilityController = KeyboardVisibilityController();
     keyboardSubscription =
@@ -81,6 +87,28 @@ class ChatPageState extends ConsumerState<ChatPage> {
     super.dispose();
   }
 
+  String _getRandomIcebreaker() {
+    final List<String> icebreakers = [
+      "What's your dream vacation destination?",
+      "Do you prefer cats or dogs?",
+      "What's your favorite hobby?",
+      "If you could have dinner with anyone, who would it be?",
+      "What's your go-to karaoke song?",
+      "What's your favorite movie genre?",
+      "What's the best gift you've ever received?",
+      "What's your hidden talent?",
+      "What's the most adventurous thing you've ever done?",
+      "If you could instantly learn any skill, what would it be?"
+    ];
+
+    String newIcebreaker;
+    do {
+      newIcebreaker = (icebreakers..shuffle()).first;
+    } while (newIcebreaker == _icebreakerQuestion);
+
+    return newIcebreaker;
+  }
+
   Widget _buildDateSeparator(DateTime date) {
     return Center(
       child: Padding(
@@ -97,6 +125,157 @@ class ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: myAppBar(context, ref),
+      drawer: myDrawer(context, ref),
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          const MatchBar(),
+          Expanded(
+            child: Consumer(
+              builder: (context, ref, _) {
+                final showVoiceCall = ref.watch(voiceCallScreenStateProvider);
+
+                return showVoiceCall
+                    ? _buildVoiceCallScreen(ref)
+                    : _buildChatScreen(ref);
+              },
+            ),
+          ),
+          AnimatedVisibility(
+            visible: _dateBarVisible,
+            duration: 100.ms,
+            child: DateBar()
+                .animate(target: _dateBarVisible ? 1 : 0)
+                .fade(duration: 100.ms),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVoiceCallScreen(WidgetRef ref) {
+    // TODO: Add an actual voice call
+    // TODO: Add picture of an anonymous man or woman
+    return Center(
+      child: !_isInCall
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: ElevatedButton(
+                key: const Key('callButton'),
+                onPressed: () {
+                  setState(() {
+                    if (!_isRinging) {
+                      ref.read(voiceCallStateProvider.notifier).toggle();
+                      Future.delayed(4.seconds, () {
+                        setState(() {
+                          _isRinging = false;
+                          _isInCall = true;
+                          ref.read(hadFirstCallProvider.notifier).state = true;
+                        });
+                      });
+                    }
+                    _isRinging = true;
+                  });
+                },
+                child: const Icon(Icons.call, size: 80),
+              )
+                  .animate(target: _isRinging ? 1 : 0)
+                  .shake(
+                    hz: 10,
+                    rotation: 0.2,
+                    duration: 1.seconds,
+                  )
+                  .then()
+                  .shake(
+                    hz: 5,
+                    rotation: 0.05,
+                    duration: 1.seconds,
+                  )
+                  .then()
+                  .shake(
+                    hz: 10,
+                    rotation: 0.2,
+                    duration: 1.seconds,
+                  )
+                  .then()
+                  .shake(
+                    hz: 5,
+                    rotation: 0.05,
+                    duration: 1.seconds,
+                  )
+                  .fadeOut(),
+            )
+          : Column(
+              children: [
+                Animate(
+                  key: ValueKey(_icebreakerQuestion),
+                  effects: [
+                    ScaleEffect(duration: 200.ms),
+                    ShakeEffect(hz: 10, offset: Offset(0, 10)),
+                  ],
+                  child: Card(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Icebreaker',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            _icebreakerQuestion,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 8.0),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                String newQuestion;
+                                do {
+                                  newQuestion = _getRandomIcebreaker();
+                                } while (newQuestion == _icebreakerQuestion);
+                                _icebreakerQuestion = newQuestion;
+                              });
+                            },
+                            child: const Icon(Icons.refresh),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: ElevatedButton(
+                    key: const Key('hangupButton'),
+                    onPressed: () {
+                      setState(() {
+                        _isInCall = false;
+                        ref.read(voiceCallStateProvider.notifier).toggle();
+                      });
+                    },
+                    child: const Icon(Icons.call_end, size: 80),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(15),
+                    ),
+                  ).animate().fadeIn(duration: 500.ms),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildChatScreen(WidgetRef ref) {
     final messages = ref.watch(chatMessagesProvider);
 
     ref.listen<AsyncValue<List<ChatMessageModel>?>>(chatMessagesProvider,
@@ -107,92 +286,77 @@ class ChatPageState extends ConsumerState<ChatPage> {
       }
     });
 
-    return Scaffold(
-      appBar: myAppBar(context, ref),
-      drawer: myDrawer(context, ref),
-      resizeToAvoidBottomInset: true,
-      body: messages.when(
-        data: (messages) {
-          final sortedMessages = List<ChatMessageModel>.from(messages!)
-            ..sort((a, b) => a.date.compareTo(b.date));
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: KeyboardDismissOnTap(
-              child: Column(
-                children: [
-                  const MatchBar(),
-                  Expanded(
-                    child: GestureDetector(
-                      onHorizontalDragUpdate: (details) {
-                        if (_timestampSize + details.primaryDelta! <= 0 &&
-                            (_timestampSize >= -100 ||
-                                details.primaryDelta! > 0)) {
+    return messages.when(
+      data: (messages) {
+        final sortedMessages = List<ChatMessageModel>.from(messages!)
+          ..sort((a, b) => a.date.compareTo(b.date));
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: KeyboardDismissOnTap(
+            child: Column(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onHorizontalDragUpdate: (details) {
+                      if (_timestampSize + details.primaryDelta! <= 0 &&
+                          (_timestampSize >= -100 ||
+                              details.primaryDelta! > 0)) {
+                        setState(() {
+                          _timestampSize += details.primaryDelta!;
+                        });
+                      }
+                    },
+                    onHorizontalDragEnd: (details) {
+                      Future.delayed(Duration.zero, () async {
+                        for (double i = _timestampSize; i <= 0; i += 1) {
+                          await Future.delayed(const Duration(milliseconds: 1));
                           setState(() {
-                            _timestampSize += details.primaryDelta!;
+                            _timestampSize = i;
                           });
                         }
-                      },
-                      onHorizontalDragEnd: (details) {
-                        Future.delayed(Duration.zero, () async {
-                          for (double i = _timestampSize; i <= 0; i += 1) {
-                            await Future.delayed(
-                                const Duration(milliseconds: 1));
-                            setState(() {
-                              _timestampSize = i;
-                            });
-                          }
-                          setState(() {
-                            _timestampSize = 0;
-                          });
+                        setState(() {
+                          _timestampSize = 0;
                         });
-                      },
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: sortedMessages.length,
-                        itemBuilder: (context, index) {
-                          List<Widget> messageWidgets = [];
-                          if (index == 0 ||
-                              sortedMessages[index].date.day !=
-                                  sortedMessages[index - 1].date.day) {
-                            messageWidgets.add(_buildDateSeparator(
-                                sortedMessages[index].date));
-                          }
-                          messageWidgets
-                              .add(_buildMessageWidget(sortedMessages[index]));
+                      });
+                    },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: sortedMessages.length,
+                      itemBuilder: (context, index) {
+                        List<Widget> messageWidgets = [];
+                        if (index == 0 ||
+                            sortedMessages[index].date.day !=
+                                sortedMessages[index - 1].date.day) {
+                          messageWidgets.add(
+                              _buildDateSeparator(sortedMessages[index].date));
+                        }
+                        messageWidgets
+                            .add(_buildMessageWidget(sortedMessages[index]));
 
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: messageWidgets,
-                          );
-                        },
-                      ),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: messageWidgets,
+                        );
+                      },
                     ),
                   ),
-                  ChatInputBar(
-                    onSend: _sendMessage,
-                  ),
-                  AnimatedVisibility(
-                    visible: _dateBarVisible,
-                    duration: 100.ms,
-                    child: DateBar()
-                        .animate(target: _dateBarVisible ? 1 : 0)
-                        .fade(duration: 100.ms),
-                  )
-                ],
-              ),
+                ),
+                ChatInputBar(
+                  onSend: _sendMessage,
+                ),
+              ],
             ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-      ),
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text('Error: $e')),
     );
   }
 
   Widget _buildMessageWidget(ChatMessageModel messageModel) {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      // Handle the case where the user is not authenticated
       return const SizedBox.shrink();
     }
 
@@ -560,128 +724,161 @@ class MatchBar extends ConsumerWidget {
     final match = ref.watch(matchNameProvider);
     final age = ref.watch(matchAgeProvider);
     final distance = ref.watch(matchDistanceProvider);
+    final isInVoiceCallScreen = ref.watch(voiceCallScreenStateProvider);
+    final hadFirstCall = ref.watch(hadFirstCallProvider);
+    final isInVoiceCall = ref.watch(voiceCallStateProvider);
 
     return Container(
       color: scheme.surfaceContainerHighest,
+      padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                match.when(
-                  data: (match) => Text(
-                    '$match',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              match.when(
+                data: (match) => Text(
+                  '$match',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                loading: () => const CircularProgressIndicator(),
+                error: (e, _) => Text('Error: $e'),
+              ),
+              age.when(
+                data: (age) => distance.when(
+                  data: (distance) => Text(
+                    '$age, ${distance?.toStringAsFixed(1)} miles away',
+                    style: theme.textTheme.bodySmall,
                   ),
                   loading: () => const CircularProgressIndicator(),
                   error: (e, _) => Text('Error: $e'),
                 ),
-                age.when(
-                  data: (age) => distance.when(
-                    data: (distance) => Text(
-                        '$age, ${distance?.toStringAsFixed(1)} miles away',
-                        style: theme.textTheme.bodySmall),
-                    loading: () => const CircularProgressIndicator(),
-                    error: (e, _) => Text('Error: $e'),
-                  ),
-                  loading: () => const CircularProgressIndicator(),
-                  error: (e, _) => Text('Error: $e'),
-                ),
-              ],
-            ),
+                loading: () => const CircularProgressIndicator(),
+                error: (e, _) => Text('Error: $e'),
+              ),
+            ],
           ),
-          PopupMenuButton<int>(
-            icon: Icon(Icons.more_vert, color: scheme.primary),
-            color: scheme.surfaceContainerHigh,
-            onSelected: (int result) {
-              if (result == 1) {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      backgroundColor: scheme.surfaceContainerHigh,
-                      title: Center(
-                        child: match.when(
-                          data: (match) => Text('Unmatch with $match?',
-                              style: theme.textTheme.headlineMedium
-                                  ?.copyWith(color: scheme.onSurface)),
-                          error: (e, _) => Text('Error: $e'),
-                          loading: () => const CircularProgressIndicator(),
-                        ),
-                      ),
-                      content: Text(
-                          'Are you sure you want to unmatch? This action cannot be undone.',
-                          style: theme.textTheme.bodyLarge
-                              ?.copyWith(color: scheme.onSurfaceVariant)),
-                      actionsAlignment: MainAxisAlignment.center,
-                      actions: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                unmatch(context, ref);
-                              },
-                              child: Text('Unmatch',
-                                  style: theme.textTheme.bodyLarge
-                                      ?.copyWith(color: scheme.primary)),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  color: scheme.primary,
-                                ),
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Cancel',
-                                  style: theme.textTheme.bodyLarge
-                                      ?.copyWith(color: scheme.onPrimary),
-                                ),
+          Row(
+            children: [
+              if (isInVoiceCallScreen)
+                hadFirstCall && !isInVoiceCall
+                    ? IconButton(
+                        icon: const Icon(Icons.chat),
+                        onPressed: () {
+                          ref
+                              .read(voiceCallScreenStateProvider.notifier)
+                              .toggle();
+                        },
+                      )
+                    : Container(),
+              if (!isInVoiceCallScreen)
+                IconButton(
+                  icon: const Icon(Icons.phone),
+                  onPressed: () {
+                    ref.read(voiceCallScreenStateProvider.notifier).toggle();
+                  },
+                ),
+              PopupMenuButton<int>(
+                icon: Icon(Icons.more_vert, color: scheme.primary),
+                color: scheme.surfaceContainerHigh,
+                onSelected: (int result) {
+                  if (result == 1) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: scheme.surfaceContainerHigh,
+                          title: Center(
+                            child: match.when(
+                              data: (match) => Text(
+                                'Unmatch with $match?',
+                                style: theme.textTheme.headlineMedium
+                                    ?.copyWith(color: scheme.onSurface),
                               ),
+                              error: (e, _) => Text('Error: $e'),
+                              loading: () => const CircularProgressIndicator(),
+                            ),
+                          ),
+                          content: Text(
+                            'Are you sure you want to unmatch? This action cannot be undone.',
+                            style: theme.textTheme.bodyLarge
+                                ?.copyWith(color: scheme.onSurfaceVariant),
+                          ),
+                          actionsAlignment: MainAxisAlignment.center,
+                          actions: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    unmatch(context, ref);
+                                  },
+                                  child: Text(
+                                    'Unmatch',
+                                    style: theme.textTheme.bodyLarge
+                                        ?.copyWith(color: scheme.primary),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      color: scheme.primary,
+                                    ),
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Cancel',
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(color: scheme.onPrimary),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
-                        ),
-                      ],
+                        );
+                      },
                     );
-                  },
-                );
-              } else if (result == 2) {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const ReportDialog();
-                  },
-                );
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-              PopupMenuItem<int>(
-                value: 1,
-                child: ListTile(
-                  leading: Icon(Icons.block, color: scheme.onSurface),
-                  title: Text('Unmatch',
-                      style: theme.textTheme.bodyLarge
-                          ?.copyWith(color: scheme.onSurface)),
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 2,
-                child: ListTile(
-                  leading: Icon(Icons.flag, color: scheme.onSurface),
-                  title: Text('Report',
-                      style: theme.textTheme.bodyLarge
-                          ?.copyWith(color: scheme.onSurface)),
-                ),
+                  } else if (result == 2) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const ReportDialog();
+                      },
+                    );
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                  PopupMenuItem<int>(
+                    value: 1,
+                    child: ListTile(
+                      leading: Icon(Icons.block, color: scheme.onSurface),
+                      title: Text(
+                        'Unmatch',
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(color: scheme.onSurface),
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem<int>(
+                    value: 2,
+                    child: ListTile(
+                      leading: Icon(Icons.flag, color: scheme.onSurface),
+                      title: Text(
+                        'Report',
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(color: scheme.onSurface),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

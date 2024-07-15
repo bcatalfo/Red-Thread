@@ -862,3 +862,29 @@ class ChatMessages extends _$ChatMessages {
         'chatMessages', messages.map((e) => jsonEncode(e.toJson())).toList());
   }
 }
+
+@riverpod
+class VoiceCallScreenState extends _$VoiceCallScreenState {
+  @override
+  bool build() {
+    return true; // Default to voice call
+  }
+
+  void toggle() {
+    state = !state;
+  }
+}
+
+@riverpod
+class VoiceCallState extends _$VoiceCallState {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void toggle() {
+    state = !state;
+  }
+}
+
+final hadFirstCallProvider = StateProvider<bool>((ref) => false);
