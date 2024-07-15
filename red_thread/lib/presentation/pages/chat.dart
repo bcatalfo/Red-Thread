@@ -8,7 +8,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:red_thread/presentation/drawer.dart';
 import 'package:red_thread/presentation/theme.dart';
-import 'package:red_thread/providers.dart'; // Adjust this import based on your file structure
+import 'package:red_thread/providers.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -157,7 +157,6 @@ class ChatPageState extends ConsumerState<ChatPage> {
 
   Widget _buildVoiceCallScreen(WidgetRef ref) {
     // TODO: Add an actual voice call
-    // TODO: Add picture of an anonymous man or woman
     return Center(
       child: !_isInCall
           ? Padding(
@@ -250,6 +249,11 @@ class ChatPageState extends ConsumerState<ChatPage> {
                       ),
                     ),
                   ),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.person,
+                  size: MediaQuery.of(context).size.width * 0.5,
                 ),
                 const Spacer(),
                 Padding(
