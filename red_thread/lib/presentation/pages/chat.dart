@@ -24,6 +24,8 @@ class ChatPageState extends ConsumerState<ChatPage> {
   var _timestampSize = 0.0;
   bool _isInCall = false;
   bool _isRinging = false;
+  bool _isMuted = false;
+  bool _isSpeakerOn = false;
 
   String _icebreakerQuestion = '';
 
@@ -258,21 +260,64 @@ class ChatPageState extends ConsumerState<ChatPage> {
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
-                  child: ElevatedButton(
-                    key: const Key('hangupButton'),
-                    onPressed: () {
-                      setState(() {
-                        _isInCall = false;
-                        ref.read(voiceCallStateProvider.notifier).toggle();
-                      });
-                    },
-                    child: const Icon(Icons.call_end, size: 80),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(15),
-                    ),
-                  ).animate().fadeIn(duration: 500.ms),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        key: const Key('muteButton'),
+                        onPressed: () {
+                          setState(() {
+                            _isMuted = !_isMuted;
+                          });
+                        },
+                        child: Icon(
+                          _isMuted ? Icons.mic_off : Icons.mic,
+                          size: 40,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(15),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton(
+                        key: const Key('hangupButton'),
+                        onPressed: () {
+                          setState(() {
+                            _isInCall = false;
+                            ref.read(voiceCallStateProvider.notifier).toggle();
+                          });
+                        },
+                        child: const Icon(
+                          Icons.call_end,
+                          size: 80,
+                          color: Colors.white, // Changed icon color to white
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(15),
+                        ),
+                      ).animate().fadeIn(duration: 500.ms),
+                      const SizedBox(width: 16),
+                      ElevatedButton(
+                        key: const Key('speakerButton'),
+                        onPressed: () {
+                          setState(() {
+                            _isSpeakerOn = !_isSpeakerOn;
+                          });
+                        },
+                        child: Icon(
+                          _isSpeakerOn ? Icons.volume_up : Icons.volume_off,
+                          size: 40,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(15),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -776,7 +821,7 @@ class MatchBar extends ConsumerWidget {
                               .read(voiceCallScreenStateProvider.notifier)
                               .toggle();
                         },
-                      )
+                      ) // TODO: Make this animate in
                     : Container(),
               if (!isInVoiceCallScreen)
                 IconButton(
